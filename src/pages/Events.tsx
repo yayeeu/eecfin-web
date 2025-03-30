@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { List, CalendarDays, AlertCircle } from 'lucide-react';
@@ -36,10 +35,18 @@ const Events = () => {
 
   return (
     <div>
-      <section className="bg-eecfin-navy text-white py-12">
-        <div className="container-custom text-center">
+      <section className="relative bg-eecfin-navy overflow-hidden">
+        <div className="absolute inset-0 z-0">
+          <img 
+            src="/lovable-uploads/54e6cd73-6658-4990-b0c6-d369f39e1cb9.png" 
+            alt="Church background" 
+            className="w-full h-full object-cover opacity-30"
+          />
+          <div className="absolute inset-0 bg-eecfin-navy/60"></div>
+        </div>
+        <div className="container-custom text-center relative z-10 py-16">
           <h1 className="text-4xl md:text-5xl font-bold mb-4">Events & Services</h1>
-          <p className="text-xl max-w-3xl mx-auto">
+          <p className="text-xl max-w-3xl mx-auto text-white/90">
             Join us for worship services, prayer meetings, and community events.
           </p>
         </div>
