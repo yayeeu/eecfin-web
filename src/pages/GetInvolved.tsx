@@ -1,16 +1,88 @@
-import React from 'react';
+
+import React, { useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { getMinistries } from '@/lib/ministryService';
 import { Button } from "@/components/ui/button";
-import { Music, Heart, Users, BookOpen, Gift, Mail, Phone, User, Handshake } from 'lucide-react';
+import { Users, Gift, Mail, Phone, User, Handshake } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import AdminLink from '@/components/AdminLink';
 
 const GetInvolved = () => {
+  // Optimize data fetching
   const { data: ministries, isLoading, error } = useQuery({
     queryKey: ['ministries', true],
     queryFn: () => getMinistries(true), // Only fetch active ministries
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    refetchOnWindowFocus: false,
   });
+  
+  // Memoize ministry cards to prevent unnecessary re-renders
+  const ministryCards = useMemo(() => {
+    if (!ministries || ministries.length === 0) return null;
+    
+    return (
+      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {ministries.map((ministry) => (
+          <div key={ministry.id} className="bg-gray-50 p-6 rounded-lg shadow-sm">
+            {ministry.photo && (
+              <div className="mb-6 rounded-lg overflow-hidden">
+                <img 
+                  src={ministry.photo} 
+                  alt={ministry.name}
+                  className="w-full h-48 object-cover"
+                  loading="lazy" 
+                />
+              </div>
+            )}
+            <h3 className="text-xl font-semibold mb-3">{ministry.name}</h3>
+            <p className="text-gray-600 mb-4">{ministry.description}</p>
+            
+            <div className="space-y-2 mb-6">
+              <div className="flex items-center text-gray-700">
+                <User className="h-4 w-4 mr-2 text-eecfin-navy" />
+                <span>{ministry.contact_name}</span>
+              </div>
+              <div className="flex items-center text-gray-700">
+                <Mail className="h-4 w-4 mr-2 text-eecfin-navy" />
+                <a href={`mailto:${ministry.contact_email}`} className="hover:text-eecfin-navy">
+                  {ministry.contact_email}
+                </a>
+              </div>
+              {ministry.contact_phone && (
+                <div className="flex items-center text-gray-700">
+                  <Phone className="h-4 w-4 mr-2 text-eecfin-navy" />
+                  <a href={`tel:${ministry.contact_phone}`} className="hover:text-eecfin-navy">
+                    {ministry.contact_phone}
+                  </a>
+                </div>
+              )}
+            </div>
+            
+            <div className="text-center">
+              <Button className="bg-eecfin-navy hover:bg-eecfin-navy/80">
+                Get Involved
+              </Button>
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  }, [ministries]);
+
+  // Memoize the empty state
+  const emptyState = useMemo(() => (
+    <div className="bg-gray-50 p-10 rounded-lg text-center max-w-3xl mx-auto">
+      <Handshake className="h-14 w-14 text-eecfin-navy mx-auto mb-4 opacity-70" />
+      <h3 className="text-xl font-semibold mb-2">Ministries Coming Soon</h3>
+      <p className="text-gray-600 mb-6">
+        We're currently organizing our ministry programs. Check back soon to find ways you can serve and 
+        connect with our church community.
+      </p>
+      <Button asChild className="bg-eecfin-navy hover:bg-eecfin-navy/80">
+        <Link to="/contact">Contact Us For More Information</Link>
+      </Button>
+    </div>
+  ), []);
 
   return (
     <div>
@@ -21,10 +93,11 @@ const GetInvolved = () => {
             src="/lovable-uploads/54e6cd73-6658-4990-b0c6-d369f39e1cb9.png" 
             alt="Church background" 
             className="w-full h-full object-cover opacity-30"
+            loading="eager"
           />
           <div className="absolute inset-0 bg-eecfin-accent/40"></div>
         </div>
-        <div className="container-custom text-center relative z-10 py-16">
+        <div className="container-custom text-center relative z-10 py-12">
           <div className="absolute top-2 right-2">
             <AdminLink />
           </div>
@@ -45,62 +118,9 @@ const GetInvolved = () => {
           ) : error ? (
             <div className="text-center p-8 text-red-500">Error loading ministries. Please try again later.</div>
           ) : ministries && ministries.length > 0 ? (
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {ministries.map((ministry) => (
-                <div key={ministry.id} className="bg-gray-50 p-6 rounded-lg shadow-sm">
-                  {ministry.photo && (
-                    <div className="mb-6 rounded-lg overflow-hidden">
-                      <img 
-                        src={ministry.photo} 
-                        alt={ministry.name}
-                        className="w-full h-48 object-cover" 
-                      />
-                    </div>
-                  )}
-                  <h3 className="text-xl font-semibold mb-3">{ministry.name}</h3>
-                  <p className="text-gray-600 mb-4">{ministry.description}</p>
-                  
-                  <div className="space-y-2 mb-6">
-                    <div className="flex items-center text-gray-700">
-                      <User className="h-4 w-4 mr-2 text-eecfin-navy" />
-                      <span>{ministry.contact_name}</span>
-                    </div>
-                    <div className="flex items-center text-gray-700">
-                      <Mail className="h-4 w-4 mr-2 text-eecfin-navy" />
-                      <a href={`mailto:${ministry.contact_email}`} className="hover:text-eecfin-navy">
-                        {ministry.contact_email}
-                      </a>
-                    </div>
-                    {ministry.contact_phone && (
-                      <div className="flex items-center text-gray-700">
-                        <Phone className="h-4 w-4 mr-2 text-eecfin-navy" />
-                        <a href={`tel:${ministry.contact_phone}`} className="hover:text-eecfin-navy">
-                          {ministry.contact_phone}
-                        </a>
-                      </div>
-                    )}
-                  </div>
-                  
-                  <div className="text-center">
-                    <Button className="bg-eecfin-navy hover:bg-eecfin-navy/80">
-                      Get Involved
-                    </Button>
-                  </div>
-                </div>
-              ))}
-            </div>
+            ministryCards
           ) : (
-            <div className="bg-gray-50 p-10 rounded-lg text-center max-w-3xl mx-auto">
-              <Handshake className="h-14 w-14 text-eecfin-navy mx-auto mb-4 opacity-70" />
-              <h3 className="text-xl font-semibold mb-2">Ministries Coming Soon</h3>
-              <p className="text-gray-600 mb-6">
-                We're currently organizing our ministry programs. Check back soon to find ways you can serve and 
-                connect with our church community.
-              </p>
-              <Button asChild className="bg-eecfin-navy hover:bg-eecfin-navy/80">
-                <Link to="/contact">Contact Us For More Information</Link>
-              </Button>
-            </div>
+            emptyState
           )}
         </div>
       </section>
@@ -114,7 +134,6 @@ const GetInvolved = () => {
             study the Bible, and grow in your faith journey together.
           </p>
           
-          {/* We'll replace the hardcoded groups with a friendly message */}
           <div className="max-w-3xl mx-auto bg-white p-8 rounded-lg shadow-sm text-center">
             <Users className="h-12 w-12 text-eecfin-navy mx-auto mb-4 opacity-70" />
             <h3 className="text-xl font-semibold mb-3">Our Small Groups Program</h3>
@@ -178,4 +197,4 @@ const GetInvolved = () => {
   );
 };
 
-export default GetInvolved;
+export default React.memo(GetInvolved);

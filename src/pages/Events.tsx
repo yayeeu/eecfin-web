@@ -1,13 +1,12 @@
-import React, { useState } from 'react';
+
+import React, { useState, useMemo } from 'react';
 import { Button } from "@/components/ui/button";
 import { List, CalendarDays, AlertCircle } from 'lucide-react';
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { fetchEvents } from "@/lib/googleCalendar";
 import { useQuery } from '@tanstack/react-query';
-import { Link } from 'react-router-dom';
 import EventListView from '@/components/events/EventListView';
 import EventCalendarView from '@/components/events/EventCalendarView';
-import EmptyState from '@/components/events/EmptyState';
 import { Skeleton } from "@/components/ui/skeleton";
 
 type ViewType = "list" | "calendar";
@@ -16,22 +15,27 @@ const Events = () => {
   const [viewType, setViewType] = useState<ViewType>("list");
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
 
+  // Optimized data fetching with proper caching strategy
   const { data, isLoading, error, isError } = useQuery({
     queryKey: ['events'],
     queryFn: fetchEvents,
-    staleTime: 5 * 60 * 1000, // 5 minutes
+    staleTime: 10 * 60 * 1000, // 10 minutes
+    refetchOnWindowFocus: false,
   });
 
   const events = data?.events || [];
   const errorMessage = data?.error || (error as Error)?.message;
   const status = data?.status;
   
-  const filteredEvents = selectedDate 
-    ? events.filter(event => {
-        const eventDate = new Date(event.startTime);
-        return eventDate.toDateString() === selectedDate.toDateString();
-      })
-    : events;
+  // Memoize filtered events to prevent unnecessary calculations on re-renders
+  const filteredEvents = useMemo(() => {
+    if (!selectedDate) return events;
+    
+    return events.filter(event => {
+      const eventDate = new Date(event.startTime);
+      return eventDate.toDateString() === selectedDate.toDateString();
+    });
+  }, [events, selectedDate]);
 
   return (
     <div>
@@ -41,10 +45,11 @@ const Events = () => {
             src="/lovable-uploads/54e6cd73-6658-4990-b0c6-d369f39e1cb9.png" 
             alt="Church background" 
             className="w-full h-full object-cover opacity-30"
+            loading="eager" // Prioritize loading for above-the-fold image
           />
           <div className="absolute inset-0 bg-eecfin-navy/60"></div>
         </div>
-        <div className="container-custom text-center relative z-10 py-16">
+        <div className="container-custom text-center relative z-10 py-12">
           <h1 className="text-4xl md:text-5xl font-bold mb-4">Events & Services</h1>
           <p className="text-xl max-w-3xl mx-auto text-white/90">
             Join us for worship services, prayer meetings, and community events.
@@ -68,6 +73,7 @@ const Events = () => {
             </ToggleGroup>
           </div>
 
+          {/* Loading Skeletons */}
           {isLoading && (
             <div className="space-y-6">
               {[1, 2, 3].map(i => (
@@ -87,6 +93,7 @@ const Events = () => {
             </div>
           )}
 
+          {/* Error State */}
           {(isError || status === 'error') && (
             <div className="bg-red-50 p-8 rounded-lg text-center">
               <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
@@ -98,11 +105,12 @@ const Events = () => {
                 Make sure your Google Calendar API key and Calendar ID are properly set in Supabase secrets.
               </p>
               <Button asChild className="bg-eecfin-navy hover:bg-eecfin-navy/80">
-                <a href={window.location.href}>Retry</a>
+                <button onClick={() => window.location.reload()}>Retry</button>
               </Button>
             </div>
           )}
 
+          {/* Content */}
           {!isLoading && !isError && status !== 'error' && (
             <div>
               {viewType === "list" && <EventListView events={events} />}
@@ -135,4 +143,4 @@ const Events = () => {
   );
 };
 
-export default Events;
+export default React.memo(Events);

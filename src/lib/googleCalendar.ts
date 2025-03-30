@@ -1,7 +1,6 @@
 
 import { format } from 'date-fns';
 import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/use-toast";
 
 // Type for the Google Calendar API response
 interface GoogleCalendarEvent {
@@ -38,8 +37,44 @@ export interface Event {
   image?: string; // Optional image property for event
 }
 
+// Cache management for events 
+const CACHE_KEY = 'calendar_events_cache';
+const CACHE_EXPIRY = 5 * 60 * 1000; // 5 minutes
+
+// Add a local caching layer for the events
+const getEventsFromCache = (): { events: Event[], timestamp: number } | null => {
+  try {
+    const cacheData = localStorage.getItem(CACHE_KEY);
+    if (!cacheData) return null;
+    
+    const { events, timestamp } = JSON.parse(cacheData);
+    
+    // Return the cache if it's still valid
+    if (Date.now() - timestamp < CACHE_EXPIRY) {
+      return { events, timestamp };
+    }
+    
+    return null;
+  } catch (error) {
+    console.log('Error reading from cache', error);
+    return null;
+  }
+};
+
+const saveEventsToCache = (events: Event[]) => {
+  try {
+    localStorage.setItem(CACHE_KEY, JSON.stringify({
+      events,
+      timestamp: Date.now()
+    }));
+  } catch (error) {
+    console.log('Error saving to cache', error);
+  }
+};
+
 /**
  * Fetches events from Google Calendar API via Supabase Edge Function
+ * With a local cache layer for better performance
  */
 export async function fetchEvents(): Promise<{ events: Event[], error: string | null, status: string }> {
   try {
@@ -51,14 +86,23 @@ export async function fetchEvents(): Promise<{ events: Event[], error: string | 
       return { events: [], error: null, status: 'development' };
     }
     
+    // Try to get events from cache first
+    const cachedEvents = getEventsFromCache();
+    if (cachedEvents) {
+      console.log('Returning events from cache');
+      return { 
+        events: cachedEvents.events, 
+        error: null, 
+        status: 'success' 
+      };
+    }
+    
     console.log('Fetching events from Supabase Edge Function');
     
     // Call the Supabase Edge Function to get calendar events
     const { data, error } = await supabase.functions.invoke('fetch-calendar-events', {
       method: 'GET'
     });
-    
-    console.log('Response from Edge Function:', data);
     
     if (error) {
       console.error('Error invoking Supabase Edge Function:', error);
@@ -90,6 +134,10 @@ export async function fetchEvents(): Promise<{ events: Event[], error: string | 
     
     // Format the events returned from the edge function
     const formattedEvents = formatEvents(data.items);
+    
+    // Save the events to the cache
+    saveEventsToCache(formattedEvents);
+    
     return { 
       events: formattedEvents, 
       error: null, 
@@ -110,11 +158,8 @@ export async function fetchEvents(): Promise<{ events: Event[], error: string | 
  */
 function formatEvents(googleEvents: GoogleCalendarEvent[]): Event[] {
   if (!googleEvents || googleEvents.length === 0) {
-    console.log('No events to format');
     return [];
   }
-  
-  console.log(`Formatting ${googleEvents.length} events`);
   
   return googleEvents.map(event => {
     const startTime = new Date(event.start.dateTime);
@@ -140,7 +185,7 @@ function formatEvents(googleEvents: GoogleCalendarEvent[]): Event[] {
       day: startTime.getDate(),
       month: format(startTime, 'MMMM'),
       year: startTime.getFullYear(),
-      image: eventImage // Only include image if available
+      image: eventImage
     };
   });
 }
