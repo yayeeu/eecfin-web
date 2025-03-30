@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { Member, Role, Ministry } from '@/types/database.types';
@@ -11,12 +10,12 @@ import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Textarea } from '@/components/ui/textarea';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 import { supabase, isSupabaseConfigured } from '@/lib/supabaseClient';
 
-// Define the form schema
 const elderFormSchema = z.object({
   name: z.string().min(2, {
     message: "Name must be at least 2 characters.",
@@ -29,6 +28,7 @@ const elderFormSchema = z.object({
     message: "Please enter a valid email address.",
   }).optional().or(z.literal('')),
   image: z.string().optional(),
+  address: z.string().optional(),
   ministry_id: z.string().optional().or(z.literal(''))
 });
 
@@ -43,7 +43,6 @@ const ElderManager = () => {
   const [selectedElder, setSelectedElder] = useState<Member | null>(null);
   const [roles, setRoles] = useState<Role[]>([]);
 
-  // Setup form
   const form = useForm<ElderFormValues>({
     resolver: zodResolver(elderFormSchema),
     defaultValues: {
@@ -52,11 +51,11 @@ const ElderManager = () => {
       phone: "",
       email: "",
       image: "",
+      address: "",
       ministry_id: ""
     }
   });
 
-  // Fetch roles data
   useEffect(() => {
     const fetchRoles = async () => {
       if (!isSupabaseConfigured()) {
@@ -76,19 +75,16 @@ const ElderManager = () => {
     fetchRoles();
   }, []);
 
-  // Fetch elders data
   const { data: elders, isLoading, isError } = useQuery({
     queryKey: ['elders'],
     queryFn: getElderMembers
   });
 
-  // Fetch ministries for the dropdown
   const { data: ministries } = useQuery({
     queryKey: ['ministries'],
     queryFn: () => getMinistries()
   });
 
-  // Mutations
   const createElderMutation = useMutation({
     mutationFn: (data: Omit<Member, 'id' | 'created_at'>) => createMember(data),
     onSuccess: () => {
@@ -146,7 +142,6 @@ const ElderManager = () => {
     },
   });
 
-  // Reset form when selectedElder changes
   useEffect(() => {
     if (selectedElder) {
       form.reset({
@@ -155,6 +150,7 @@ const ElderManager = () => {
         phone: selectedElder.phone || "",
         email: selectedElder.email || "",
         image: selectedElder.image || "",
+        address: selectedElder.address || "",
         ministry_id: selectedElder.ministry_id || ""
       });
     } else {
@@ -164,6 +160,7 @@ const ElderManager = () => {
         phone: "",
         email: "",
         image: "",
+        address: "",
         ministry_id: ""
       });
     }
@@ -194,7 +191,6 @@ const ElderManager = () => {
   };
 
   const onSubmit = (data: ElderFormValues) => {
-    // Ensure that required fields are present
     if (!data.name || !data.role) {
       toast({
         title: "Error",
@@ -204,7 +200,6 @@ const ElderManager = () => {
       return;
     }
 
-    // Get the Elder role ID
     const elderRoleId = roles.find(r => r.name === 'Elder')?.id;
     if (!elderRoleId) {
       toast({
@@ -215,15 +210,15 @@ const ElderManager = () => {
       return;
     }
 
-    // Clean up empty strings to undefined for optional fields
     const formattedData = {
-      name: data.name, // required field
-      role: data.role, // required field
+      name: data.name,
+      role: data.role,
       email: data.email || undefined,
       phone: data.phone || undefined,
       image: data.image || undefined,
+      address: data.address || undefined,
       ministry_id: data.ministry_id || undefined,
-      role_id: elderRoleId // Always set the role_id to Elder
+      role_id: elderRoleId
     };
 
     if (isEditing && selectedElder) {
@@ -311,7 +306,6 @@ const ElderManager = () => {
         </div>
       )}
 
-      {/* Add/Edit Elder Dialog */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent className="sm:max-w-[500px]">
           <DialogHeader>
@@ -400,6 +394,24 @@ const ElderManager = () => {
                           </div>
                         )}
                       </div>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <FormField
+                control={form.control}
+                name="address"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Address</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        placeholder="Enter full address (for map location)"
+                        className="min-h-[80px]"
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

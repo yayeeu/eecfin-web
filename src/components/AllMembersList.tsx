@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Member } from '@/types/database.types';
@@ -79,6 +78,7 @@ const AllMembersList = () => {
       role: '',
       email: '',
       phone: '',
+      address: '',
       gender: '',
       marital_status: '',
       spouse_name: '',
@@ -98,6 +98,7 @@ const AllMembersList = () => {
       role: member.role,
       email: member.email,
       phone: member.phone,
+      address: member.address,
       gender: member.gender,
       marital_status: member.marital_status,
       spouse_name: member.spouse_name,
@@ -271,6 +272,22 @@ const AllMembersList = () => {
                       <FormLabel>Phone</FormLabel>
                       <FormControl>
                         <Input placeholder="Phone number" {...field} />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="address"
+                  render={({ field }) => (
+                    <FormItem className="md:col-span-2">
+                      <FormLabel>Address</FormLabel>
+                      <FormControl>
+                        <Textarea 
+                          placeholder="Enter full address (for map location)"
+                          className="min-h-[80px]"
+                          {...field} 
+                        />
                       </FormControl>
                     </FormItem>
                   )}
