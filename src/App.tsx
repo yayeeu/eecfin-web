@@ -16,6 +16,7 @@ const Contact = lazy(() => import("./pages/Contact"));
 const GetInvolved = lazy(() => import("./pages/GetInvolved"));
 const Sermons = lazy(() => import("./pages/Sermons"));
 const Give = lazy(() => import("./pages/Give"));
+const Constitution = lazy(() => import("./pages/Constitution"));
 const Admin = lazy(() => import("./pages/Admin"));
 
 // Configure the query client with performance optimizations
@@ -83,6 +84,13 @@ const App = () => (
             <Layout>
               <Suspense fallback={<PageLoader />}>
                 <Give />
+              </Suspense>
+            </Layout>
+          } />
+          <Route path="/constitution" element={
+            <Layout>
+              <Suspense fallback={<PageLoader />}>
+                <Constitution />
               </Suspense>
             </Layout>
           } />

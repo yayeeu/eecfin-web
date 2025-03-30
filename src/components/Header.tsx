@@ -16,10 +16,11 @@ const Header = () => {
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
 
-  // Modified navItems to remove Contact (will be in topNav)
+  // Modified navItems to include Constitution
   const navItems = [
     { title: 'Home', path: '/' },
     { title: 'Who We Are', path: '/who-we-are' },
+    { title: 'Constitution', path: '/constitution' },
     { title: 'Events', path: '/events' },
     { title: 'Sermons', path: '/sermons' },
     { title: 'Get Involved', path: '/get-involved' },
