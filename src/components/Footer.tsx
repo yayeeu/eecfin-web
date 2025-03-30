@@ -14,7 +14,7 @@ const Footer = () => {
             <h3 className="text-eecfin-gold text-xl font-semibold mb-4">Ethiopian Evangelical Church in Finland</h3>
             <p className="mb-2 flex items-center">
               <MapPin size={18} className="mr-2 text-eecfin-gold" />
-              <span>Helsinki, Finland</span>
+              <span>Keinulaudankuja 4 B, 00940 Helsinki, Finland</span>
             </p>
             <p className="mb-2 flex items-center">
               <Phone size={18} className="mr-2 text-eecfin-gold" />

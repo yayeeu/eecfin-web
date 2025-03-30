@@ -1,16 +1,10 @@
+
 import React from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { getMinistries } from '@/lib/ministryService';
 import { Button } from "@/components/ui/button";
-import { Mail, Phone, MapPin, Clock, Users } from 'lucide-react';
+import { Mail, Phone, MapPin, Clock } from 'lucide-react';
 import AdminLink from '@/components/AdminLink';
 
 const Contact = () => {
-  const { data: ministries } = useQuery({
-    queryKey: ['ministries', true],
-    queryFn: () => getMinistries(true), // Only fetch active ministries
-  });
-
   return (
     <div>
       {/* Hero Section with Background Image */}
@@ -48,8 +42,8 @@ const Contact = () => {
                   <div>
                     <h3 className="text-lg font-semibold mb-1">Church Location</h3>
                     <p className="text-gray-600">
-                      Address Line 1<br />
-                      Helsinki, Finland
+                      Keinulaudankuja 4 B<br />
+                      00940 Helsinki, Finland
                     </p>
                   </div>
                 </div>
@@ -140,62 +134,28 @@ const Contact = () => {
         </div>
       </section>
 
-      {/* Ministry Contacts Section */}
-      {ministries && ministries.length > 0 && (
-        <section className="py-16 bg-gray-50">
-          <div className="container-custom">
-            <h2 className="section-title text-center mb-8">Ministry Contacts</h2>
-            <p className="text-center text-gray-600 mb-8">
-              Get in touch with our ministry leaders directly for specific inquiries.
-            </p>
-            
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {ministries.map((ministry) => (
-                <div key={ministry.id} className="bg-white p-6 rounded-lg shadow-sm">
-                  <div className="flex items-start mb-4">
-                    <div className="bg-eecfin-navy/10 p-3 rounded-full mr-4">
-                      <Users className="h-5 w-5 text-eecfin-navy" />
-                    </div>
-                    <div>
-                      <h3 className="text-lg font-semibold">{ministry.name}</h3>
-                    </div>
-                  </div>
-                  
-                  <p className="text-gray-600 mb-4 line-clamp-2">{ministry.description}</p>
-                  
-                  <div className="space-y-2 text-sm">
-                    <p><span className="font-medium">Contact:</span> {ministry.contact_name}</p>
-                    <p>
-                      <span className="font-medium">Email:</span> 
-                      <a href={`mailto:${ministry.contact_email}`} className="text-eecfin-navy ml-1 hover:underline">
-                        {ministry.contact_email}
-                      </a>
-                    </p>
-                    {ministry.contact_phone && (
-                      <p>
-                        <span className="font-medium">Phone:</span> 
-                        <a href={`tel:${ministry.contact_phone}`} className="text-eecfin-navy ml-1 hover:underline">
-                          {ministry.contact_phone}
-                        </a>
-                      </p>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
-
       {/* Map Section */}
       <section className="py-16 bg-white">
         <div className="container-custom">
           <h2 className="section-title text-center mb-8">Find Us</h2>
-          <div className="bg-gray-300 h-96 rounded-lg flex items-center justify-center">
-            <p className="text-gray-600">Map will be displayed here</p>
+          <div className="bg-gray-100 h-96 rounded-lg overflow-hidden shadow-md">
+            <iframe 
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1984.1515532267075!2d25.0965548!3d60.236891!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x46920f34ca9d0975%3A0xe0d7c1b2c5711be!2sKeinulaudankuja%204%20B%2C%2000940%20Helsinki%2C%20Finland!5e0!3m2!1sen!2sus!4v1715788767156!5m2!1sen!2sus" 
+              width="100%" 
+              height="100%" 
+              style={{ border: 0 }} 
+              allowFullScreen={true} 
+              loading="lazy" 
+              referrerPolicy="no-referrer-when-downgrade"
+              title="Church Location Map"
+              className="w-full h-full"
+            ></iframe>
           </div>
           <div className="mt-6 text-center">
-            <Button className="bg-eecfin-navy hover:bg-eecfin-navy/80">
+            <Button 
+              className="bg-eecfin-navy hover:bg-eecfin-navy/80"
+              onClick={() => window.open('https://maps.google.com/?q=Keinulaudankuja+4+B,+00940+Helsinki,+Finland', '_blank')}
+            >
               Get Directions
             </Button>
           </div>
