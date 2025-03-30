@@ -1,4 +1,3 @@
-
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
@@ -37,13 +36,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           });
           
           if (newSession?.user?.id) {
-            // Use setTimeout to avoid recursive auth state changes
             setTimeout(() => {
               loadUserProfile(newSession.user.id);
             }, 0);
           }
           
-          // Redirect to admin page after login
           const currentPath = window.location.pathname;
           if (currentPath === '/auth' || currentPath === '/') {
             window.location.href = '/admin';
@@ -113,7 +110,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const signOut = async () => {
     try {
       await signOutUser();
-      // Redirect to home page after logout
       window.location.href = '/';
     } catch (error: any) {
       toast({
@@ -183,4 +179,4 @@ export const useAuth = () => {
   return context;
 };
 
-export { UserRole };
+export type { UserRole };
