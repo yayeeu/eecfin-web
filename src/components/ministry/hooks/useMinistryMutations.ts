@@ -13,7 +13,8 @@ export const useMinistryMutations = () => {
       queryClient.invalidateQueries({ queryKey: ['ministries'] });
       toast.success('Ministry added successfully');
     },
-    onError: (error) => {
+    onError: (error: any) => {
+      console.error('Error adding ministry:', error);
       toast.error(`Error adding ministry: ${error.message}`);
     }
   });
@@ -25,7 +26,8 @@ export const useMinistryMutations = () => {
       queryClient.invalidateQueries({ queryKey: ['ministries'] });
       toast.success('Ministry updated successfully');
     },
-    onError: (error) => {
+    onError: (error: any) => {
+      console.error('Error updating ministry:', error);
       toast.error(`Error updating ministry: ${error.message}`);
     }
   });
@@ -36,7 +38,8 @@ export const useMinistryMutations = () => {
       queryClient.invalidateQueries({ queryKey: ['ministries'] });
       toast.success('Ministry deleted successfully');
     },
-    onError: (error) => {
+    onError: (error: any) => {
+      console.error('Error deleting ministry:', error);
       toast.error(`Error deleting ministry: ${error.message}`);
     }
   });

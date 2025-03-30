@@ -31,7 +31,6 @@ const formSchema = z.object({
   name: z.string().min(1, 'Ministry name is required'),
   description: z.string().min(1, 'Description is required'),
   contact_person_id: z.string().min(1, 'Contact person is required'),
-  contact_phone: z.string().optional(),
   photo: z.string().optional(),
   status: z.enum(['active', 'inactive'])
 });
@@ -57,11 +56,10 @@ const MinistryForm: React.FC<MinistryFormProps> = ({
   onContactPersonChange,
   selectedMember
 }) => {
-  const emptyMinistry: Omit<Ministry, 'id' | 'created_at' | 'contact_name' | 'contact_email'> = {
+  const emptyMinistry: Omit<Ministry, 'id' | 'created_at' | 'contact_name' | 'contact_email' | 'contact_phone'> = {
     name: '',
     description: '',
     contact_person_id: '',
-    contact_phone: '',
     status: 'active',
     photo: ''
   };
@@ -72,7 +70,6 @@ const MinistryForm: React.FC<MinistryFormProps> = ({
       name: ministry.name,
       description: ministry.description,
       contact_person_id: ministry.contact_person_id || '',
-      contact_phone: ministry.contact_phone || '',
       status: ministry.status,
       photo: ministry.photo || ''
     } : emptyMinistry
@@ -128,7 +125,10 @@ const MinistryForm: React.FC<MinistryFormProps> = ({
               <FormControl>
                 <Select 
                   value={field.value} 
-                  onValueChange={onContactPersonChange}
+                  onValueChange={(value) => {
+                    field.onChange(value);
+                    onContactPersonChange(value);
+                  }}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Select a contact elder" />
@@ -182,25 +182,6 @@ const MinistryForm: React.FC<MinistryFormProps> = ({
             {selectedMember.phone && <p className="text-sm">Phone: {selectedMember.phone}</p>}
           </div>
         )}
-
-        <FormField
-          control={form.control}
-          name="contact_phone"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Additional Contact Phone</FormLabel>
-              <FormControl>
-                <Input 
-                  placeholder="Enter additional contact phone number (optional)" 
-                  {...field} 
-                />
-              </FormControl>
-              <FormDescription>
-                Optional additional contact phone for this ministry
-              </FormDescription>
-            </FormItem>
-          )}
-        />
 
         <FormField
           control={form.control}

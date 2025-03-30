@@ -51,11 +51,11 @@ const MinistryCard: React.FC<MinistryCardProps> = ({ ministry }) => {
             </a>
           </div>
           
-          {ministry.contact_phone && (
+          {ministry.contact_elder?.phone && (
             <div className="flex items-center text-gray-700">
               <Phone className="h-3 w-3 mr-1 text-eecfin-navy flex-shrink-0" />
-              <a href={`tel:${ministry.contact_phone}`} className="hover:text-eecfin-navy truncate">
-                {ministry.contact_phone}
+              <a href={`tel:${ministry.contact_elder.phone}`} className="hover:text-eecfin-navy truncate">
+                {ministry.contact_elder.phone}
               </a>
             </div>
           )}

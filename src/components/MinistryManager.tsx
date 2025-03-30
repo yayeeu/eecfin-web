@@ -11,13 +11,13 @@ import DeleteConfirmDialog from './ministry/DeleteConfirmDialog';
 import { useMinistryData } from './ministry/hooks/useMinistryData';
 import { useMinistryMutations } from './ministry/hooks/useMinistryMutations';
 import { z } from 'zod';
+import { toast } from 'sonner';
 
 // Form schema from the original component
 const formSchema = z.object({
   name: z.string().min(1, 'Ministry name is required'),
   description: z.string().min(1, 'Description is required'),
   contact_person_id: z.string().min(1, 'Contact person is required'),
-  contact_phone: z.string().optional(),
   photo: z.string().optional(),
   status: z.enum(['active', 'inactive'])
 });
@@ -56,15 +56,18 @@ const MinistryManager = () => {
                            members?.find(m => m.id === values.contact_person_id);
     
     if (!selectedMember) {
-      // This should rarely happen since the dropdown enforces a selection
+      toast.error("Selected contact person not found");
       return;
     }
 
     const ministryData = {
       ...values,
       contact_name: selectedMember.name || '',
-      contact_email: selectedMember.email || ''
+      contact_email: selectedMember.email || '',
+      contact_phone: selectedMember.phone || ''  // We'll still set this from the member's phone
     };
+
+    console.log("Submitting ministry data:", ministryData);
 
     if (editingMinistry?.id) {
       updateMutation.mutate({ 
