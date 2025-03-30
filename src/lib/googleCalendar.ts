@@ -19,6 +19,11 @@ interface GoogleCalendarEvent {
     dateTime: string;
     timeZone: string;
   };
+  attachments?: {
+    fileUrl: string;
+    title: string;
+    mimeType: string;
+  }[];
 }
 
 // Type for our formatted event
@@ -32,6 +37,7 @@ export interface Event {
   day: number;
   month: string;
   year: number;
+  image?: string; // Added image property for event
 }
 
 /**
@@ -72,6 +78,17 @@ function formatEvents(googleEvents: GoogleCalendarEvent[]): Event[] {
   return googleEvents.map(event => {
     const startTime = new Date(event.start.dateTime);
     
+    // Extract image from attachments if available
+    let eventImage: string | undefined = undefined;
+    if (event.attachments && event.attachments.length > 0) {
+      const imageAttachment = event.attachments.find(
+        attachment => attachment.mimeType.startsWith('image/')
+      );
+      if (imageAttachment) {
+        eventImage = imageAttachment.fileUrl;
+      }
+    }
+    
     return {
       id: event.id,
       title: event.summary,
@@ -81,7 +98,8 @@ function formatEvents(googleEvents: GoogleCalendarEvent[]): Event[] {
       endTime: new Date(event.end.dateTime),
       day: startTime.getDate(),
       month: format(startTime, 'MMMM'),
-      year: startTime.getFullYear()
+      year: startTime.getFullYear(),
+      image: eventImage
     };
   });
 }
@@ -107,7 +125,8 @@ function getMockEvents(): Event[] {
       endTime: new Date(today.setHours(12, 0, 0, 0)),
       day: today.getDate(),
       month: format(today, 'MMMM'),
-      year: today.getFullYear()
+      year: today.getFullYear(),
+      image: '/images/worship-service.jpg' // Mock image path
     },
     {
       id: '2',
@@ -118,7 +137,8 @@ function getMockEvents(): Event[] {
       endTime: new Date(nextWeek.setHours(20, 0, 0, 0)),
       day: nextWeek.getDate(),
       month: format(nextWeek, 'MMMM'),
-      year: nextWeek.getFullYear()
+      year: nextWeek.getFullYear(),
+      image: '/images/bible-study.jpg' // Mock image path
     },
     {
       id: '3',
@@ -129,7 +149,8 @@ function getMockEvents(): Event[] {
       endTime: new Date(twoWeeks.setHours(17, 0, 0, 0)),
       day: twoWeeks.getDate(),
       month: format(twoWeeks, 'MMMM'),
-      year: twoWeeks.getFullYear()
+      year: twoWeeks.getFullYear(),
+      image: '/images/youth-fellowship.jpg' // Mock image path
     }
   ];
 }

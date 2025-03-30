@@ -1,11 +1,12 @@
 
 import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
-import { Calendar as CalendarIcon, Clock, MapPin, List, CalendarDays } from 'lucide-react';
+import { Calendar as CalendarIcon, Clock, MapPin, List, CalendarDays, Image as ImageIcon } from 'lucide-react';
 import { Calendar } from "@/components/ui/calendar";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { fetchEvents } from "@/lib/googleCalendar";
 
 type ViewType = "list" | "calendar";
@@ -19,6 +20,7 @@ type Event = {
   day: number;
   month: string;
   year: number;
+  image?: string;
 };
 
 const Events = () => {
@@ -52,6 +54,19 @@ const Events = () => {
         return eventDate.toDateString() === selectedDate.toDateString();
       })
     : events;
+
+  // Function to get a fallback image for events without an image
+  const getEventFallbackImage = (eventTitle: string) => {
+    // Create initials from the event title
+    const initials = eventTitle
+      .split(' ')
+      .map(word => word[0])
+      .join('')
+      .toUpperCase()
+      .substring(0, 2);
+    
+    return initials;
+  };
 
   return (
     <div>
@@ -107,20 +122,31 @@ const Events = () => {
                             <span className="uppercase">{event.month}</span>
                             <span>{event.year}</span>
                           </div>
-                          <div className="p-6">
-                            <h3 className="text-xl font-semibold mb-2">{event.title}</h3>
-                            <div className="flex items-center text-gray-600 mb-1">
-                              <Clock className="h-4 w-4 mr-2" />
-                              <span>{new Date(event.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - {new Date(event.endTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                          <div className="md:flex flex-grow">
+                            {event.image && (
+                              <div className="md:w-1/3 h-48 md:h-auto">
+                                <img 
+                                  src={event.image} 
+                                  alt={event.title} 
+                                  className="h-full w-full object-cover"
+                                />
+                              </div>
+                            )}
+                            <div className="p-6 md:w-2/3">
+                              <h3 className="text-xl font-semibold mb-2">{event.title}</h3>
+                              <div className="flex items-center text-gray-600 mb-1">
+                                <Clock className="h-4 w-4 mr-2" />
+                                <span>{new Date(event.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - {new Date(event.endTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                              </div>
+                              <div className="flex items-center text-gray-600 mb-4">
+                                <MapPin className="h-4 w-4 mr-2" />
+                                <span>{event.location}</span>
+                              </div>
+                              <p className="text-gray-600 mb-4">{event.description}</p>
+                              <Button size="sm" className="bg-eecfin-navy hover:bg-eecfin-navy/80">
+                                Add to Calendar
+                              </Button>
                             </div>
-                            <div className="flex items-center text-gray-600 mb-4">
-                              <MapPin className="h-4 w-4 mr-2" />
-                              <span>{event.location}</span>
-                            </div>
-                            <p className="text-gray-600 mb-4">{event.description}</p>
-                            <Button size="sm" className="bg-eecfin-navy hover:bg-eecfin-navy/80">
-                              Add to Calendar
-                            </Button>
                           </div>
                         </div>
                       </div>
@@ -167,16 +193,34 @@ const Events = () => {
                           <div className="space-y-4">
                             {filteredEvents.map((event) => (
                               <div key={event.id} className="border-b pb-4 last:border-0">
-                                <h3 className="font-medium text-lg">{event.title}</h3>
-                                <div className="flex items-center text-sm text-gray-600 mt-1">
-                                  <Clock className="h-4 w-4 mr-1" />
-                                  <span>{new Date(event.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - {new Date(event.endTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                                <div className="flex items-start gap-3">
+                                  {event.image ? (
+                                    <Avatar className="h-14 w-14 rounded-md">
+                                      <AvatarImage src={event.image} alt={event.title} className="object-cover" />
+                                      <AvatarFallback className="bg-eecfin-navy text-white rounded-md">
+                                        {getEventFallbackImage(event.title)}
+                                      </AvatarFallback>
+                                    </Avatar>
+                                  ) : (
+                                    <Avatar className="h-14 w-14 rounded-md bg-eecfin-navy text-white">
+                                      <AvatarFallback className="rounded-md">
+                                        {getEventFallbackImage(event.title)}
+                                      </AvatarFallback>
+                                    </Avatar>
+                                  )}
+                                  <div className="flex-1">
+                                    <h3 className="font-medium text-lg">{event.title}</h3>
+                                    <div className="flex items-center text-sm text-gray-600 mt-1">
+                                      <Clock className="h-4 w-4 mr-1" />
+                                      <span>{new Date(event.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - {new Date(event.endTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                                    </div>
+                                    <div className="flex items-center text-sm text-gray-600 mt-1 mb-2">
+                                      <MapPin className="h-4 w-4 mr-1" />
+                                      <span>{event.location}</span>
+                                    </div>
+                                    <p className="text-sm text-gray-700">{event.description}</p>
+                                  </div>
                                 </div>
-                                <div className="flex items-center text-sm text-gray-600 mt-1 mb-2">
-                                  <MapPin className="h-4 w-4 mr-1" />
-                                  <span>{event.location}</span>
-                                </div>
-                                <p className="text-sm text-gray-700">{event.description}</p>
                               </div>
                             ))}
                           </div>
