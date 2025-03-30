@@ -24,9 +24,24 @@ export const getMemberMinistries = async (memberId: string) => {
     throw error;
   }
   
-  // Extract the ministry objects from each row and return a properly typed array
-  const ministries = data.map(item => item.ministry);
-  return ministries as Ministry[];
+  // Process the return data to match the Ministry type
+  const ministries: Ministry[] = data.map(item => {
+    // Handle the case where ministry might be null
+    if (!item.ministry) return null;
+    
+    // Explicitly match each property to the Ministry type
+    return {
+      id: item.ministry.id,
+      name: item.ministry.name,
+      description: item.ministry.description,
+      contact_name: item.ministry.contact_name,
+      contact_email: item.ministry.contact_email,
+      contact_phone: item.ministry.contact_phone,
+      status: item.ministry.status as 'active' | 'inactive'
+    };
+  }).filter(Boolean) as Ministry[]; // Filter out null values
+  
+  return ministries;
 };
 
 // Assign ministry to member
