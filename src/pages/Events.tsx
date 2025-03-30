@@ -1,12 +1,15 @@
-import React, { useState, useEffect } from 'react';
+
+import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
-import { Calendar as CalendarIcon, Clock, MapPin, List, CalendarDays, Image as ImageIcon } from 'lucide-react';
+import { Calendar as CalendarIcon, Clock, MapPin, List, CalendarDays, Calendar as CalendarLucide } from 'lucide-react';
 import { Calendar } from "@/components/ui/calendar";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { fetchEvents } from "@/lib/googleCalendar";
+import { useQuery } from '@tanstack/react-query';
+import { Link } from 'react-router-dom';
 
 type ViewType = "list" | "calendar";
 type Event = {
@@ -24,27 +27,13 @@ type Event = {
 
 const Events = () => {
   const [viewType, setViewType] = useState<ViewType>("list");
-  const [events, setEvents] = useState<Event[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
 
-  useEffect(() => {
-    async function loadEvents() {
-      try {
-        setIsLoading(true);
-        const data = await fetchEvents();
-        setEvents(data);
-      } catch (err) {
-        console.error("Failed to fetch events:", err);
-        setError("Failed to load events. Please try again later.");
-      } finally {
-        setIsLoading(false);
-      }
-    }
-
-    loadEvents();
-  }, []);
+  const { data: events = [], isLoading, error } = useQuery({
+    queryKey: ['events'],
+    queryFn: fetchEvents,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
 
   const filteredEvents = selectedDate 
     ? events.filter(event => {
@@ -63,6 +52,22 @@ const Events = () => {
     
     return initials;
   };
+
+  // Component for empty state display
+  const EmptyState = ({ message, filteredView = false }: { message?: string, filteredView?: boolean }) => (
+    <div className="bg-gray-50 rounded-lg p-8 text-center">
+      <CalendarLucide className="h-12 w-12 text-eecfin-navy mx-auto mb-4 opacity-60" />
+      <h3 className="text-xl font-medium mb-2">
+        {filteredView ? "No events on selected date" : "No upcoming events"}
+      </h3>
+      <p className="text-gray-600 mb-6">
+        {message || "We don't have any events scheduled at the moment. Please check back soon for upcoming services and gatherings."}
+      </p>
+      <Button asChild className="bg-eecfin-navy hover:bg-eecfin-navy/80">
+        <Link to="/contact">Contact Us</Link>
+      </Button>
+    </div>
+  );
 
   return (
     <div>
@@ -99,7 +104,7 @@ const Events = () => {
 
           {error && (
             <div className="bg-red-50 text-red-800 p-4 rounded-lg mb-6">
-              <p>{error}</p>
+              <p>Error loading events. Please try again later.</p>
             </div>
           )}
 
@@ -146,9 +151,7 @@ const Events = () => {
                       </div>
                     ))
                   ) : (
-                    <div className="text-center py-10">
-                      <p className="text-lg text-gray-600">No upcoming events found.</p>
-                    </div>
+                    <EmptyState />
                   )}
                 </div>
               )}
@@ -217,7 +220,13 @@ const Events = () => {
                             ))}
                           </div>
                         ) : (
-                          <p className="text-center py-8 text-gray-500">No events found for this date.</p>
+                          <EmptyState 
+                            filteredView={true} 
+                            message={selectedDate 
+                              ? "There are no events scheduled for this date. Please select another date or check back later." 
+                              : undefined
+                            } 
+                          />
                         )}
                       </CardContent>
                     </Card>

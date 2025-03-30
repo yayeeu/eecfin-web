@@ -1,11 +1,23 @@
+
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { Calendar, Users, Heart, Video } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import ImageSlider from '../components/ImageSlider';
 import YouTubeEmbed from '../components/YouTubeEmbed';
+import { useQuery } from '@tanstack/react-query';
+import { fetchEvents } from '@/lib/googleCalendar';
 
 const Home = () => {
+  const { data: events, isLoading } = useQuery({
+    queryKey: ['events-preview'],
+    queryFn: fetchEvents,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
+
+  // Get only the next 3 upcoming events
+  const upcomingEvents = events?.slice(0, 3) || [];
+
   return (
     <div>
       {/* Image Slider Banner */}
@@ -129,46 +141,43 @@ const Home = () => {
               <Link to="/events">View All Events</Link>
             </Button>
           </div>
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {/* Event Card 1 */}
-            <div className="border border-gray-200 rounded-lg overflow-hidden">
-              <div className="bg-eecfin-navy text-white p-3 text-center">
-                <p className="text-sm">Sunday, January 14, 2024</p>
-                <p className="text-lg font-semibold">10:00 AM - 12:00 PM</p>
-              </div>
-              <div className="p-4">
-                <h3 className="text-xl font-semibold mb-2">Sunday Worship Service</h3>
-                <p className="text-gray-600 mb-3">Join us for our weekly worship service with praise, prayer, and a message from God's Word.</p>
-                <p className="text-sm text-gray-500">Location: Helsinki, Finland</p>
-              </div>
+          
+          {isLoading ? (
+            <div className="text-center py-8">
+              <p className="text-gray-500">Loading upcoming events...</p>
             </div>
-
-            {/* Event Card 2 */}
-            <div className="border border-gray-200 rounded-lg overflow-hidden">
-              <div className="bg-eecfin-navy text-white p-3 text-center">
-                <p className="text-sm">Wednesday, January 17, 2024</p>
-                <p className="text-lg font-semibold">6:30 PM - 8:00 PM</p>
-              </div>
-              <div className="p-4">
-                <h3 className="text-xl font-semibold mb-2">Midweek Bible Study</h3>
-                <p className="text-gray-600 mb-3">Deepen your understanding of Scripture in our midweek Bible study group.</p>
-                <p className="text-sm text-gray-500">Location: Helsinki, Finland</p>
-              </div>
+          ) : upcomingEvents.length > 0 ? (
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {upcomingEvents.map(event => (
+                <div key={event.id} className="border border-gray-200 rounded-lg overflow-hidden">
+                  <div className="bg-eecfin-navy text-white p-3 text-center">
+                    <p className="text-sm">{`${event.month} ${event.day}, ${event.year}`}</p>
+                    <p className="text-lg font-semibold">
+                      {new Date(event.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - 
+                      {new Date(event.endTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                    </p>
+                  </div>
+                  <div className="p-4">
+                    <h3 className="text-xl font-semibold mb-2">{event.title}</h3>
+                    <p className="text-gray-600 mb-3">{event.description}</p>
+                    <p className="text-sm text-gray-500">Location: {event.location}</p>
+                  </div>
+                </div>
+              ))}
             </div>
-
-            {/* Event Card 3 */}
-            <div className="border border-gray-200 rounded-lg overflow-hidden">
-              <div className="bg-eecfin-navy text-white p-3 text-center">
-                <p className="text-sm">Saturday, January 20, 2024</p>
-                <p className="text-lg font-semibold">3:00 PM - 5:00 PM</p>
-              </div>
-              <div className="p-4">
-                <h3 className="text-xl font-semibold mb-2">Youth Fellowship</h3>
-                <p className="text-gray-600 mb-3">Special gathering for teenagers and young adults with games, discussions, and fellowship.</p>
-                <p className="text-sm text-gray-500">Location: Helsinki, Finland</p>
-              </div>
+          ) : (
+            <div className="bg-gray-50 rounded-lg p-8 text-center">
+              <Calendar className="h-12 w-12 text-eecfin-navy mx-auto mb-4 opacity-60" />
+              <h3 className="text-xl font-medium mb-2">No upcoming events</h3>
+              <p className="text-gray-600 mb-6">
+                We don't have any events scheduled at the moment. 
+                Please check back soon for upcoming services and gatherings.
+              </p>
+              <Button asChild className="bg-eecfin-navy hover:bg-eecfin-navy/80">
+                <Link to="/contact">Contact Us</Link>
+              </Button>
             </div>
-          </div>
+          )}
         </div>
       </section>
 

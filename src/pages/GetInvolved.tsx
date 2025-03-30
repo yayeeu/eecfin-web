@@ -1,8 +1,9 @@
+
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { getMinistries } from '@/lib/ministryService';
 import { Button } from "@/components/ui/button";
-import { Music, Heart, Users, BookOpen, Gift, Mail, Phone, User } from 'lucide-react';
+import { Music, Heart, Users, BookOpen, Gift, Mail, Phone, User, Handshake } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import AdminLink from '@/components/AdminLink';
 
@@ -82,8 +83,16 @@ const GetInvolved = () => {
               ))}
             </div>
           ) : (
-            <div className="bg-gray-50 p-6 rounded-lg">
-              <p className="text-center text-gray-500">There are currently no active ministries listed. Please check back later.</p>
+            <div className="bg-gray-50 p-10 rounded-lg text-center max-w-3xl mx-auto">
+              <Handshake className="h-14 w-14 text-eecfin-navy mx-auto mb-4 opacity-70" />
+              <h3 className="text-xl font-semibold mb-2">Ministries Coming Soon</h3>
+              <p className="text-gray-600 mb-6">
+                We're currently organizing our ministry programs. Check back soon to find ways you can serve and 
+                connect with our church community.
+              </p>
+              <Button asChild className="bg-eecfin-navy hover:bg-eecfin-navy/80">
+                <Link to="/contact">Contact Us For More Information</Link>
+              </Button>
             </div>
           )}
         </div>
@@ -97,49 +106,17 @@ const GetInvolved = () => {
             Connect with others in a smaller setting where you can build relationships,
             study the Bible, and grow in your faith journey together.
           </p>
-          <div className="grid md:grid-cols-3 gap-6">
-            <div className="bg-white p-6 rounded-lg shadow-sm">
-              <h3 className="text-xl font-semibold mb-3">Young Adults Group</h3>
-              <p className="text-gray-600 mb-4">
-                For adults in their 20s and 30s who want to connect with peers and explore faith together.
-              </p>
-              <p className="text-sm text-gray-500 mb-4">
-                Meets every Friday at 7:00 PM
-              </p>
-              <Button variant="outline" className="w-full border-eecfin-navy text-eecfin-navy">
-                Learn More
-              </Button>
-            </div>
-
-            <div className="bg-white p-6 rounded-lg shadow-sm">
-              <h3 className="text-xl font-semibold mb-3">Family Life Group</h3>
-              <p className="text-gray-600 mb-4">
-                For families with children who want to grow together in faith and community.
-              </p>
-              <p className="text-sm text-gray-500 mb-4">
-                Meets every other Saturday at 4:00 PM
-              </p>
-              <Button variant="outline" className="w-full border-eecfin-navy text-eecfin-navy">
-                Learn More
-              </Button>
-            </div>
-
-            <div className="bg-white p-6 rounded-lg shadow-sm">
-              <h3 className="text-xl font-semibold mb-3">Women's Fellowship</h3>
-              <p className="text-gray-600 mb-4">
-                A supportive community for women to study scripture, pray together, and build friendship.
-              </p>
-              <p className="text-sm text-gray-500 mb-4">
-                Meets every other Tuesday at 6:30 PM
-              </p>
-              <Button variant="outline" className="w-full border-eecfin-navy text-eecfin-navy">
-                Learn More
-              </Button>
-            </div>
-          </div>
-          <div className="text-center mt-8">
-            <Button className="bg-eecfin-navy hover:bg-eecfin-navy/80">
-              View All Groups
+          
+          {/* We'll replace the hardcoded groups with a friendly message */}
+          <div className="max-w-3xl mx-auto bg-white p-8 rounded-lg shadow-sm text-center">
+            <Users className="h-12 w-12 text-eecfin-navy mx-auto mb-4 opacity-70" />
+            <h3 className="text-xl font-semibold mb-3">Our Small Groups Program</h3>
+            <p className="text-gray-600 mb-6">
+              We're in the process of organizing our small groups for this season. 
+              Please contact us if you're interested in joining or leading a small group.
+            </p>
+            <Button asChild className="bg-eecfin-navy hover:bg-eecfin-navy/80">
+              <Link to="/contact">Inquire About Small Groups</Link>
             </Button>
           </div>
         </div>
