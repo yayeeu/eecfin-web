@@ -1,6 +1,6 @@
 
 import { SlideImage } from '@/components/SliderManager';
-import { createClient } from '@supabase/supabase-js';
+import { supabase, isSupabaseConfigured } from '@/lib/supabaseClient';
 import { v4 as uuidv4 } from 'uuid';
 
 // Mock data for initial development
@@ -31,40 +31,19 @@ const mockSlides: SlideImage[] = [
   }
 ];
 
-// Initialize Supabase client
-// These will be replaced with actual values when Supabase is connected
-const supabaseUrl = 'https://your-supabase-url.supabase.co';
-const supabaseKey = 'your-supabase-key';
-
-// Function to initialize Supabase client
-const getSupabaseClient = () => {
-  // This is a placeholder. In production, use environment variables or Supabase integration
-  if (typeof window !== 'undefined') {
-    try {
-      return createClient(supabaseUrl, supabaseKey);
-    } catch (error) {
-      console.error('Error initializing Supabase client:', error);
-      return null;
-    }
-  }
-  return null;
-};
-
 /**
  * Fetch all slides from Supabase
  */
 export const fetchSlides = async (): Promise<SlideImage[]> => {
-  const supabase = getSupabaseClient();
-  
-  // If Supabase is not initialized, return mock data
-  if (!supabase) {
+  // If Supabase is not configured, return mock data
+  if (!isSupabaseConfigured()) {
     console.log('Using mock data for slides');
     return Promise.resolve([...mockSlides]);
   }
 
   try {
     // Fetch slides from Supabase, ordered by the order field
-    const { data, error } = await supabase
+    const { data, error } = await supabase!
       .from('slides')
       .select('*')
       .order('order', { ascending: true });
@@ -82,10 +61,8 @@ export const fetchSlides = async (): Promise<SlideImage[]> => {
  * Add a new slide to Supabase
  */
 export const addSlide = async (slide: SlideImage, imageFile: File | null): Promise<SlideImage> => {
-  const supabase = getSupabaseClient();
-  
-  // If Supabase is not initialized, simulate with mock data
-  if (!supabase || !imageFile) {
+  // If Supabase is not configured, simulate with mock data
+  if (!isSupabaseConfigured() || !imageFile) {
     console.log('Using mock data for adding slide');
     const newSlide = {
       ...slide,
@@ -102,19 +79,19 @@ export const addSlide = async (slide: SlideImage, imageFile: File | null): Promi
     const fileName = `${uuidv4()}.${fileExt}`;
     const filePath = `slides/${fileName}`;
 
-    const { error: uploadError } = await supabase.storage
+    const { error: uploadError } = await supabase!.storage
       .from('images')
       .upload(filePath, imageFile);
 
     if (uploadError) throw uploadError;
 
     // Get the public URL for the uploaded image
-    const { data: { publicUrl } } = supabase.storage
+    const { data: { publicUrl } } = supabase!.storage
       .from('images')
       .getPublicUrl(filePath);
 
     // Insert new slide record in Supabase
-    const { data, error } = await supabase
+    const { data, error } = await supabase!
       .from('slides')
       .insert([
         { 
@@ -140,10 +117,8 @@ export const addSlide = async (slide: SlideImage, imageFile: File | null): Promi
  * Update an existing slide in Supabase
  */
 export const updateSlide = async (id: string, slide: SlideImage, imageFile: File | null): Promise<SlideImage> => {
-  const supabase = getSupabaseClient();
-  
-  // If Supabase is not initialized, simulate with mock data
-  if (!supabase) {
+  // If Supabase is not configured, simulate with mock data
+  if (!isSupabaseConfigured()) {
     console.log('Using mock data for updating slide');
     const index = mockSlides.findIndex(s => s.id === id);
     if (index === -1) throw new Error('Slide not found');
@@ -171,14 +146,14 @@ export const updateSlide = async (id: string, slide: SlideImage, imageFile: File
       const fileName = `${uuidv4()}.${fileExt}`;
       const filePath = `slides/${fileName}`;
 
-      const { error: uploadError } = await supabase.storage
+      const { error: uploadError } = await supabase!.storage
         .from('images')
         .upload(filePath, imageFile);
 
       if (uploadError) throw uploadError;
 
       // Get the public URL for the uploaded image
-      const { data: { publicUrl } } = supabase.storage
+      const { data: { publicUrl } } = supabase!.storage
         .from('images')
         .getPublicUrl(filePath);
 
@@ -186,7 +161,7 @@ export const updateSlide = async (id: string, slide: SlideImage, imageFile: File
     }
 
     // Update slide record in Supabase
-    const { data, error } = await supabase
+    const { data, error } = await supabase!
       .from('slides')
       .update(slideData)
       .eq('id', id)
@@ -205,10 +180,8 @@ export const updateSlide = async (id: string, slide: SlideImage, imageFile: File
  * Delete a slide from Supabase
  */
 export const deleteSlide = async (id: string): Promise<void> => {
-  const supabase = getSupabaseClient();
-  
-  // If Supabase is not initialized, simulate with mock data
-  if (!supabase) {
+  // If Supabase is not configured, simulate with mock data
+  if (!isSupabaseConfigured()) {
     console.log('Using mock data for deleting slide');
     const index = mockSlides.findIndex(s => s.id === id);
     if (index === -1) throw new Error('Slide not found');
@@ -218,7 +191,7 @@ export const deleteSlide = async (id: string): Promise<void> => {
 
   try {
     // Get the slide to find the image path
-    const { data: slide, error: fetchError } = await supabase
+    const { data: slide, error: fetchError } = await supabase!
       .from('slides')
       .select('src')
       .eq('id', id)
@@ -227,7 +200,7 @@ export const deleteSlide = async (id: string): Promise<void> => {
     if (fetchError) throw fetchError;
 
     // Delete the slide record
-    const { error: deleteError } = await supabase
+    const { error: deleteError } = await supabase!
       .from('slides')
       .delete()
       .eq('id', id);
@@ -239,7 +212,7 @@ export const deleteSlide = async (id: string): Promise<void> => {
       // Extract the path from the URL
       const imagePath = slide.src.split('/').pop();
       if (imagePath) {
-        const { error: storageError } = await supabase.storage
+        const { error: storageError } = await supabase!.storage
           .from('images')
           .remove([`slides/${imagePath}`]);
 

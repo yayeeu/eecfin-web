@@ -1,9 +1,53 @@
 
-import { supabase } from '@/lib/supabaseClient';
+import { supabase, isSupabaseConfigured } from '@/lib/supabaseClient';
 import { Ministry } from '@/types/database.types';
+import { v4 as uuidv4 } from 'uuid';
+
+// Mock data for development mode
+const mockMinistries: Ministry[] = [
+  {
+    id: '1',
+    name: 'Worship Team',
+    description: 'Leading the congregation in worship through music and song.',
+    contact_name: 'Daniel Bekele',
+    contact_email: 'worship@example.com',
+    contact_phone: '+358 40 123 4567',
+    status: 'active',
+    created_at: new Date().toISOString()
+  },
+  {
+    id: '2',
+    name: 'Children\'s Ministry',
+    description: 'Nurturing the spiritual growth of our youngest members through age-appropriate teaching and activities.',
+    contact_name: 'Sara Tadesse',
+    contact_email: 'children@example.com',
+    status: 'active',
+    created_at: new Date().toISOString()
+  },
+  {
+    id: '3',
+    name: 'Prayer Team',
+    description: 'Dedicated to praying for the needs of the church, community, and world.',
+    contact_name: 'Elias Girma',
+    contact_email: 'prayer@example.com',
+    contact_phone: '+358 50 987 6543',
+    status: 'active',
+    created_at: new Date().toISOString()
+  }
+];
 
 export const getMinistries = async (activeOnly = false) => {
-  let query = supabase
+  // If Supabase is not configured, return mock data
+  if (!isSupabaseConfigured()) {
+    console.log('Using mock data for ministries');
+    let filteredMinistries = [...mockMinistries];
+    if (activeOnly) {
+      filteredMinistries = filteredMinistries.filter(m => m.status === 'active');
+    }
+    return Promise.resolve(filteredMinistries);
+  }
+  
+  let query = supabase!
     .from('ministries')
     .select('*');
   
@@ -24,7 +68,16 @@ export const getMinistries = async (activeOnly = false) => {
 };
 
 export const getMinistry = async (id: string) => {
-  const { data, error } = await supabase
+  // If Supabase is not configured, return mock data
+  if (!isSupabaseConfigured()) {
+    const ministry = mockMinistries.find(m => m.id === id);
+    if (!ministry) {
+      throw new Error('Ministry not found');
+    }
+    return Promise.resolve(ministry);
+  }
+  
+  const { data, error } = await supabase!
     .from('ministries')
     .select('*')
     .eq('id', id)
@@ -39,7 +92,18 @@ export const getMinistry = async (id: string) => {
 };
 
 export const createMinistry = async (ministry: Omit<Ministry, 'id' | 'created_at'>) => {
-  const { data, error } = await supabase
+  // If Supabase is not configured, use mock data
+  if (!isSupabaseConfigured()) {
+    const newMinistry: Ministry = {
+      id: uuidv4(),
+      created_at: new Date().toISOString(),
+      ...ministry
+    };
+    mockMinistries.push(newMinistry);
+    return Promise.resolve(newMinistry);
+  }
+  
+  const { data, error } = await supabase!
     .from('ministries')
     .insert(ministry)
     .select()
@@ -54,7 +118,22 @@ export const createMinistry = async (ministry: Omit<Ministry, 'id' | 'created_at
 };
 
 export const updateMinistry = async (id: string, ministry: Partial<Omit<Ministry, 'id' | 'created_at'>>) => {
-  const { data, error } = await supabase
+  // If Supabase is not configured, use mock data
+  if (!isSupabaseConfigured()) {
+    const index = mockMinistries.findIndex(m => m.id === id);
+    if (index === -1) {
+      throw new Error('Ministry not found');
+    }
+    
+    const updatedMinistry = {
+      ...mockMinistries[index],
+      ...ministry
+    };
+    mockMinistries[index] = updatedMinistry;
+    return Promise.resolve(updatedMinistry);
+  }
+  
+  const { data, error } = await supabase!
     .from('ministries')
     .update(ministry)
     .eq('id', id)
@@ -70,7 +149,17 @@ export const updateMinistry = async (id: string, ministry: Partial<Omit<Ministry
 };
 
 export const deleteMinistry = async (id: string) => {
-  const { error } = await supabase
+  // If Supabase is not configured, use mock data
+  if (!isSupabaseConfigured()) {
+    const index = mockMinistries.findIndex(m => m.id === id);
+    if (index === -1) {
+      throw new Error('Ministry not found');
+    }
+    mockMinistries.splice(index, 1);
+    return Promise.resolve(true);
+  }
+  
+  const { error } = await supabase!
     .from('ministries')
     .delete()
     .eq('id', id);
