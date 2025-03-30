@@ -10,6 +10,7 @@ import WhoWeAre from "./pages/WhoWeAre";
 import Events from "./pages/Events";
 import Contact from "./pages/Contact";
 import GetInvolved from "./pages/GetInvolved";
+import Sermons from "./pages/Sermons";
 import Admin from "./pages/Admin";
 import NotFound from "./pages/NotFound";
 
@@ -31,6 +32,11 @@ const App = () => (
           <Route path="/events" element={
             <Layout>
               <Events />
+            </Layout>
+          } />
+          <Route path="/sermons" element={
+            <Layout>
+              <Sermons />
             </Layout>
           } />
           <Route path="/contact" element={

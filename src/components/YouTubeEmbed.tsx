@@ -1,32 +1,44 @@
-
 import React, { useEffect, useState } from 'react';
 
 interface YouTubeEmbedProps {
-  channelId: string;
+  channelId?: string;
+  videoId?: string;
   className?: string;
 }
 
-const YouTubeEmbed: React.FC<YouTubeEmbedProps> = ({ channelId, className }) => {
-  const [videoId, setVideoId] = useState<string | null>(null);
+const YouTubeEmbed: React.FC<YouTubeEmbedProps> = ({ channelId, videoId, className }) => {
+  const [loadedVideoId, setLoadedVideoId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchLatestVideo = async () => {
+    const fetchVideo = async () => {
       try {
-        // In a real implementation, you would use the YouTube API to get the latest video
-        // For now, we'll hard-code the embed to the channel itself, which will show
-        // the live stream when active or the featured video otherwise
-        setLoading(false);
+        // If a direct videoId is provided, use it
+        if (videoId) {
+          setLoadedVideoId(videoId);
+          setLoading(false);
+          return;
+        }
+
+        // Otherwise, try to get the latest video from the channel
+        if (channelId) {
+          // In a real implementation, you would use the YouTube API to get the latest video
+          // For now, we'll use the channel embed which shows latest content
+          setLoading(false);
+        } else {
+          setError("No video or channel ID provided");
+          setLoading(false);
+        }
       } catch (err) {
-        setError("Could not load the latest video");
+        setError("Could not load the video");
         setLoading(false);
         console.error("YouTube fetch error:", err);
       }
     };
 
-    fetchLatestVideo();
-  }, [channelId]);
+    fetchVideo();
+  }, [channelId, videoId]);
 
   if (loading) {
     return (
@@ -44,6 +56,22 @@ const YouTubeEmbed: React.FC<YouTubeEmbedProps> = ({ channelId, className }) => 
     );
   }
 
+  // If we have a specific video ID, embed that video
+  if (loadedVideoId) {
+    return (
+      <div className={`relative ${className || 'w-full h-0 pb-[56.25%]'}`}>
+        <iframe 
+          src={`https://www.youtube.com/embed/${loadedVideoId}`}
+          title="YouTube video player"
+          className="absolute top-0 left-0 w-full h-full rounded-lg shadow-lg"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowFullScreen
+        ></iframe>
+      </div>
+    );
+  }
+
+  // Otherwise, embed the channel's uploads playlist
   return (
     <div className={`relative ${className || 'w-full h-0 pb-[56.25%]'}`}>
       <iframe 
