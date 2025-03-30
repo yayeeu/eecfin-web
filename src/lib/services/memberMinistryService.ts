@@ -25,21 +25,23 @@ export const getMemberMinistries = async (memberId: string) => {
   }
   
   // Process the return data to match the Ministry type
-  const ministries: Ministry[] = data.map(item => {
-    // Handle the case where ministry might be null
-    if (!item.ministry) return null;
-    
-    // Explicitly match each property to the Ministry type
-    return {
-      id: item.ministry.id,
-      name: item.ministry.name,
-      description: item.ministry.description,
-      contact_name: item.ministry.contact_name,
-      contact_email: item.ministry.contact_email,
-      contact_phone: item.ministry.contact_phone,
-      status: item.ministry.status as 'active' | 'inactive'
-    };
-  }).filter(Boolean) as Ministry[]; // Filter out null values
+  const ministries: Ministry[] = data
+    .filter(item => item.ministry) // Filter out any null ministry objects
+    .map(item => {
+      // Convert item.ministry to the correct type
+      const ministry = item.ministry as any;
+      
+      // Create a properly typed Ministry object
+      return {
+        id: ministry.id,
+        name: ministry.name,
+        description: ministry.description,
+        contact_name: ministry.contact_name,
+        contact_email: ministry.contact_email,
+        contact_phone: ministry.contact_phone,
+        status: ministry.status as 'active' | 'inactive'
+      };
+    });
   
   return ministries;
 };
