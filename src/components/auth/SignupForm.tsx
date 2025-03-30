@@ -23,7 +23,7 @@ const signupSchema = z.object({
   name: z.string().min(2, { message: 'Name must be at least 2 characters' }),
   email: z.string().email({ message: 'Please enter a valid email address' }),
   password: z.string().min(6, { message: 'Password must be at least 6 characters' }),
-  role: z.enum(['admin', 'it', 'member', 'elder']).default('member'),
+  role: z.enum(['admin', 'it', 'member', 'elder', 'volunteer']).default('member'),
   phone: z.string().optional(),
   address: z.string().optional(),
 });
@@ -67,6 +67,7 @@ const SignupForm = ({ onSubmit }: SignupFormProps) => {
     { value: 'it', label: 'IT Staff' },
     { value: 'elder', label: 'Elder' },
     { value: 'member', label: 'Regular Member' },
+    { value: 'volunteer', label: 'Volunteer' },
   ];
 
   return (
