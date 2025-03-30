@@ -5,7 +5,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { AuthProvider } from "@/contexts/AuthContext";
+import { AuthProvider, UserRole } from "@/contexts/AuthContext";
 import Layout from "@/components/Layout";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
@@ -56,8 +56,16 @@ const publicRoutes = [
 ];
 
 const protectedRoutes = [
-  { path: "/admin", element: <Admin />, roles: ['admin', 'member', 'elder', 'it'] },
-  { path: "/profile", element: <Profile />, roles: ['admin', 'member', 'elder', 'it'] }
+  { 
+    path: "/admin", 
+    element: <Admin />, 
+    roles: ['admin', 'member', 'elder', 'it'] as UserRole[] 
+  },
+  { 
+    path: "/profile", 
+    element: <Profile />, 
+    roles: ['admin', 'member', 'elder', 'it'] as UserRole[] 
+  }
 ];
 
 const App = () => (
@@ -74,7 +82,7 @@ const App = () => (
                 key={route.path} 
                 path={route.path} 
                 element={
-                  <RoleGuard allowedRoles={['admin', 'member', 'elder', 'it']} isPublicRoute={true}>
+                  <RoleGuard allowedRoles={['admin', 'member', 'elder', 'it'] as UserRole[]} isPublicRoute={true}>
                     {route.path === "/" ? (
                       route.element
                     ) : (
