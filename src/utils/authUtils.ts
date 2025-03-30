@@ -63,8 +63,7 @@ export const syncMemberRoleId = async (
   if (!userId || !roleName) return false;
   
   try {
-    // Use a type assertion to handle the role
-    await updateRole(userId, roleName as any);
+    await updateRole(userId, roleName);
     return true;
   } catch (error) {
     console.error('Error synchronizing member role ID:', error);
