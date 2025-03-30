@@ -12,13 +12,13 @@ const GetInvolved = () => {
       <InvolvedHero />
       
       <div className="bg-white py-16">
-        <div className="container-custom grid md:grid-cols-2 gap-8">
-          {/* Left column - Ministries */}
-          <div className="md:col-span-1">
+        <div className="container-custom grid md:grid-cols-4 gap-8">
+          {/* Left column - Ministries (now takes up 3/4 of the space) */}
+          <div className="md:col-span-3">
             <MinistrySection />
           </div>
           
-          {/* Right column - Small Groups */}
+          {/* Right column - Small Groups (now takes up 1/4 of the space) */}
           <div className="md:col-span-1">
             <SmallGroupSection />
           </div>
