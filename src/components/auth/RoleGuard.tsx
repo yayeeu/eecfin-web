@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { UserRole } from '@/types/auth.types';
@@ -29,17 +29,13 @@ const RoleGuard: React.FC<RoleGuardProps> = ({
     );
   }
 
-  // For the auth section, we don't need to check if user is authenticated
-  if (currentPath === '/auth') {
-    return <>{children}</>;
+  // For the auth section, redirect to admin if user is logged in
+  if (currentPath === '/auth' && user) {
+    return <Navigate to="/admin" replace />;
   }
 
   // Allow public routes to be accessed regardless of auth status
   if (isPublicRoute) {
-    // If user is logged in and visiting the home page, redirect to admin
-    if (user && currentPath === '/') {
-      return <Navigate to="/admin" replace />;
-    }
     return <>{children}</>;
   }
 
