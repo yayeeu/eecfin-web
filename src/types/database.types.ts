@@ -37,6 +37,19 @@ export interface MemberUnderElder {
   elder?: Member;
 }
 
+export interface ContactLog {
+  id: string;
+  created_at?: string;
+  updated_at?: string;
+  contact_type: 'Text Message' | 'In Person' | 'Phone Call' | 'Email' | 'Other';
+  elder_id: string;
+  member_id: string;
+  notes?: string;
+  flagged?: boolean;
+  elder?: Member;
+  member?: Member;
+}
+
 export interface Member {
   id: string;
   created_at?: string;
@@ -98,6 +111,11 @@ export interface Database {
         Row: MemberUnderElder;
         Insert: Omit<MemberUnderElder, 'id' | 'created_at'>;
         Update: Partial<Omit<MemberUnderElder, 'id' | 'created_at'>>;
+      };
+      contact_log: {
+        Row: ContactLog;
+        Insert: Omit<ContactLog, 'id' | 'created_at' | 'updated_at'>;
+        Update: Partial<Omit<ContactLog, 'id' | 'created_at' | 'updated_at'>>;
       };
     };
     Views: {};

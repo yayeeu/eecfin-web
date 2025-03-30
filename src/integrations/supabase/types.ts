@@ -9,6 +9,54 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      contact_log: {
+        Row: {
+          contact_type: string
+          created_at: string | null
+          elder_id: string
+          flagged: boolean | null
+          id: string
+          member_id: string
+          notes: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          contact_type: string
+          created_at?: string | null
+          elder_id: string
+          flagged?: boolean | null
+          id?: string
+          member_id: string
+          notes?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          contact_type?: string
+          created_at?: string | null
+          elder_id?: string
+          flagged?: boolean | null
+          id?: string
+          member_id?: string
+          notes?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "contact_log_elder_id_fkey"
+            columns: ["elder_id"]
+            isOneToOne: false
+            referencedRelation: "members"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "contact_log_member_id_fkey"
+            columns: ["member_id"]
+            isOneToOne: false
+            referencedRelation: "members"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       elders: {
         Row: {
           created_at: string | null

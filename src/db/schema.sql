@@ -29,7 +29,38 @@ CREATE TABLE IF NOT EXISTS ministries (
 -- Create an index on the status field for filtering
 CREATE INDEX IF NOT EXISTS ministries_status_idx ON ministries (status);
 
--- Create storage bucket for images if it doesn't exist
+-- Create the member_under_elder table
+CREATE TABLE IF NOT EXISTS member_under_elder (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  member_id UUID NOT NULL REFERENCES members(id) ON DELETE CASCADE,
+  elder_id UUID NOT NULL REFERENCES members(id) ON DELETE CASCADE,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  UNIQUE(member_id)
+);
+
+-- Create indexes for faster lookups
+CREATE INDEX IF NOT EXISTS member_under_elder_member_id_idx ON member_under_elder(member_id);
+CREATE INDEX IF NOT EXISTS member_under_elder_elder_id_idx ON member_under_elder(elder_id);
+
+-- Create the contact_log table
+CREATE TABLE IF NOT EXISTS contact_log (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  contact_type TEXT NOT NULL CHECK (contact_type IN ('Text Message', 'In Person', 'Phone Call', 'Email', 'Other')),
+  elder_id UUID NOT NULL REFERENCES members(id) ON DELETE CASCADE,
+  member_id UUID NOT NULL REFERENCES members(id) ON DELETE CASCADE,
+  notes TEXT,
+  flagged BOOLEAN DEFAULT FALSE,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Create indexes for faster lookups on contact_log
+CREATE INDEX IF NOT EXISTS contact_log_elder_id_idx ON contact_log(elder_id);
+CREATE INDEX IF NOT EXISTS contact_log_member_id_idx ON contact_log(member_id);
+CREATE INDEX IF NOT EXISTS contact_log_flagged_idx ON contact_log(flagged);
+CREATE INDEX IF NOT EXISTS contact_log_created_at_idx ON contact_log(created_at);
+
+-- Storage bucket for images if it doesn't exist
 -- Note: This needs to be executed separately in the Supabase dashboard SQL editor
 -- INSERT INTO storage.buckets (id, name, public) 
 -- VALUES ('images', 'images', true)
@@ -65,6 +96,40 @@ USING (true);
 -- For authenticated users, allow full access
 CREATE POLICY "Allow authenticated users full access to ministries" 
 ON ministries 
+FOR ALL 
+TO authenticated
+USING (true);
+
+-- Set up Row Level Security for the member_under_elder table
+ALTER TABLE member_under_elder ENABLE ROW LEVEL SECURITY;
+
+-- Create policy to allow authenticated users to view member-elder relationships
+CREATE POLICY "Allow authenticated read access to member_under_elder" 
+ON member_under_elder 
+FOR SELECT 
+TO authenticated
+USING (true);
+
+-- Create policy to allow authenticated users to modify member-elder relationships
+CREATE POLICY "Allow authenticated users full access to member_under_elder" 
+ON member_under_elder 
+FOR ALL 
+TO authenticated
+USING (true);
+
+-- Set up Row Level Security for the contact_log table
+ALTER TABLE contact_log ENABLE ROW LEVEL SECURITY;
+
+-- Create policy to allow authenticated users to view contact logs
+CREATE POLICY "Allow authenticated read access to contact_log" 
+ON contact_log 
+FOR SELECT 
+TO authenticated
+USING (true);
+
+-- Create policy to allow authenticated users to modify contact logs
+CREATE POLICY "Allow authenticated users full access to contact_log" 
+ON contact_log 
 FOR ALL 
 TO authenticated
 USING (true);
