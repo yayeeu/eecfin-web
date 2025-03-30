@@ -2,7 +2,7 @@
 import { supabase } from '@/integrations/supabase/client';
 import { Member } from '@/types/database.types';
 import { UserRole } from '@/types/auth.types';
-import { updateMemberRole } from '@/lib/memberService';
+import { updateMemberRole as updateRole } from '@/lib/memberService';
 
 /**
  * Retrieves a member profile from the database by user ID
@@ -63,7 +63,8 @@ export const syncMemberRoleId = async (
   if (!userId || !roleName) return false;
   
   try {
-    await updateMemberRole(userId, roleName);
+    // Use a type assertion to handle the role
+    await updateRole(userId, roleName as any);
     return true;
   } catch (error) {
     console.error('Error synchronizing member role ID:', error);

@@ -13,6 +13,7 @@ import Dashboard from '@/components/Dashboard';
 import { useAuth, UserRole } from '@/contexts/AuthContext';
 import RoleGuard from '@/components/auth/RoleGuard';
 import Auth from '@/pages/Auth';
+import SignupForm from '@/components/auth/SignupForm';
 import {
   SidebarProvider, Sidebar, SidebarContent, SidebarHeader, SidebarGroup,
   SidebarGroupLabel, SidebarGroupContent, SidebarMenu, SidebarMenuItem,
@@ -26,7 +27,7 @@ interface AdminProps {
 const Admin: React.FC<AdminProps> = ({ activeSection = 'dashboard' }) => {
   const [activeSectionState, setActiveSection] = useState<string>(activeSection);
   const navigate = useNavigate();
-  const { userRole, signOut } = useAuth();
+  const { userRole, signOut, signUp } = useAuth();
 
   // Define which roles can access which sections based on requirements
   const sectionAccess: Record<string, UserRole[]> = {
@@ -36,6 +37,7 @@ const Admin: React.FC<AdminProps> = ({ activeSection = 'dashboard' }) => {
     members: ['admin', 'elder'],
     settings: ['admin'],
     auth: ['admin', 'member', 'elder', 'it', 'volunteer'],
+    register: ['admin'], // Only admin can access member registration
   };
 
   // Filter menu items based on user role
@@ -45,7 +47,7 @@ const Admin: React.FC<AdminProps> = ({ activeSection = 'dashboard' }) => {
     { id: 'ministries', label: 'Ministries', icon: Users, roles: ['admin'] },
     { id: 'members', label: 'All Members', icon: User, roles: ['admin', 'elder'] },
     { id: 'settings', label: 'Settings', icon: Settings, roles: ['admin'] },
-    { id: 'auth', label: 'Authentication', icon: Lock, roles: ['admin', 'member', 'elder', 'it', 'volunteer'] },
+    { id: 'register', label: 'Add Member', icon: Lock, roles: ['admin'] }, // Only for admin
   ].filter(item => {
     // Admin can see everything, others only see what they have permission for
     if (userRole === 'admin') return true;
@@ -145,7 +147,7 @@ const Admin: React.FC<AdminProps> = ({ activeSection = 'dashboard' }) => {
 
           {/* Content area */}
           <div className="flex-1 p-6">
-            {activeSectionState !== 'auth' && (
+            {activeSectionState !== 'register' && (
               <div className="mb-8">
                 <h1 className="text-3xl font-bold text-eecfin-navy">
                   {activeSectionState === 'dashboard' ? 'Church Dashboard' :
@@ -196,7 +198,17 @@ const Admin: React.FC<AdminProps> = ({ activeSection = 'dashboard' }) => {
                 </div>
               </RoleGuard>
             )}
-            {activeSectionState === 'auth' && <Auth />}
+            {activeSectionState === 'register' && (
+              <RoleGuard allowedRoles={['admin']}>
+                <div className="mb-8">
+                  <h1 className="text-3xl font-bold text-eecfin-navy">Add New Member</h1>
+                  <p className="text-gray-500 mt-2">Register a new member account with appropriate role.</p>
+                </div>
+                <div className="max-w-md mx-auto">
+                  <SignupForm onSubmit={signUp} />
+                </div>
+              </RoleGuard>
+            )}
           </div>
         </div>
       </div>

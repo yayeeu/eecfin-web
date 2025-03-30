@@ -4,14 +4,11 @@ import { Navigate, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import AuthHeader from '@/components/auth/AuthHeader';
 import LoginForm from '@/components/auth/LoginForm';
-import SignupForm from '@/components/auth/SignupForm';
 
 const Auth = () => {
-  const { user, signIn, signUp, loading } = useAuth();
-  const [activeTab, setActiveTab] = useState('login');
+  const { user, signIn, loading } = useAuth();
   const navigate = useNavigate();
   
   // Redirect if already logged in
@@ -32,20 +29,7 @@ const Auth = () => {
           <AuthHeader />
           
           <CardContent>
-            <Tabs defaultValue="login" value={activeTab} onValueChange={setActiveTab}>
-              <TabsList className="grid w-full grid-cols-2">
-                <TabsTrigger value="login">Sign In</TabsTrigger>
-                <TabsTrigger value="register">Register</TabsTrigger>
-              </TabsList>
-              
-              <TabsContent value="login">
-                <LoginForm onSubmit={signIn} />
-              </TabsContent>
-              
-              <TabsContent value="register">
-                <SignupForm onSubmit={signUp} />
-              </TabsContent>
-            </Tabs>
+            <LoginForm onSubmit={signIn} />
           </CardContent>
           
           <CardFooter className="flex justify-center">

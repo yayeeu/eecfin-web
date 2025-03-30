@@ -127,7 +127,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       
       if (data.role && data.role !== userProfile?.role) {
         try {
-          await updateMemberRole(user.id, data.role as UserRole);
+          // Cast the role to make TypeScript happy
+          const userRoleValue = data.role as UserRole;
+          await updateMemberRole(user.id, userRoleValue);
         } catch (err) {
           console.error('Error updating role:', err);
           throw err;

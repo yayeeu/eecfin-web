@@ -1,6 +1,7 @@
 
 import { supabase, isSupabaseConfigured } from '@/lib/supabaseClient';
 import { Role } from '@/types/database.types';
+import { UserRole } from '@/types/auth.types';
 
 // Mock data for development mode
 const mockRoles: Role[] = [
@@ -8,6 +9,7 @@ const mockRoles: Role[] = [
   { id: '2', created_at: new Date().toISOString(), name: 'it' },
   { id: '3', created_at: new Date().toISOString(), name: 'elder' },
   { id: '4', created_at: new Date().toISOString(), name: 'member' },
+  { id: '5', created_at: new Date().toISOString(), name: 'volunteer' },
 ];
 
 // Get all roles
@@ -84,7 +86,7 @@ export const getRoleById = async (id: string): Promise<Role | null> => {
 };
 
 // Update member's role
-export const updateMemberRole = async (memberId: string, roleName: 'admin' | 'it' | 'member' | 'elder'): Promise<boolean> => {
+export const updateMemberRole = async (memberId: string, roleName: UserRole): Promise<boolean> => {
   // If Supabase is not configured, return mock data
   if (!isSupabaseConfigured()) {
     console.log(`Using mock data to update member ${memberId} with role ${roleName}`);
