@@ -1,6 +1,6 @@
 
 import { supabase, isSupabaseConfigured } from '@/lib/supabaseClient';
-import { Member } from '@/types/database.types';
+import { Member, MemberUnderElder } from '@/types/database.types';
 import { v4 as uuidv4 } from 'uuid';
 
 // Mock data for development mode
@@ -77,6 +77,22 @@ const mockMembers: Member[] = [
   },
 ];
 
+// Mock data for elder assignments
+const mockElderAssignments: MemberUnderElder[] = [
+  {
+    id: '1',
+    member_id: '6',
+    elder_id: '1',
+    created_at: new Date().toISOString()
+  },
+  {
+    id: '2',
+    member_id: '7',
+    elder_id: '2',
+    created_at: new Date().toISOString()
+  }
+];
+
 export const getElderMembers = async () => {
   // If Supabase is not configured, return mock data
   if (!isSupabaseConfigured()) {
@@ -102,12 +118,35 @@ export const getAllMembers = async () => {
   // If Supabase is not configured, return mock data
   if (!isSupabaseConfigured()) {
     console.log('Using mock data for all members');
-    return Promise.resolve(mockMembers);
+    // Add assigned_elder property to mock members
+    const membersWithElders = mockMembers.map(member => {
+      const assignment = mockElderAssignments.find(a => a.member_id === member.id);
+      if (assignment) {
+        const elder = mockMembers.find(m => m.id === assignment.elder_id);
+        return {
+          ...member,
+          assigned_elder: {
+            ...assignment,
+            elder
+          }
+        };
+      }
+      return member;
+    });
+    return Promise.resolve(membersWithElders);
   }
   
   const { data, error } = await supabase!
     .from('members')
-    .select('*, roles(id, name)')
+    .select(`
+      *, 
+      roles(id, name),
+      assigned_elder:member_under_elder!member_id(
+        id,
+        elder_id,
+        elder:members!member_under_elder_elder_id_fkey(id, name)
+      )
+    `)
     .order('name');
   
   if (error) {
@@ -125,12 +164,35 @@ export const getMember = async (id: string) => {
     if (!member) {
       throw new Error('Member not found');
     }
+    
+    // Add assigned elder information if available
+    const assignment = mockElderAssignments.find(a => a.member_id === id);
+    if (assignment) {
+      const elder = mockMembers.find(m => m.id === assignment.elder_id);
+      return Promise.resolve({
+        ...member,
+        assigned_elder: {
+          ...assignment,
+          elder
+        }
+      });
+    }
+    
     return Promise.resolve(member);
   }
   
   const { data, error } = await supabase!
     .from('members')
-    .select('*, ministries(id, name), roles(id, name)')
+    .select(`
+      *, 
+      ministries(id, name), 
+      roles(id, name),
+      assigned_elder:member_under_elder!member_id(
+        id,
+        elder_id,
+        elder:members!member_under_elder_elder_id_fkey(id, name)
+      )
+    `)
     .eq('id', id)
     .single();
   
@@ -279,6 +341,123 @@ export const getEldersForDropdown = async () => {
   
   if (error) {
     console.error('Error fetching elders for dropdown:', error);
+    throw error;
+  }
+  
+  return data;
+};
+
+// Functions for managing elder assignments
+
+export const assignElderToMember = async (memberId: string, elderId: string) => {
+  if (!isSupabaseConfigured()) {
+    // First, check if there's an existing assignment
+    const existingIndex = mockElderAssignments.findIndex(a => a.member_id === memberId);
+    
+    if (existingIndex !== -1) {
+      // Update existing assignment
+      mockElderAssignments[existingIndex].elder_id = elderId;
+      return Promise.resolve(mockElderAssignments[existingIndex]);
+    } else {
+      // Create new assignment
+      const newAssignment: MemberUnderElder = {
+        id: uuidv4(),
+        member_id: memberId,
+        elder_id: elderId,
+        created_at: new Date().toISOString()
+      };
+      mockElderAssignments.push(newAssignment);
+      return Promise.resolve(newAssignment);
+    }
+  }
+  
+  // First check if an assignment already exists
+  const { data: existingAssignment } = await supabase!
+    .from('member_under_elder')
+    .select('*')
+    .eq('member_id', memberId)
+    .maybeSingle();
+  
+  if (existingAssignment) {
+    // Update existing assignment
+    const { data, error } = await supabase!
+      .from('member_under_elder')
+      .update({ elder_id: elderId })
+      .eq('member_id', memberId)
+      .select()
+      .single();
+    
+    if (error) {
+      console.error('Error updating elder assignment:', error);
+      throw error;
+    }
+    
+    return data;
+  } else {
+    // Create new assignment
+    const { data, error } = await supabase!
+      .from('member_under_elder')
+      .insert({
+        member_id: memberId,
+        elder_id: elderId
+      })
+      .select()
+      .single();
+    
+    if (error) {
+      console.error('Error creating elder assignment:', error);
+      throw error;
+    }
+    
+    return data;
+  }
+};
+
+export const removeElderAssignment = async (memberId: string) => {
+  if (!isSupabaseConfigured()) {
+    const index = mockElderAssignments.findIndex(a => a.member_id === memberId);
+    if (index !== -1) {
+      mockElderAssignments.splice(index, 1);
+    }
+    return Promise.resolve(true);
+  }
+  
+  const { error } = await supabase!
+    .from('member_under_elder')
+    .delete()
+    .eq('member_id', memberId);
+  
+  if (error) {
+    console.error('Error removing elder assignment:', error);
+    throw error;
+  }
+  
+  return true;
+};
+
+export const getElderAssignment = async (memberId: string) => {
+  if (!isSupabaseConfigured()) {
+    const assignment = mockElderAssignments.find(a => a.member_id === memberId);
+    if (!assignment) return Promise.resolve(null);
+    
+    const elder = mockMembers.find(m => m.id === assignment.elder_id);
+    return Promise.resolve({
+      ...assignment,
+      elder
+    });
+  }
+  
+  const { data, error } = await supabase!
+    .from('member_under_elder')
+    .select(`
+      *,
+      elder:members!member_under_elder_elder_id_fkey(id, name, email, phone)
+    `)
+    .eq('member_id', memberId)
+    .maybeSingle();
+  
+  if (error) {
+    console.error('Error fetching elder assignment:', error);
     throw error;
   }
   

@@ -50,6 +50,42 @@ export type Database = {
           },
         ]
       }
+      member_under_elder: {
+        Row: {
+          created_at: string | null
+          elder_id: string
+          id: string
+          member_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          elder_id: string
+          id?: string
+          member_id: string
+        }
+        Update: {
+          created_at?: string | null
+          elder_id?: string
+          id?: string
+          member_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "member_under_elder_elder_id_fkey"
+            columns: ["elder_id"]
+            isOneToOne: false
+            referencedRelation: "members"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "member_under_elder_member_id_fkey"
+            columns: ["member_id"]
+            isOneToOne: true
+            referencedRelation: "members"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       members: {
         Row: {
           address: string | null

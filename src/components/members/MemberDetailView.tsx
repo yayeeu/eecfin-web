@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { 
   User, Phone, Mail, MapPin, Calendar, Users, 
   HeartHandshake, Building, Award, AlertCircle, 
-  CheckCircle2, XCircle
+  CheckCircle2, XCircle, UserPlus
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { Badge } from '@/components/ui/badge';
@@ -121,6 +121,16 @@ const MemberDetailView: React.FC<MemberDetailViewProps> = ({ member, onClose }) 
                   <p className="text-gray-900">{member.is_baptised ? 'Yes' : 'No'}</p>
                 </div>
               </div>
+
+              {member.assigned_elder?.elder && (
+                <div className="flex items-start gap-3">
+                  <UserPlus className="w-5 h-5 text-gray-500 mt-0.5" />
+                  <div>
+                    <p className="text-sm font-medium text-gray-700">Assigned Elder</p>
+                    <p className="text-gray-900">{member.assigned_elder.elder.name}</p>
+                  </div>
+                </div>
+              )}
             </div>
             
             <div className="space-y-4">

@@ -29,6 +29,14 @@ export interface Role {
   name: string;
 }
 
+export interface MemberUnderElder {
+  id: string;
+  created_at?: string;
+  member_id: string;
+  elder_id: string;
+  elder?: Member;
+}
+
 export interface Member {
   id: string;
   created_at?: string;
@@ -59,6 +67,8 @@ export interface Member {
   // Include joined data
   ministries?: Pick<Ministry, 'id' | 'name'>;
   roles?: Pick<Role, 'id' | 'name'>;
+  // Assigned elder
+  assigned_elder?: MemberUnderElder;
 }
 
 export interface Database {
@@ -83,6 +93,11 @@ export interface Database {
         Row: Role;
         Insert: Omit<Role, 'id' | 'created_at'>;
         Update: Partial<Omit<Role, 'id' | 'created_at'>>;
+      };
+      member_under_elder: {
+        Row: MemberUnderElder;
+        Insert: Omit<MemberUnderElder, 'id' | 'created_at'>;
+        Update: Partial<Omit<MemberUnderElder, 'id' | 'created_at'>>;
       };
     };
     Views: {};

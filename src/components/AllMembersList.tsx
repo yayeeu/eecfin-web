@@ -1,8 +1,9 @@
+
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Member } from '@/types/database.types';
 import { getAllMembers, updateMember } from '@/lib/memberService';
-import { Loader2, User, Pencil, BadgeCheck } from 'lucide-react';
+import { Loader2, User, Pencil, BadgeCheck, UserPlus } from 'lucide-react';
 import {
   Table,
   TableBody,
@@ -41,6 +42,7 @@ import {
 } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
 import MemberDetailView from './members/MemberDetailView';
+import ElderAssignmentSelect from './members/ElderAssignmentSelect';
 
 const AllMembersList = () => {
   const { toast } = useToast();
@@ -130,6 +132,10 @@ const AllMembersList = () => {
     setSelectedMember(member);
   };
 
+  const refreshData = () => {
+    queryClient.invalidateQueries({ queryKey: ['members'] });
+  };
+
   if (isLoading) {
     return (
       <div className="flex justify-center items-center p-8">
@@ -164,6 +170,7 @@ const AllMembersList = () => {
             <TableHead>Role</TableHead>
             <TableHead>Status</TableHead>
             <TableHead>Member Since</TableHead>
+            <TableHead>Assigned Elder</TableHead>
             <TableHead>Phone</TableHead>
             <TableHead>Email</TableHead>
             <TableHead>Actions</TableHead>
@@ -208,6 +215,13 @@ const AllMembersList = () => {
               </TableCell>
               <TableCell>
                 {member.created_at ? format(new Date(member.created_at), 'MMM d, yyyy') : 'Unknown'}
+              </TableCell>
+              <TableCell onClick={(e) => e.stopPropagation()}>
+                {member.role !== 'Elder' ? (
+                  <ElderAssignmentSelect member={member} onAssignmentChanged={refreshData} />
+                ) : (
+                  <span className="text-gray-500">N/A</span>
+                )}
               </TableCell>
               <TableCell>
                 {member.phone || 'N/A'}
@@ -509,6 +523,14 @@ const AllMembersList = () => {
                   )}
                 />
               </div>
+              
+              {editingMember && editingMember.role !== 'Elder' && (
+                <div className="pt-4 border-t mt-6">
+                  <FormLabel className="block mb-2">Assigned Elder</FormLabel>
+                  <ElderAssignmentSelect member={editingMember} onAssignmentChanged={refreshData} />
+                </div>
+              )}
+              
               <DialogFooter className="mt-6">
                 <Button type="button" variant="outline" onClick={() => setEditingMember(null)}>
                   Cancel
