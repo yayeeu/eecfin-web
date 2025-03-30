@@ -3,7 +3,7 @@ import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Member } from '@/types/database.types';
 import { getElderMembers } from '@/lib/memberService';
-import { Loader2, BadgeCheck } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 
 const EldersList = () => {
   const { data: elders, isLoading, isError } = useQuery({
@@ -28,7 +28,10 @@ const EldersList = () => {
     );
   }
 
-  if (!elders || elders.length === 0) {
+  // Filter to show only active elders
+  const activeElders = elders ? elders.filter(elder => elder.status === 'active') : [];
+
+  if (!activeElders || activeElders.length === 0) {
     return (
       <div className="p-8 text-center">
         <p className="text-gray-500">No elders found.</p>
@@ -38,7 +41,7 @@ const EldersList = () => {
 
   return (
     <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-      {elders.map((elder) => (
+      {activeElders.map((elder) => (
         <div key={elder.id} className="text-center">
           <div className="w-40 h-40 bg-gray-200 rounded-full mx-auto mb-4 flex items-center justify-center overflow-hidden">
             {elder.image ? (
@@ -56,18 +59,7 @@ const EldersList = () => {
             )}
           </div>
           <h3 className="text-xl font-semibold">{elder.name}</h3>
-          <p className="text-eecfin-navy font-medium">{elder.role}</p>
-          
-          <div className="mt-1 text-sm text-gray-600">
-            {elder.status && (
-              <span className={`inline-flex items-center px-2 py-1 rounded-full ${
-                elder.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
-              }`}>
-                {elder.status === 'active' && <BadgeCheck className="w-3 h-3 mr-1" />}
-                {elder.status === 'active' ? 'Active' : 'Inactive'}
-              </span>
-            )}
-          </div>
+          <p className="text-eecfin-navy font-medium">Elder</p>
           
           {elder.phone && (
             <p className="mt-2 text-gray-600">
