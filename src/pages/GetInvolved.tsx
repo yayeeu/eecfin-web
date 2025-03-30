@@ -10,8 +10,17 @@ const GetInvolved = () => {
   return (
     <div>
       <InvolvedHero />
-      <MinistrySection />
-      <SmallGroupSection />
+      
+      <div className="bg-white py-16">
+        <div className="container-custom grid md:grid-cols-2 gap-8">
+          {/* Left column - Ministries */}
+          <MinistrySection />
+          
+          {/* Right column - Small Groups */}
+          <SmallGroupSection />
+        </div>
+      </div>
+      
       <SupportSection />
       <CTASection />
     </div>

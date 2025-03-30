@@ -3,6 +3,7 @@ import React from 'react';
 import { Mail, Phone, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Ministry } from '@/types/database.types';
+import { Card, CardContent, CardFooter } from '@/components/ui/card';
 
 interface MinistryCardProps {
   ministry: Ministry;
@@ -10,70 +11,50 @@ interface MinistryCardProps {
 
 const MinistryCard: React.FC<MinistryCardProps> = ({ ministry }) => {
   return (
-    <div className="bg-gray-50 p-6 rounded-lg shadow-sm">
+    <Card className="h-full flex flex-col overflow-hidden">
       {ministry.photo && (
-        <div className="mb-6 rounded-lg overflow-hidden">
+        <div className="w-full h-24 overflow-hidden">
           <img 
             src={ministry.photo} 
             alt={ministry.name}
-            className="w-full h-48 object-cover"
+            className="w-full h-full object-cover"
             loading="lazy" 
           />
         </div>
       )}
-      <h3 className="text-xl font-semibold mb-3">{ministry.name}</h3>
-      <p className="text-gray-600 mb-4">{ministry.description}</p>
       
-      <div className="space-y-2 mb-6">
-        {ministry.contact_elder ? (
-          <>
+      <CardContent className="flex-grow p-3">
+        <h3 className="text-base font-semibold mb-1 line-clamp-1">{ministry.name}</h3>
+        <p className="text-xs text-gray-600 mb-2 line-clamp-2">{ministry.description}</p>
+        
+        <div className="space-y-1 text-xs">
+          {ministry.contact_elder ? (
             <div className="flex items-start text-gray-700">
-              <User className="h-4 w-4 mr-2 mt-1 text-eecfin-navy" />
-              <div>
-                <p className="font-medium">Contact Elder:</p> 
-                <p>{ministry.contact_elder.name}</p>
-              </div>
+              <User className="h-3 w-3 mr-1 mt-0.5 text-eecfin-navy flex-shrink-0" />
+              <span className="truncate">{ministry.contact_elder.name}</span>
             </div>
-          </>
-        ) : (
+          ) : (
+            <div className="flex items-center text-gray-700">
+              <User className="h-3 w-3 mr-1 text-eecfin-navy flex-shrink-0" />
+              <span className="truncate">{ministry.contact_name}</span>
+            </div>
+          )}
+          
           <div className="flex items-center text-gray-700">
-            <User className="h-4 w-4 mr-2 text-eecfin-navy" />
-            <span>{ministry.contact_name}</span>
+            <Mail className="h-3 w-3 mr-1 text-eecfin-navy flex-shrink-0" />
+            <a href={`mailto:${ministry.contact_email}`} className="hover:text-eecfin-navy truncate">
+              {ministry.contact_email}
+            </a>
           </div>
-        )}
-        
-        <div className="flex items-center text-gray-700">
-          <Mail className="h-4 w-4 mr-2 text-eecfin-navy" />
-          <a href={`mailto:${ministry.contact_email}`} className="hover:text-eecfin-navy">
-            {ministry.contact_email}
-          </a>
         </div>
-        
-        {ministry.contact_phone && (
-          <div className="flex items-center text-gray-700">
-            <Phone className="h-4 w-4 mr-2 text-eecfin-navy" />
-            <a href={`tel:${ministry.contact_phone}`} className="hover:text-eecfin-navy">
-              {ministry.contact_phone}
-            </a>
-          </div>
-        )}
-        
-        {ministry.contact_elder?.phone && (
-          <div className="flex items-center text-gray-700">
-            <Phone className="h-4 w-4 mr-2 text-eecfin-navy" />
-            <a href={`tel:${ministry.contact_elder.phone}`} className="hover:text-eecfin-navy">
-              {ministry.contact_elder.phone}
-            </a>
-          </div>
-        )}
-      </div>
+      </CardContent>
       
-      <div className="text-center">
-        <Button className="bg-eecfin-navy hover:bg-eecfin-navy/80">
+      <CardFooter className="pt-0 p-3">
+        <Button className="bg-eecfin-navy hover:bg-eecfin-navy/80 w-full text-xs h-8" size="sm">
           Get Involved
         </Button>
-      </div>
-    </div>
+      </CardFooter>
+    </Card>
   );
 };
 
