@@ -46,14 +46,6 @@ const MyMembersList: React.FC<MyMembersListProps> = ({ onMemberSelect }) => {
     enabled: !!elderId
   });
 
-  if (!elderId) {
-    return (
-      <div className="text-center py-10">
-        <p className="text-gray-500">You need to be logged in as an elder to view assigned members.</p>
-      </div>
-    );
-  }
-
   if (isLoading) {
     return (
       <div className="flex justify-center items-center p-8">
@@ -85,7 +77,9 @@ const MyMembersList: React.FC<MyMembersListProps> = ({ onMemberSelect }) => {
         <UserCheck className="mx-auto h-12 w-12 text-gray-400" />
         <h3 className="mt-2 text-sm font-semibold text-gray-900">No assigned members</h3>
         <p className="mt-1 text-sm text-gray-500">
-          You don't have any members assigned to you yet.
+          {userProfile?.role === 'Elder' 
+            ? "You don't have any members assigned to you yet."
+            : "Only users with 'Elder' role can have members assigned to them."}
         </p>
       </div>
     );

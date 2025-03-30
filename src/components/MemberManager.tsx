@@ -25,7 +25,7 @@ const MemberManager: React.FC = () => {
       <Tabs defaultValue="all-members" className="w-full">
         <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="all-members">All Members</TabsTrigger>
-          {isElder && <TabsTrigger value="my-members">My Members</TabsTrigger>}
+          <TabsTrigger value="my-members">My Members</TabsTrigger>
           <TabsTrigger value="elders">Elders</TabsTrigger>
           <TabsTrigger value="contact-logs" disabled={!selectedMemberId}>
             Contact Logs {selectedMemberId ? '(Selected Member)' : ''}
@@ -47,21 +47,19 @@ const MemberManager: React.FC = () => {
           </Card>
         </TabsContent>
         
-        {isElder && (
-          <TabsContent value="my-members">
-            <Card>
-              <CardHeader>
-                <CardTitle>My Assigned Members</CardTitle>
-                <CardDescription>
-                  View and manage members that are assigned to you. You can track interactions and add contact logs for these members.
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <MyMembersList onMemberSelect={handleMemberSelect} />
-              </CardContent>
-            </Card>
-          </TabsContent>
-        )}
+        <TabsContent value="my-members">
+          <Card>
+            <CardHeader>
+              <CardTitle>My Assigned Members</CardTitle>
+              <CardDescription>
+                View and manage members that are assigned to you. You can track interactions and add contact logs for these members.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <MyMembersList onMemberSelect={handleMemberSelect} />
+            </CardContent>
+          </Card>
+        </TabsContent>
         
         <TabsContent value="elders">
           <Card>

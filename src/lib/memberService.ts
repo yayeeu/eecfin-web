@@ -491,5 +491,5 @@ export const getMembersByElderId = async (elderId: string) => {
   }
   
   // Transform the data structure to return just the member objects
-  return data.map(item => item.member) as Member[];
+  return data.map(item => item.member) as unknown as Member[];
 };
