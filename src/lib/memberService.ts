@@ -1,3 +1,4 @@
+
 import { supabase, isSupabaseConfigured } from '@/lib/supabaseClient';
 import { Member } from '@/types/database.types';
 import { v4 as uuidv4 } from 'uuid';
@@ -193,14 +194,14 @@ export const getMembersForDropdown = async () => {
         id: m.id,
         name: m.name,
         email: m.email,
-        status: m.status
+        status: m.status // Make sure to include status in the returned data
       }))
     );
   }
   
   const { data, error } = await supabase!
     .from('members')
-    .select('id, name, email, status')
+    .select('id, name, email, status') // Include status in the select query
     .eq('status', 'active')
     .order('name');
   
