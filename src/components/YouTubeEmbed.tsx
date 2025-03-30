@@ -1,12 +1,19 @@
+
 import React, { useEffect, useState } from 'react';
 
 interface YouTubeEmbedProps {
   channelId?: string;
   videoId?: string;
   className?: string;
+  openInNewTab?: boolean;
 }
 
-const YouTubeEmbed: React.FC<YouTubeEmbedProps> = ({ channelId, videoId, className }) => {
+const YouTubeEmbed: React.FC<YouTubeEmbedProps> = ({ 
+  channelId, 
+  videoId, 
+  className,
+  openInNewTab = false
+}) => {
   const [loadedVideoId, setLoadedVideoId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -53,6 +60,25 @@ const YouTubeEmbed: React.FC<YouTubeEmbedProps> = ({ channelId, videoId, classNa
       <div className={`flex items-center justify-center bg-gray-100 ${className || 'h-[315px] w-full'}`}>
         <div className="text-red-500">{error}</div>
       </div>
+    );
+  }
+
+  // If openInNewTab is true, return a thumbnail with a link
+  if (openInNewTab && loadedVideoId) {
+    return (
+      <a 
+        href={`https://www.youtube.com/watch?v=${loadedVideoId}`}
+        target="_blank"
+        rel="noopener noreferrer"
+        className={`block ${className || 'w-full'}`}
+      >
+        <img 
+          src={`https://img.youtube.com/vi/${loadedVideoId}/maxresdefault.jpg`} 
+          alt="Video thumbnail" 
+          className="w-full h-auto rounded-lg shadow-lg hover:opacity-90 transition-opacity"
+        />
+        <div className="mt-2 text-center text-sm text-gray-600">Click to watch on YouTube</div>
+      </a>
     );
   }
 
