@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { Link } from 'react-router-dom';
@@ -142,44 +141,78 @@ const WhoWeAre = () => {
         </div>
       </section>
 
-      {/* Leadership Team */}
+      {/* Leadership Team - Updated with real names and contact info */}
       <section className="py-16 bg-white">
         <div className="container-custom">
           <h2 className="section-title text-center mb-12">Our Leadership</h2>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {/* Pastor */}
+            {/* Leader 1 */}
             <div className="text-center">
               <div className="w-40 h-40 bg-gray-200 rounded-full mx-auto mb-4 flex items-center justify-center">
                 <span className="text-gray-400 text-5xl">👨‍⚖️</span>
               </div>
-              <h3 className="text-xl font-semibold">Pastor Abebe Kebede</h3>
-              <p className="text-eecfin-navy font-medium">Lead Pastor</p>
+              <h3 className="text-xl font-semibold">Yeteshawork Berhanu</h3>
+              <p className="text-eecfin-navy font-medium">Elder</p>
               <p className="mt-2 text-gray-600">
-                Serving our congregation since 2015 with wisdom and compassion.
+                <a href="tel:+358415225889" className="hover:text-eecfin-gold transition-colors">
+                  +358 41 522 58 89
+                </a>
               </p>
             </div>
             
-            {/* Elder 1 */}
+            {/* Leader 2 */}
             <div className="text-center">
               <div className="w-40 h-40 bg-gray-200 rounded-full mx-auto mb-4 flex items-center justify-center">
                 <span className="text-gray-400 text-5xl">👨‍💼</span>
               </div>
-              <h3 className="text-xl font-semibold">Markos Tadesse</h3>
+              <h3 className="text-xl font-semibold">Bruke Wolde</h3>
               <p className="text-eecfin-navy font-medium">Elder</p>
               <p className="mt-2 text-gray-600">
-                Oversees community outreach and congregational care ministries.
+                <a href="tel:+358451682997" className="hover:text-eecfin-gold transition-colors">
+                  +358 45 168 2997
+                </a>
               </p>
             </div>
             
-            {/* Elder 2 */}
+            {/* Leader 3 */}
             <div className="text-center">
               <div className="w-40 h-40 bg-gray-200 rounded-full mx-auto mb-4 flex items-center justify-center">
-                <span className="text-gray-400 text-5xl">👩‍💼</span>
+                <span className="text-gray-400 text-5xl">👨‍💼</span>
               </div>
-              <h3 className="text-xl font-semibold">Sara Hailu</h3>
+              <h3 className="text-xl font-semibold">Hizekiel Daniel</h3>
               <p className="text-eecfin-navy font-medium">Elder</p>
               <p className="mt-2 text-gray-600">
-                Leads our worship ministry and coordinates youth programs.
+                <a href="tel:+358449869685" className="hover:text-eecfin-gold transition-colors">
+                  +358 44 986 9685
+                </a>
+              </p>
+            </div>
+
+            {/* Leader 4 */}
+            <div className="text-center">
+              <div className="w-40 h-40 bg-gray-200 rounded-full mx-auto mb-4 flex items-center justify-center">
+                <span className="text-gray-400 text-5xl">👨‍💼</span>
+              </div>
+              <h3 className="text-xl font-semibold">Mekbib Tekle</h3>
+              <p className="text-eecfin-navy font-medium">Elder</p>
+              <p className="mt-2 text-gray-600">
+                <a href="tel:+358440822798" className="hover:text-eecfin-gold transition-colors">
+                  +358 44 08 22 798
+                </a>
+              </p>
+            </div>
+
+            {/* Leader 5 */}
+            <div className="text-center">
+              <div className="w-40 h-40 bg-gray-200 rounded-full mx-auto mb-4 flex items-center justify-center">
+                <span className="text-gray-400 text-5xl">👨‍💼</span>
+              </div>
+              <h3 className="text-xl font-semibold">Tamirat Teshome</h3>
+              <p className="text-eecfin-navy font-medium">Elder</p>
+              <p className="mt-2 text-gray-600">
+                <a href="tel:+358443514051" className="hover:text-eecfin-gold transition-colors">
+                  +358 44 351 4051
+                </a>
               </p>
             </div>
           </div>
