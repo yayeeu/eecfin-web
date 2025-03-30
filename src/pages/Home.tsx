@@ -7,9 +7,10 @@ import YouTubeEmbed from '../components/YouTubeEmbed';
 import { useQuery } from '@tanstack/react-query';
 import { fetchEvents } from '@/lib/googleCalendar';
 import EmptyState from '@/components/events/EmptyState';
+import { Skeleton } from "@/components/ui/skeleton";
 
 const Home = () => {
-  const { data: events = [], isLoading } = useQuery({
+  const { data: events = [], isLoading, error } = useQuery({
     queryKey: ['events-preview'],
     queryFn: fetchEvents,
     staleTime: 5 * 60 * 1000, // 5 minutes
@@ -143,8 +144,22 @@ const Home = () => {
           </div>
           
           {isLoading ? (
-            <div className="text-center py-8">
-              <p className="text-gray-500">Loading upcoming events...</p>
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {[1, 2, 3].map(i => (
+                <div key={i} className="border border-gray-200 rounded-lg overflow-hidden">
+                  <Skeleton className="h-20 w-full" />
+                  <div className="p-4">
+                    <Skeleton className="h-6 w-3/4 mb-2" />
+                    <Skeleton className="h-4 w-full mb-3" />
+                    <Skeleton className="h-4 w-1/2" />
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : error ? (
+            <div className="bg-red-50 p-6 rounded-lg text-center">
+              <p className="text-red-800 mb-2">Error loading events</p>
+              <p className="text-gray-600 text-sm">Please check your Google Calendar configuration</p>
             </div>
           ) : upcomingEvents.length > 0 ? (
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">

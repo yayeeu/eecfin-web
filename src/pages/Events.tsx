@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
-import { List, CalendarDays } from 'lucide-react';
+import { List, CalendarDays, AlertCircle } from 'lucide-react';
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { fetchEvents } from "@/lib/googleCalendar";
 import { useQuery } from '@tanstack/react-query';
@@ -9,6 +9,7 @@ import { Link } from 'react-router-dom';
 import EventListView from '@/components/events/EventListView';
 import EventCalendarView from '@/components/events/EventCalendarView';
 import EmptyState from '@/components/events/EmptyState';
+import { Skeleton } from "@/components/ui/skeleton";
 
 type ViewType = "list" | "calendar";
 
@@ -57,14 +58,37 @@ const Events = () => {
           </div>
 
           {isLoading && (
-            <div className="flex justify-center items-center py-12">
-              <p className="text-lg">Loading events...</p>
+            <div className="space-y-6">
+              {[1, 2, 3].map(i => (
+                <div key={i} className="bg-white rounded-lg shadow-md overflow-hidden">
+                  <div className="md:flex">
+                    <Skeleton className="h-48 md:w-48" />
+                    <div className="p-6 w-full">
+                      <Skeleton className="h-8 w-3/4 mb-4" />
+                      <Skeleton className="h-4 w-1/2 mb-2" />
+                      <Skeleton className="h-4 w-2/3 mb-4" />
+                      <Skeleton className="h-20 w-full mb-4" />
+                      <Skeleton className="h-10 w-40" />
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
           )}
 
           {error && (
-            <div className="bg-red-50 text-red-800 p-4 rounded-lg mb-6">
-              <p>Error loading events. Please try again later.</p>
+            <div className="bg-red-50 p-8 rounded-lg text-center">
+              <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
+              <h3 className="text-xl font-medium mb-2">Error Loading Events</h3>
+              <p className="text-gray-700 mb-6">
+                There was a problem fetching events from Google Calendar. Please check your configuration and try again.
+              </p>
+              <p className="text-sm text-gray-500 mb-4">
+                Make sure your Google Calendar API key and Calendar ID are properly set in Supabase secrets.
+              </p>
+              <Button asChild className="bg-eecfin-navy hover:bg-eecfin-navy/80">
+                <a href={window.location.href}>Retry</a>
+              </Button>
             </div>
           )}
 

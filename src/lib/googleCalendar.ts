@@ -1,6 +1,7 @@
 
 import { format } from 'date-fns';
 import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
 // Type for the Google Calendar API response
 interface GoogleCalendarEvent {
@@ -50,21 +51,30 @@ export async function fetchEvents(): Promise<Event[]> {
       return [];  // Return empty array instead of mock data
     }
     
+    console.log('Fetching events from Supabase Edge Function');
+    
     // Call the Supabase Edge Function to get calendar events
     const { data, error } = await supabase.functions.invoke('fetch-calendar-events', {
       method: 'GET'
     });
     
     if (error) {
-      console.error('Error fetching events:', error);
-      return []; // Return empty array instead of falling back to mock data
+      console.error('Error invoking Supabase Edge Function:', error);
+      return []; 
     }
+    
+    if (data.error) {
+      console.error('Error from Google Calendar API:', data.error);
+      return [];
+    }
+    
+    console.log('Events data received:', data);
     
     // Format the events returned from the edge function
     return formatEvents(data.items || []);
   } catch (error) {
     console.error('Error fetching events:', error);
-    return []; // Return empty array instead of falling back to mock data
+    return []; 
   }
 }
 
@@ -73,8 +83,11 @@ export async function fetchEvents(): Promise<Event[]> {
  */
 function formatEvents(googleEvents: GoogleCalendarEvent[]): Event[] {
   if (!googleEvents || googleEvents.length === 0) {
+    console.log('No events to format');
     return [];
   }
+  
+  console.log(`Formatting ${googleEvents.length} events`);
   
   return googleEvents.map(event => {
     const startTime = new Date(event.start.dateTime);
