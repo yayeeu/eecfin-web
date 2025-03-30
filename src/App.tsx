@@ -100,9 +100,11 @@ const App = () => (
             <Route 
               path="/auth" 
               element={
-                <Suspense fallback={<PageLoader />}>
-                  <Auth />
-                </Suspense>
+                <RoleGuard isPublicRoute={true}>
+                  <Suspense fallback={<PageLoader />}>
+                    <Auth />
+                  </Suspense>
+                </RoleGuard>
               } 
             />
 
