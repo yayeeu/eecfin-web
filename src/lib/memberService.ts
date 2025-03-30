@@ -30,3 +30,11 @@ export {
   removeMinistryFromMember,
   getMembersByMinistryId
 } from '@/lib/services/memberMinistryService';
+
+// Export role services
+export {
+  getAllRoles,
+  getRoleByName,
+  getRoleById,
+  updateMemberRole
+} from '@/lib/services/roleService';

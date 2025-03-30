@@ -1,4 +1,3 @@
-
 export interface Slide {
   id: string;
   created_at?: string;
@@ -26,7 +25,7 @@ export interface Ministry {
 export interface Role {
   id: string;
   created_at: string;
-  name: string;
+  name: 'admin' | 'it' | 'member' | 'elder';
 }
 
 export interface MemberUnderElder {
@@ -66,7 +65,7 @@ export interface Member {
   email?: string;
   address?: string;
   image?: string;
-  role?: string;
+  role?: 'admin' | 'it' | 'member' | 'elder';
   role_id?: string;
   ministry_id?: string;
   // Fields from database
@@ -87,7 +86,7 @@ export interface Member {
   longitude?: number;
   // Include joined data
   ministries?: Pick<Ministry, 'id' | 'name'>;
-  roles?: Pick<Role, 'id' | 'name'>;
+  roles?: Role;
   // Assigned elder
   assigned_elder?: MemberUnderElder;
   // Ministry assignments

@@ -1,9 +1,9 @@
-
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { Member } from '@/types/database.types';
+import { Member, Role } from '@/types/database.types';
+import { getRoleByName, updateMemberRole } from '@/lib/memberService';
 
 // Define user roles
 export type UserRole = 'admin' | 'it' | 'member' | 'elder';
@@ -32,7 +32,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const { toast } = useToast();
 
   useEffect(() => {
-    // First set up the auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, newSession) => {
         setSession(newSession);
@@ -44,7 +43,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             description: 'Welcome back!',
           });
           
-          // Fetch user profile on sign in
           fetchUserProfile(newSession?.user?.id);
         } else if (event === 'SIGNED_OUT') {
           setUserProfile(null);
@@ -57,12 +55,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
     );
 
-    // Then check for existing session
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       setUser(session?.user ?? null);
       
-      // Fetch user profile for existing session
       if (session?.user) {
         fetchUserProfile(session.user.id);
       }
@@ -79,7 +75,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       const { data, error } = await supabase
         .from('members')
-        .select('*, roles(id, name)')
+        .select('*, roles(*)')
         .eq('id', userId)
         .single();
       
@@ -90,17 +86,25 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       
       setUserProfile(data as Member);
       
-      // Determine user role from profile data
       if (data) {
-        const roleName = data.roles?.name?.toLowerCase() || data.role?.toLowerCase();
-        if (roleName === 'admin') {
-          setUserRole('admin');
-        } else if (roleName === 'it') {
-          setUserRole('it');
-        } else if (roleName === 'elder') {
-          setUserRole('elder');
+        let roleName: UserRole | null = null;
+        
+        if (data.roles?.name) {
+          roleName = data.roles.name as UserRole;
+        } else if (data.role) {
+          roleName = data.role as UserRole;
         } else {
-          setUserRole('member');
+          roleName = 'member';
+        }
+        
+        setUserRole(roleName);
+        
+        if (roleName && !data.role_id) {
+          try {
+            await updateMemberRole(userId, roleName);
+          } catch (err) {
+            console.error('Error updating member role ID:', err);
+          }
         }
       }
     } catch (error) {
@@ -130,7 +134,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         options: {
           data: {
             name: formData.name,
-            role: formData.role || 'member', // Default to member role
+            role: formData.role || 'member',
           },
         },
       });
@@ -167,14 +171,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       if (!user) throw new Error('Not authenticated');
       
-      const { error } = await supabase
-        .from('members')
-        .update(data)
-        .eq('id', user.id);
+      if (data.role && data.role !== userProfile?.role) {
+        try {
+          await updateMemberRole(user.id, data.role as UserRole);
+        } catch (err) {
+          console.error('Error updating role:', err);
+          throw err;
+        }
+      } else {
+        const { error } = await supabase
+          .from('members')
+          .update(data)
+          .eq('id', user.id);
+        
+        if (error) throw error;
+      }
       
-      if (error) throw error;
-      
-      // Refresh user profile after update
       fetchUserProfile(user.id);
       
       toast({
@@ -191,14 +203,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  // Helper function to check if user has permission based on role
   const hasPermission = (allowedRoles: UserRole[]): boolean => {
     if (!userRole) return false;
     
-    // Admin always has permission to everything
     if (userRole === 'admin') return true;
     
-    // Check if user's role is in the list of allowed roles
     return allowedRoles.includes(userRole);
   };
 
