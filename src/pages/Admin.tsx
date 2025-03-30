@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { 
-  Settings, Home, LogOut, Users, User, BarChart, Image 
+  Settings, Home, LogOut, Users, User, BarChart, Image, Lock 
 } from 'lucide-react';
 import { Separator } from "@/components/ui/separator";
 import SliderManager from '@/components/SliderManager';
@@ -12,14 +12,19 @@ import MemberManager from '@/components/MemberManager';
 import Dashboard from '@/components/Dashboard';
 import { useAuth, UserRole } from '@/contexts/AuthContext';
 import RoleGuard from '@/components/auth/RoleGuard';
+import Auth from '@/pages/Auth';
 import {
   SidebarProvider, Sidebar, SidebarContent, SidebarHeader, SidebarGroup,
   SidebarGroupLabel, SidebarGroupContent, SidebarMenu, SidebarMenuItem,
   SidebarMenuButton, SidebarFooter
 } from "@/components/ui/sidebar";
 
-const Admin = () => {
-  const [activeSection, setActiveSection] = useState<string>('dashboard');
+interface AdminProps {
+  activeSection?: string;
+}
+
+const Admin: React.FC<AdminProps> = ({ activeSection = 'dashboard' }) => {
+  const [activeSectionState, setActiveSection] = useState<string>(activeSection);
   const navigate = useNavigate();
   const { userRole, signOut } = useAuth();
 
@@ -30,6 +35,7 @@ const Admin = () => {
     ministries: ['admin'],
     members: ['admin', 'elder'],
     settings: ['admin'],
+    auth: ['admin', 'member', 'elder', 'it'],
   };
 
   // Filter menu items based on user role
@@ -39,6 +45,7 @@ const Admin = () => {
     { id: 'ministries', label: 'Ministries', icon: Users, roles: ['admin'] },
     { id: 'members', label: 'All Members', icon: User, roles: ['admin', 'elder'] },
     { id: 'settings', label: 'Settings', icon: Settings, roles: ['admin'] },
+    { id: 'auth', label: 'Authentication', icon: Lock, roles: ['admin', 'member', 'elder', 'it'] },
   ].filter(item => {
     // Admin can see everything, others only see what they have permission for
     if (userRole === 'admin') return true;
@@ -79,7 +86,7 @@ const Admin = () => {
                     {menuItems.map((item) => (
                       <SidebarMenuItem key={item.id}>
                         <SidebarMenuButton 
-                          isActive={activeSection === item.id}
+                          isActive={activeSectionState === item.id}
                           onClick={() => handleMenuClick(item.id)}
                         >
                           <item.icon className="h-5 w-5" />
@@ -134,44 +141,46 @@ const Admin = () => {
 
             {/* Content area */}
             <div className="flex-1 p-6">
-              <div className="mb-8">
-                <h1 className="text-3xl font-bold text-eecfin-navy">
-                  {activeSection === 'dashboard' ? 'Church Dashboard' :
-                   activeSection === 'slider' ? 'Manage Slider Images' : 
-                   activeSection === 'ministries' ? 'Manage Ministries' :
-                   activeSection === 'members' ? 'All Church Members' :
-                   'Settings'}
-                </h1>
-                <p className="text-gray-500 mt-2">
-                  {activeSection === 'dashboard'
-                    ? 'Overview of church metrics, member statistics, and ministry activity.'
-                    : activeSection === 'slider' 
-                    ? 'Add, edit, or delete slider images displayed on the homepage.' 
-                    : activeSection === 'ministries'
-                    ? 'Add, edit, or delete ministry information displayed on the Get Involved page.'
-                    : activeSection === 'members'
-                    ? 'View all church members and their assigned roles.'
-                    : 'Configure website settings.'}
-                </p>
-              </div>
+              {activeSectionState !== 'auth' && (
+                <div className="mb-8">
+                  <h1 className="text-3xl font-bold text-eecfin-navy">
+                    {activeSectionState === 'dashboard' ? 'Church Dashboard' :
+                     activeSectionState === 'slider' ? 'Manage Slider Images' : 
+                     activeSectionState === 'ministries' ? 'Manage Ministries' :
+                     activeSectionState === 'members' ? 'All Church Members' :
+                     'Settings'}
+                  </h1>
+                  <p className="text-gray-500 mt-2">
+                    {activeSectionState === 'dashboard'
+                      ? 'Overview of church metrics, member statistics, and ministry activity.'
+                      : activeSectionState === 'slider' 
+                      ? 'Add, edit, or delete slider images displayed on the homepage.' 
+                      : activeSectionState === 'ministries'
+                      ? 'Add, edit, or delete ministry information displayed on the Get Involved page.'
+                      : activeSectionState === 'members'
+                      ? 'View all church members and their assigned roles.'
+                      : 'Configure website settings.'}
+                  </p>
+                </div>
+              )}
               
-              {activeSection === 'dashboard' && <Dashboard />}
-              {activeSection === 'slider' && (
+              {activeSectionState === 'dashboard' && <Dashboard />}
+              {activeSectionState === 'slider' && (
                 <RoleGuard allowedRoles={['admin', 'it']} redirectTo="/admin">
                   <SliderManager />
                 </RoleGuard>
               )}
-              {activeSection === 'ministries' && (
+              {activeSectionState === 'ministries' && (
                 <RoleGuard allowedRoles={['admin']} redirectTo="/admin">
                   <MinistryManager />
                 </RoleGuard>
               )}
-              {activeSection === 'members' && (
+              {activeSectionState === 'members' && (
                 <RoleGuard allowedRoles={['admin', 'elder']} redirectTo="/admin">
                   <MemberManager />
                 </RoleGuard>
               )}
-              {activeSection === 'settings' && (
+              {activeSectionState === 'settings' && (
                 <RoleGuard allowedRoles={['admin']} redirectTo="/admin">
                   <div className="bg-white p-6 rounded-lg shadow">
                     <h2 className="text-xl font-semibold mb-4">Site Settings</h2>
@@ -179,6 +188,7 @@ const Admin = () => {
                   </div>
                 </RoleGuard>
               )}
+              {activeSectionState === 'auth' && <Auth />}
             </div>
           </div>
         </div>

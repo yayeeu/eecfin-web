@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAuth, UserRole } from '@/contexts/AuthContext';
@@ -22,6 +23,11 @@ const RoleGuard: React.FC<RoleGuardProps> = ({
         <div className="animate-spin h-10 w-10 border-4 border-blue-500 rounded-full border-t-transparent"></div>
       </div>
     );
+  }
+
+  // For the auth section, we don't need to check if user is authenticated
+  if (window.location.pathname === '/auth') {
+    return <>{children}</>;
   }
 
   // If the user is not authenticated, redirect to login

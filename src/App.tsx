@@ -108,7 +108,7 @@ const App = () => (
             } />
             <Route path="/auth" element={
               <Suspense fallback={<PageLoader />}>
-                <Auth />
+                <Admin activeSection="auth" />
               </Suspense>
             } />
             <Route path="/profile" element={

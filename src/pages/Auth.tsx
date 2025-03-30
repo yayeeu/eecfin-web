@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Navigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
@@ -6,7 +5,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { Eye, EyeOff } from 'lucide-react';
 
-import Layout from '@/components/Layout';
 import { useAuth, UserRole } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import {
@@ -18,7 +16,7 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
@@ -50,34 +48,32 @@ const Auth = () => {
   }
 
   return (
-    <Layout>
-      <div className="container flex items-center justify-center py-16 px-4">
-        <div className="w-full max-w-md">
-          <Tabs defaultValue="login" value={activeTab} onValueChange={setActiveTab}>
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="login">Sign In</TabsTrigger>
-              <TabsTrigger value="register">Register</TabsTrigger>
-            </TabsList>
-            
-            <TabsContent value="login">
-              <LoginForm
-                onSubmit={signIn}
-                showPassword={showPassword}
-                setShowPassword={setShowPassword}
-              />
-            </TabsContent>
-            
-            <TabsContent value="register">
-              <SignupForm
-                onSubmit={signUp}
-                showPassword={showPassword}
-                setShowPassword={setShowPassword}
-              />
-            </TabsContent>
-          </Tabs>
-        </div>
+    <div className="container flex items-center justify-center py-16 px-4">
+      <div className="w-full max-w-md">
+        <Tabs defaultValue="login" value={activeTab} onValueChange={setActiveTab}>
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="login">Sign In</TabsTrigger>
+            <TabsTrigger value="register">Register</TabsTrigger>
+          </TabsList>
+          
+          <TabsContent value="login">
+            <LoginForm
+              onSubmit={signIn}
+              showPassword={showPassword}
+              setShowPassword={setShowPassword}
+            />
+          </TabsContent>
+          
+          <TabsContent value="register">
+            <SignupForm
+              onSubmit={signUp}
+              showPassword={showPassword}
+              setShowPassword={setShowPassword}
+            />
+          </TabsContent>
+        </Tabs>
       </div>
-    </Layout>
+    </div>
   );
 };
 
