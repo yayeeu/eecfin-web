@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -7,6 +7,7 @@ import { Ministry, Member } from '@/types/database.types';
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
+import { Image, ImagePlus, Loader2 } from 'lucide-react';
 import {
   Form,
   FormField,
@@ -56,6 +57,10 @@ const MinistryForm: React.FC<MinistryFormProps> = ({
   onContactPersonChange,
   selectedMember
 }) => {
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(ministry?.photo || null);
+  const [isUploading, setIsUploading] = useState(false);
+
   const emptyMinistry: Omit<Ministry, 'id' | 'created_at' | 'contact_name' | 'contact_email' | 'contact_phone'> = {
     name: '',
     description: '',
@@ -78,9 +83,95 @@ const MinistryForm: React.FC<MinistryFormProps> = ({
   const activeMembers = members?.filter(member => member.status === 'active') || [];
   const activeElders = elders || [];
 
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      setImageFile(file);
+      
+      // Create a preview URL
+      const previewUrl = URL.createObjectURL(file);
+      setImagePreview(previewUrl);
+      
+      // Update the form value
+      form.setValue('photo', previewUrl);
+    }
+  };
+
+  const handleFormSubmit = async (values: FormValues) => {
+    if (imageFile) {
+      setIsUploading(true);
+      try {
+        // In a real implementation, you would upload the file to a server/storage service
+        // and get back a URL to store in the database
+        
+        // For this example, we're just using the local preview URL
+        // In a real app, replace this with your actual upload code
+        await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate upload delay
+        
+        // After "upload", submit the form with the values including the image URL
+        onSubmit(values);
+      } catch (error) {
+        console.error('Error uploading image:', error);
+      } finally {
+        setIsUploading(false);
+      }
+    } else {
+      // If no new image, just submit the form with existing values
+      onSubmit(values);
+    }
+  };
+
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+      <form onSubmit={form.handleSubmit(handleFormSubmit)} className="space-y-4">
+        <div className="mb-6">
+          <FormLabel>Ministry Image</FormLabel>
+          <div className="mt-2 flex flex-col items-center">
+            {imagePreview ? (
+              <div className="relative w-full max-w-md aspect-video mb-4 rounded overflow-hidden">
+                <img 
+                  src={imagePreview} 
+                  alt="Ministry preview" 
+                  className="w-full h-full object-cover"
+                />
+                <Button 
+                  type="button"
+                  variant="outline" 
+                  size="sm"
+                  className="absolute bottom-2 right-2 bg-white/80"
+                  onClick={() => {
+                    setImagePreview(null);
+                    form.setValue('photo', '');
+                  }}
+                >
+                  Remove
+                </Button>
+              </div>
+            ) : (
+              <div className="w-full max-w-md aspect-video mb-4 flex items-center justify-center bg-gray-100 rounded">
+                <ImagePlus className="h-12 w-12 text-gray-400" />
+              </div>
+            )}
+            
+            <div className="flex items-center justify-center w-full">
+              <label className="flex flex-col items-center justify-center w-full cursor-pointer">
+                <div className="flex flex-col items-center justify-center">
+                  <Button type="button" variant="outline" className="flex items-center gap-2">
+                    <ImagePlus className="h-4 w-4" />
+                    {imagePreview ? 'Change Image' : 'Upload Image'}
+                  </Button>
+                </div>
+                <input 
+                  type="file" 
+                  className="hidden" 
+                  accept="image/*"
+                  onChange={handleImageChange}
+                />
+              </label>
+            </div>
+          </div>
+        </div>
+
         <FormField
           control={form.control}
           name="name"
@@ -185,22 +276,6 @@ const MinistryForm: React.FC<MinistryFormProps> = ({
 
         <FormField
           control={form.control}
-          name="photo"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Photo URL</FormLabel>
-              <FormControl>
-                <Input 
-                  placeholder="Enter photo URL (optional)" 
-                  {...field} 
-                />
-              </FormControl>
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
           name="status"
           render={({ field }) => (
             <FormItem>
@@ -228,7 +303,12 @@ const MinistryForm: React.FC<MinistryFormProps> = ({
           <Button type="button" variant="outline" onClick={onCancel}>
             Cancel
           </Button>
-          <Button type="submit" className="bg-eecfin-navy">
+          <Button 
+            type="submit" 
+            className="bg-eecfin-navy"
+            disabled={isUploading}
+          >
+            {isUploading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             {ministry ? 'Update Ministry' : 'Add Ministry'}
           </Button>
         </DialogFooter>

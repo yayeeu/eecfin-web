@@ -25,15 +25,24 @@ const MinistryCard: React.FC<MinistryCardProps> = ({
   return (
     <Card key={ministry.id} className="overflow-hidden">
       {ministry.photo ? (
-        <div className="aspect-video w-full overflow-hidden">
+        <div 
+          className="aspect-video w-full overflow-hidden cursor-pointer hover:opacity-90 transition-opacity relative"
+          onClick={() => onEdit(ministry)}
+        >
           <img 
             src={ministry.photo} 
             alt={ministry.name} 
             className="w-full h-full object-cover"
           />
+          <div className="absolute inset-0 flex items-center justify-center bg-black/30 opacity-0 hover:opacity-100 transition-opacity">
+            <ImagePlus className="h-8 w-8 text-white" />
+          </div>
         </div>
       ) : (
-        <div className="aspect-video w-full bg-gray-200 flex items-center justify-center">
+        <div 
+          className="aspect-video w-full bg-gray-200 flex items-center justify-center cursor-pointer hover:bg-gray-300 transition-colors"
+          onClick={() => onEdit(ministry)}
+        >
           <ImagePlus className="h-12 w-12 text-gray-400" />
         </div>
       )}
