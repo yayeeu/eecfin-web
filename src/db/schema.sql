@@ -13,6 +13,22 @@ CREATE TABLE IF NOT EXISTS slides (
 -- Create an index on the order field for faster sorting
 CREATE INDEX IF NOT EXISTS slides_order_idx ON slides ("order");
 
+-- Create the ministries table
+CREATE TABLE IF NOT EXISTS ministries (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  name TEXT NOT NULL,
+  description TEXT NOT NULL,
+  contact_name TEXT NOT NULL,
+  contact_email TEXT NOT NULL,
+  contact_phone TEXT,
+  status TEXT NOT NULL CHECK (status IN ('active', 'inactive')),
+  photo TEXT
+);
+
+-- Create an index on the status field for filtering
+CREATE INDEX IF NOT EXISTS ministries_status_idx ON ministries (status);
+
 -- Create storage bucket for images if it doesn't exist
 -- Note: This needs to be executed separately in the Supabase dashboard SQL editor
 -- INSERT INTO storage.buckets (id, name, public) 
@@ -32,6 +48,23 @@ USING (true);
 -- For authenticated users, allow full access
 CREATE POLICY "Allow authenticated users full access to slides" 
 ON slides 
+FOR ALL 
+TO authenticated
+USING (true);
+
+-- Set up Row Level Security (RLS) policy for the ministries table
+ALTER TABLE ministries ENABLE ROW LEVEL SECURITY;
+
+-- Create policy for anonymous users to select ministries
+CREATE POLICY "Allow anonymous read access to ministries" 
+ON ministries 
+FOR SELECT 
+TO anon
+USING (true);
+
+-- For authenticated users, allow full access
+CREATE POLICY "Allow authenticated users full access to ministries" 
+ON ministries 
 FOR ALL 
 TO authenticated
 USING (true);

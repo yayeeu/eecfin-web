@@ -9,6 +9,18 @@ export interface Slide {
   order: number;
 }
 
+export interface Ministry {
+  id: string;
+  created_at?: string;
+  name: string;
+  description: string;
+  contact_name: string;
+  contact_email: string;
+  contact_phone?: string;
+  status: 'active' | 'inactive';
+  photo?: string;
+}
+
 export interface Database {
   public: {
     Tables: {
@@ -16,6 +28,11 @@ export interface Database {
         Row: Slide;
         Insert: Omit<Slide, 'id' | 'created_at'>;
         Update: Partial<Omit<Slide, 'id' | 'created_at'>>;
+      };
+      ministries: {
+        Row: Ministry;
+        Insert: Omit<Ministry, 'id' | 'created_at'>;
+        Update: Partial<Omit<Ministry, 'id' | 'created_at'>>;
       };
     };
     Views: {};

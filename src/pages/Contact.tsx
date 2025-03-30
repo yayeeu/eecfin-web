@@ -1,14 +1,25 @@
 
 import React from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { getMinistries } from '@/lib/ministryService';
 import { Button } from "@/components/ui/button";
-import { Mail, Phone, MapPin, Clock } from 'lucide-react';
+import { Mail, Phone, MapPin, Clock, Users } from 'lucide-react';
+import AdminLink from '@/components/AdminLink';
 
 const Contact = () => {
+  const { data: ministries } = useQuery({
+    queryKey: ['ministries', true],
+    queryFn: () => getMinistries(true), // Only fetch active ministries
+  });
+
   return (
     <div>
       {/* Hero Section */}
       <section className="bg-eecfin-navy text-white py-16">
-        <div className="container-custom text-center">
+        <div className="container-custom text-center relative">
+          <div className="absolute top-2 right-2">
+            <AdminLink />
+          </div>
           <h1 className="text-4xl md:text-5xl font-bold mb-6">Contact Us</h1>
           <p className="text-xl max-w-3xl mx-auto">
             We'd love to hear from you! Reach out with any questions or prayer requests.
@@ -122,8 +133,55 @@ const Contact = () => {
         </div>
       </section>
 
+      {/* Ministry Contacts Section */}
+      {ministries && ministries.length > 0 && (
+        <section className="py-16 bg-gray-50">
+          <div className="container-custom">
+            <h2 className="section-title text-center mb-8">Ministry Contacts</h2>
+            <p className="text-center text-gray-600 mb-8">
+              Get in touch with our ministry leaders directly for specific inquiries.
+            </p>
+            
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {ministries.map((ministry) => (
+                <div key={ministry.id} className="bg-white p-6 rounded-lg shadow-sm">
+                  <div className="flex items-start mb-4">
+                    <div className="bg-eecfin-navy/10 p-3 rounded-full mr-4">
+                      <Users className="h-5 w-5 text-eecfin-navy" />
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-semibold">{ministry.name}</h3>
+                    </div>
+                  </div>
+                  
+                  <p className="text-gray-600 mb-4 line-clamp-2">{ministry.description}</p>
+                  
+                  <div className="space-y-2 text-sm">
+                    <p><span className="font-medium">Contact:</span> {ministry.contact_name}</p>
+                    <p>
+                      <span className="font-medium">Email:</span> 
+                      <a href={`mailto:${ministry.contact_email}`} className="text-eecfin-navy ml-1 hover:underline">
+                        {ministry.contact_email}
+                      </a>
+                    </p>
+                    {ministry.contact_phone && (
+                      <p>
+                        <span className="font-medium">Phone:</span> 
+                        <a href={`tel:${ministry.contact_phone}`} className="text-eecfin-navy ml-1 hover:underline">
+                          {ministry.contact_phone}
+                        </a>
+                      </p>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
       {/* Map Section */}
-      <section className="py-16 bg-gray-50">
+      <section className="py-16 bg-white">
         <div className="container-custom">
           <h2 className="section-title text-center mb-8">Find Us</h2>
           <div className="bg-gray-300 h-96 rounded-lg flex items-center justify-center">

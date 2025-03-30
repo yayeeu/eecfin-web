@@ -3,10 +3,11 @@ import React, { useState } from 'react';
 import { SidebarProvider, Sidebar, SidebarContent, SidebarHeader, SidebarGroup, 
   SidebarGroupLabel, SidebarGroupContent, SidebarMenu, SidebarMenuItem, 
   SidebarMenuButton, SidebarFooter } from "@/components/ui/sidebar";
-import { Image, Settings, Home, LogOut } from 'lucide-react';
+import { Image, Settings, Home, LogOut, Users } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Separator } from "@/components/ui/separator";
 import SliderManager from '@/components/SliderManager';
+import MinistryManager from '@/components/MinistryManager';
 
 const Admin = () => {
   const [activeSection, setActiveSection] = useState<string>('slider');
@@ -14,6 +15,7 @@ const Admin = () => {
 
   const menuItems = [
     { id: 'slider', label: 'Slider Images', icon: Image },
+    { id: 'ministries', label: 'Ministries', icon: Users },
     { id: 'settings', label: 'Settings', icon: Settings },
   ];
 
@@ -81,16 +83,21 @@ const Admin = () => {
         <div className="flex-1 p-6">
           <div className="mb-8">
             <h1 className="text-3xl font-bold text-eecfin-navy">
-              {activeSection === 'slider' ? 'Manage Slider Images' : 'Settings'}
+              {activeSection === 'slider' ? 'Manage Slider Images' : 
+               activeSection === 'ministries' ? 'Manage Ministries' : 
+               'Settings'}
             </h1>
             <p className="text-gray-500 mt-2">
               {activeSection === 'slider' 
                 ? 'Add, edit, or delete slider images displayed on the homepage.' 
+                : activeSection === 'ministries'
+                ? 'Add, edit, or delete ministry information displayed on the Get Involved page.'
                 : 'Configure website settings.'}
             </p>
           </div>
           
           {activeSection === 'slider' && <SliderManager />}
+          {activeSection === 'ministries' && <MinistryManager />}
           {activeSection === 'settings' && (
             <div className="bg-white p-6 rounded-lg shadow">
               <h2 className="text-xl font-semibold mb-4">Site Settings</h2>
