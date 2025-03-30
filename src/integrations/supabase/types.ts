@@ -53,39 +53,63 @@ export type Database = {
       members: {
         Row: {
           address: string | null
+          children_names: string | null
           created_at: string
           email: string | null
+          emergency_contact: string | null
+          gender: string | null
+          has_letter_from_prev_church: boolean | null
           id: string
           image: string | null
+          marital_status: string | null
           ministry_id: string | null
           name: string | null
           phone: string | null
+          previous_church: string | null
           role: string | null
           role_id: string | null
+          role_in_previous_church: string | null
+          spouse_name: string | null
         }
         Insert: {
           address?: string | null
+          children_names?: string | null
           created_at?: string
           email?: string | null
+          emergency_contact?: string | null
+          gender?: string | null
+          has_letter_from_prev_church?: boolean | null
           id: string
           image?: string | null
+          marital_status?: string | null
           ministry_id?: string | null
           name?: string | null
           phone?: string | null
+          previous_church?: string | null
           role?: string | null
           role_id?: string | null
+          role_in_previous_church?: string | null
+          spouse_name?: string | null
         }
         Update: {
           address?: string | null
+          children_names?: string | null
           created_at?: string
           email?: string | null
+          emergency_contact?: string | null
+          gender?: string | null
+          has_letter_from_prev_church?: boolean | null
           id?: string
           image?: string | null
+          marital_status?: string | null
           ministry_id?: string | null
           name?: string | null
           phone?: string | null
+          previous_church?: string | null
           role?: string | null
           role_id?: string | null
+          role_in_previous_church?: string | null
+          spouse_name?: string | null
         }
         Relationships: [
           {

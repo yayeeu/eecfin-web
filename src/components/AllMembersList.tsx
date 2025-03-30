@@ -32,6 +32,15 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { useForm } from 'react-hook-form';
+import { Textarea } from '@/components/ui/textarea';
+import { 
+  Select, 
+  SelectContent, 
+  SelectItem, 
+  SelectTrigger, 
+  SelectValue 
+} from '@/components/ui/select';
+import { Checkbox } from '@/components/ui/checkbox';
 
 const AllMembersList = () => {
   const { toast } = useToast();
@@ -70,6 +79,14 @@ const AllMembersList = () => {
       role: '',
       email: '',
       phone: '',
+      gender: '',
+      marital_status: '',
+      spouse_name: '',
+      children_names: '',
+      previous_church: '',
+      role_in_previous_church: '',
+      emergency_contact: '',
+      has_letter_from_prev_church: false,
     }
   });
 
@@ -80,6 +97,14 @@ const AllMembersList = () => {
       role: member.role,
       email: member.email,
       phone: member.phone,
+      gender: member.gender,
+      marital_status: member.marital_status,
+      spouse_name: member.spouse_name,
+      children_names: member.children_names,
+      previous_church: member.previous_church,
+      role_in_previous_church: member.role_in_previous_church,
+      emergency_contact: member.emergency_contact,
+      has_letter_from_prev_church: member.has_letter_from_prev_church,
     });
   };
 
@@ -125,6 +150,8 @@ const AllMembersList = () => {
             <TableHead>Name</TableHead>
             <TableHead>Role</TableHead>
             <TableHead>Member Since</TableHead>
+            <TableHead>Phone</TableHead>
+            <TableHead>Email</TableHead>
             <TableHead>Actions</TableHead>
           </TableRow>
         </TableHeader>
@@ -157,6 +184,12 @@ const AllMembersList = () => {
                 {member.created_at ? format(new Date(member.created_at), 'MMM d, yyyy') : 'Unknown'}
               </TableCell>
               <TableCell>
+                {member.phone || 'N/A'}
+              </TableCell>
+              <TableCell>
+                {member.email || 'N/A'}
+              </TableCell>
+              <TableCell>
                 <Button
                   variant="ghost"
                   size="sm"
@@ -173,7 +206,7 @@ const AllMembersList = () => {
       </Table>
 
       <Dialog open={!!editingMember} onOpenChange={(open) => !open && setEditingMember(null)}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className="sm:max-w-xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Edit Member</DialogTitle>
             <DialogDescription>
@@ -182,54 +215,188 @@ const AllMembersList = () => {
           </DialogHeader>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
-              <FormField
-                control={form.control}
-                name="name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Name</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Member name" {...field} />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="role"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Role</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Member role" {...field} />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="email"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Email</FormLabel>
-                    <FormControl>
-                      <Input type="email" placeholder="Email address" {...field} />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="phone"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Phone</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Phone number" {...field} />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <FormField
+                  control={form.control}
+                  name="name"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Name</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Member name" {...field} />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="role"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Role</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Member role" {...field} />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Email</FormLabel>
+                      <FormControl>
+                        <Input type="email" placeholder="Email address" {...field} />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="phone"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Phone</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Phone number" {...field} />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="gender"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Gender</FormLabel>
+                      <Select 
+                        onValueChange={field.onChange} 
+                        defaultValue={field.value || ''}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select gender" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="Male">Male</SelectItem>
+                          <SelectItem value="Female">Female</SelectItem>
+                          <SelectItem value="Other">Other</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="marital_status"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Marital Status</FormLabel>
+                      <Select 
+                        onValueChange={field.onChange} 
+                        defaultValue={field.value || ''}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select marital status" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="Single">Single</SelectItem>
+                          <SelectItem value="Married">Married</SelectItem>
+                          <SelectItem value="Divorced">Divorced</SelectItem>
+                          <SelectItem value="Widowed">Widowed</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="spouse_name"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Spouse Name</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Spouse name (if applicable)" {...field} />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="children_names"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Children Names</FormLabel>
+                      <FormControl>
+                        <Textarea 
+                          placeholder="Names of children (if applicable), separated by commas" 
+                          className="min-h-[80px]" 
+                          {...field} 
+                        />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="previous_church"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Previous Church</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Name of previous church" {...field} />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="role_in_previous_church"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Role in Previous Church</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Role in previous church" {...field} />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="emergency_contact"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Emergency Contact</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Emergency contact information" {...field} />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="has_letter_from_prev_church"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-row items-start space-x-3 space-y-0 p-4">
+                      <FormControl>
+                        <Checkbox
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                        />
+                      </FormControl>
+                      <div className="space-y-1 leading-none">
+                        <FormLabel>
+                          Has Letter from Previous Church
+                        </FormLabel>
+                      </div>
+                    </FormItem>
+                  )}
+                />
+              </div>
               <DialogFooter className="mt-6">
                 <Button type="button" variant="outline" onClick={() => setEditingMember(null)}>
                   Cancel

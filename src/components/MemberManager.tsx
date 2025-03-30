@@ -13,7 +13,8 @@ const MemberManager: React.FC = () => {
         <CardHeader>
           <CardTitle>All Members</CardTitle>
           <CardDescription>
-            View and manage all church members
+            View and manage all church members with comprehensive details including personal information, 
+            church background, family details, and contact information.
           </CardDescription>
         </CardHeader>
         <CardContent>
