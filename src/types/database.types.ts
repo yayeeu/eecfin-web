@@ -21,6 +21,19 @@ export interface Ministry {
   photo?: string;
 }
 
+export interface Elder {
+  id: string;
+  created_at?: string;
+  name: string;
+  phone?: string;
+  email?: string;
+  image?: string;
+  role: string;
+  ministry_id?: string;
+  // Include joined data
+  ministries?: Pick<Ministry, 'id' | 'name'>;
+}
+
 export interface Database {
   public: {
     Tables: {
@@ -33,6 +46,11 @@ export interface Database {
         Row: Ministry;
         Insert: Omit<Ministry, 'id' | 'created_at'>;
         Update: Partial<Omit<Ministry, 'id' | 'created_at'>>;
+      };
+      elders: {
+        Row: Elder;
+        Insert: Omit<Elder, 'id' | 'created_at'>;
+        Update: Partial<Omit<Elder, 'id' | 'created_at'>>;
       };
     };
     Views: {};

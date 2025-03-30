@@ -9,7 +9,83 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      elders: {
+        Row: {
+          created_at: string | null
+          email: string | null
+          id: string
+          image: string | null
+          ministry_id: string | null
+          name: string
+          phone: string | null
+          role: string
+        }
+        Insert: {
+          created_at?: string | null
+          email?: string | null
+          id?: string
+          image?: string | null
+          ministry_id?: string | null
+          name: string
+          phone?: string | null
+          role: string
+        }
+        Update: {
+          created_at?: string | null
+          email?: string | null
+          id?: string
+          image?: string | null
+          ministry_id?: string | null
+          name?: string
+          phone?: string | null
+          role?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "elders_ministry_id_fkey"
+            columns: ["ministry_id"]
+            isOneToOne: false
+            referencedRelation: "ministries"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ministries: {
+        Row: {
+          contact_email: string
+          contact_name: string
+          contact_phone: string | null
+          created_at: string | null
+          description: string
+          id: string
+          name: string
+          photo: string | null
+          status: string
+        }
+        Insert: {
+          contact_email: string
+          contact_name: string
+          contact_phone?: string | null
+          created_at?: string | null
+          description: string
+          id?: string
+          name: string
+          photo?: string | null
+          status: string
+        }
+        Update: {
+          contact_email?: string
+          contact_name?: string
+          contact_phone?: string | null
+          created_at?: string | null
+          description?: string
+          id?: string
+          name?: string
+          photo?: string | null
+          status?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
