@@ -1,11 +1,27 @@
 
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { Phone, Mail, MapPin, Facebook, Instagram, Youtube } from 'lucide-react';
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
+  const location = useLocation();
+  const isAdminPage = location.pathname.includes('/admin');
 
+  // For admin pages, just show the copyright footer
+  if (isAdminPage) {
+    return (
+      <footer className="bg-eecfin-navy text-white py-4">
+        <div className="container-custom">
+          <div className="text-center text-sm">
+            <p>&copy; {currentYear} Ethiopian Evangelical Church in Finland. All rights reserved.</p>
+          </div>
+        </div>
+      </footer>
+    );
+  }
+
+  // For non-admin pages, show the full footer
   return (
     <footer className="bg-eecfin-navy text-white py-12">
       <div className="container-custom">
