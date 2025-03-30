@@ -2,6 +2,8 @@
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { Link } from 'react-router-dom';
+import { BookOpen, Heart, Users } from 'lucide-react';
+import { Card, CardContent } from "@/components/ui/card";
 
 const WhoWeAre = () => {
   return (
@@ -24,8 +26,101 @@ const WhoWeAre = () => {
         </div>
       </section>
 
-      {/* Our Story Section */}
+      {/* Mission, Values, Beliefs - Colorful Boxes */}
       <section className="py-16 bg-white">
+        <div className="container-custom">
+          <div className="grid md:grid-cols-1 lg:grid-cols-3 gap-8">
+            {/* Mission Box */}
+            <Card className="overflow-hidden shadow-lg transition-all duration-300 hover:shadow-xl border-l-8 border-l-blue-500 bg-gradient-to-br from-blue-50 to-white">
+              <CardContent className="p-6">
+                <div className="flex items-center space-x-2 mb-4">
+                  <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600">
+                    <BookOpen size={20} />
+                  </div>
+                  <h3 className="text-2xl font-bold text-blue-700">Mission</h3>
+                </div>
+                <div className="mb-4">
+                  <span className="px-3 py-1 text-sm font-medium bg-blue-100 text-blue-700 rounded-full">
+                    United in prayer, fellowship, and service
+                  </span>
+                </div>
+                <p className="mb-6 text-gray-700">
+                  Our mission is to be a Spirit-filled community, united in prayer, fellowship, and service, 
+                  focused on evangelizing the lost, making disciples, and spreading hope. Our commitment is 
+                  to stand firm in our faith, knowing that our Lord and Savior Jesus Christ will return, 
+                  and we will live with Him forever in His eternal kingdom.
+                </p>
+                <Button asChild variant="outline" className="border-blue-500 text-blue-600 hover:bg-blue-50">
+                  <Link to="/constitution">Read Our Constitution</Link>
+                </Button>
+              </CardContent>
+            </Card>
+
+            {/* Values Box */}
+            <Card className="overflow-hidden shadow-lg transition-all duration-300 hover:shadow-xl border-l-8 border-l-green-500 bg-gradient-to-br from-green-50 to-white">
+              <CardContent className="p-6">
+                <div className="flex items-center space-x-2 mb-4">
+                  <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center text-green-600">
+                    <Heart size={20} />
+                  </div>
+                  <h3 className="text-2xl font-bold text-green-700">Values</h3>
+                </div>
+                <div className="mb-4">
+                  <span className="px-3 py-1 text-sm font-medium bg-green-100 text-green-700 rounded-full">
+                    Faith, Community, Service
+                  </span>
+                </div>
+                <div className="space-y-4 text-gray-700">
+                  <div>
+                    <h4 className="font-semibold text-green-700">Faith in the Word of God</h4>
+                    <p>We uphold the Bible as the inspired and infallible authority in all areas of faith and life, guiding us in our walk with God.</p>
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-green-700">Community and Discipleship</h4>
+                    <p>We value unity, fellowship, and mutual growth, fostering an environment where believers can grow in faith, love, and service.</p>
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-green-700">Mission and Service</h4>
+                    <p>We are committed to sharing the Gospel, serving others, and living out our faith through the power of the Holy Spirit, with a hopeful anticipation of Christ's return.</p>
+                  </div>
+                  <p className="italic">These values guide us as a church, shaping our actions, relationships, and the way we engage with the world around us.</p>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Beliefs Box */}
+            <Card className="overflow-hidden shadow-lg transition-all duration-300 hover:shadow-xl border-l-8 border-l-amber-500 bg-gradient-to-br from-amber-50 to-white">
+              <CardContent className="p-6">
+                <div className="flex items-center space-x-2 mb-4">
+                  <div className="w-10 h-10 rounded-full bg-amber-100 flex items-center justify-center text-amber-600">
+                    <Users size={20} />
+                  </div>
+                  <h3 className="text-2xl font-bold text-amber-700">Beliefs</h3>
+                </div>
+                <div className="mb-4">
+                  <span className="px-3 py-1 text-sm font-medium bg-amber-100 text-amber-700 rounded-full">
+                    We believe in one God, three persons
+                  </span>
+                </div>
+                <p className="mb-6 text-gray-700">
+                  We believe that the 66 books of the Old and New Testaments are the inspired and infallible 
+                  Word of God, the supreme authority in faith and life. We believe in one God, eternally 
+                  existing in three persons: Father, Son, and Holy Spirit. We believe in the deity of Jesus 
+                  Christ, who was born of the Virgin Mary, lived a sinless life, and died for our sins as a 
+                  substitutionary sacrifice. We believe in His bodily resurrection, ascension into Heaven, 
+                  and His ongoing role as our High Priest and Advocate.
+                </p>
+                <Button asChild className="bg-amber-500 hover:bg-amber-600 text-white">
+                  <Link to="/our-faith">Learn More</Link>
+                </Button>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </section>
+
+      {/* Our Story Section */}
+      <section className="py-16 bg-gray-50">
         <div className="container-custom">
           <div className="max-w-3xl mx-auto">
             <h2 className="section-title">Our Story</h2>
@@ -43,56 +138,6 @@ const WhoWeAre = () => {
               Today, EECFIN continues to be a place of worship, fellowship, and community service,
               welcoming all who seek to grow in their faith journey.
             </p>
-          </div>
-        </div>
-      </section>
-
-      {/* Our Mission & Values */}
-      <section className="py-16 bg-gray-50">
-        <div className="container-custom">
-          <div className="grid md:grid-cols-2 gap-12">
-            <div>
-              <h2 className="section-title">Our Mission</h2>
-              <p className="mb-4">
-                The mission of the Ethiopian Evangelical Church in Finland is to:
-              </p>
-              <ul className="list-disc pl-5 space-y-2 mb-4">
-                <li>Proclaim the Gospel of Jesus Christ and nurture spiritual growth among our members</li>
-                <li>Preserve and share the rich traditions of Ethiopian Christianity</li>
-                <li>Provide a supportive community for Ethiopians and friends in Finland</li>
-                <li>Help newcomers integrate into Finnish society while maintaining their cultural identity</li>
-                <li>Extend compassionate service to those in need both locally and globally</li>
-              </ul>
-              <p>
-                Through worship, teaching, fellowship, and service, we seek to fulfill this mission
-                and be a positive presence in our community.
-              </p>
-            </div>
-            <div>
-              <h2 className="section-title">Our Values</h2>
-              <div className="space-y-4">
-                <div>
-                  <h3 className="text-xl font-semibold text-eecfin-navy mb-2">Faith</h3>
-                  <p>We are committed to the teachings of Jesus Christ and the Bible as our foundation.</p>
-                </div>
-                <div>
-                  <h3 className="text-xl font-semibold text-eecfin-navy mb-2">Community</h3>
-                  <p>We value the strength that comes from genuine fellowship and mutual support.</p>
-                </div>
-                <div>
-                  <h3 className="text-xl font-semibold text-eecfin-navy mb-2">Cultural Heritage</h3>
-                  <p>We honor our Ethiopian Christian traditions while embracing our new home in Finland.</p>
-                </div>
-                <div>
-                  <h3 className="text-xl font-semibold text-eecfin-navy mb-2">Service</h3>
-                  <p>We are dedicated to serving others and making a positive impact in our community.</p>
-                </div>
-                <div>
-                  <h3 className="text-xl font-semibold text-eecfin-navy mb-2">Inclusion</h3>
-                  <p>We welcome all people regardless of background, embracing diversity as a strength.</p>
-                </div>
-              </div>
-            </div>
           </div>
         </div>
       </section>
