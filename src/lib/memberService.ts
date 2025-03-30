@@ -1,4 +1,3 @@
-
 import { supabase, isSupabaseConfigured } from '@/lib/supabaseClient';
 import { Member } from '@/types/database.types';
 import { v4 as uuidv4 } from 'uuid';
@@ -188,16 +187,20 @@ export const getMembersForDropdown = async () => {
   // If Supabase is not configured, return mock data
   if (!isSupabaseConfigured()) {
     console.log('Using mock data for members dropdown');
-    return Promise.resolve(mockMembers.map(m => ({
-      id: m.id,
-      name: m.name,
-      email: m.email
-    })));
+    return Promise.resolve(mockMembers
+      .filter(m => m.status === 'active')
+      .map(m => ({
+        id: m.id,
+        name: m.name,
+        email: m.email,
+        status: m.status
+      }))
+    );
   }
   
   const { data, error } = await supabase!
     .from('members')
-    .select('id, name, email')
+    .select('id, name, email, status')
     .eq('status', 'active')
     .order('name');
   
