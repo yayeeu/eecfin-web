@@ -1,27 +1,14 @@
-
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { Calendar, Users, Heart } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import ImageSlider from '../components/ImageSlider';
 
 const Home = () => {
   return (
     <div>
-      {/* Hero Section */}
-      <section className="bg-eecfin-navy text-white py-20">
-        <div className="container-custom text-center">
-          <h1 className="text-4xl md:text-6xl font-bold mb-6">Welcome to Ethiopian Evangelical Church in Finland</h1>
-          <p className="text-xl md:text-2xl mb-8 max-w-3xl mx-auto">A place of worship, community, and spiritual growth for Ethiopians and friends in Finland</p>
-          <div className="flex flex-wrap justify-center gap-4">
-            <Button asChild className="bg-eecfin-gold text-eecfin-navy hover:bg-eecfin-accent">
-              <Link to="/who-we-are">Learn More</Link>
-            </Button>
-            <Button asChild variant="outline" className="border-eecfin-gold text-eecfin-gold hover:bg-eecfin-gold/10">
-              <Link to="/contact">Visit Us</Link>
-            </Button>
-          </div>
-        </div>
-      </section>
+      {/* Image Slider Banner */}
+      <ImageSlider />
 
       {/* Welcome Message */}
       <section className="py-16 bg-white">
