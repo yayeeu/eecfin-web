@@ -13,14 +13,15 @@ export const getMembersForDropdown = async () => {
         id: m.id,
         name: m.name,
         email: m.email,
-        status: m.status // Make sure to include status in the returned data
+        phone: m.phone, // Include phone in the returned data
+        status: m.status
       }))
     );
   }
   
   const { data, error } = await supabase!
     .from('members')
-    .select('id, name, email, status') // Include status in the select query
+    .select('id, name, email, phone, status') // Include phone in the select query
     .eq('status', 'active')
     .order('name');
   

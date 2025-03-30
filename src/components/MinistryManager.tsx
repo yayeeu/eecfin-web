@@ -64,7 +64,7 @@ const MinistryManager = () => {
       ...values,
       contact_name: selectedMember.name || '',
       contact_email: selectedMember.email || '',
-      contact_phone: selectedMember.phone || ''  // We'll still set this from the member's phone
+      contact_phone: selectedMember.phone || ''  // This should now work correctly
     };
 
     console.log("Submitting ministry data:", ministryData);
