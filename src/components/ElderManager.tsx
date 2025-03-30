@@ -1,8 +1,10 @@
-import React, { useState, useEffect } from 'react';
+
+import React, { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
-import { Member, Role, Ministry } from '@/types/database.types';
+import { Member, Role } from '@/types/database.types';
 import { getElderMembers, createMember, updateMember, deleteMember } from '@/lib/memberService';
 import { getMinistries } from '@/lib/ministryService';
+import { getAllRoles } from '@/lib/services/roleService';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Pencil, Trash2, Plus, Loader2 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
@@ -14,7 +16,6 @@ import { Textarea } from '@/components/ui/textarea';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
-import { supabase, isSupabaseConfigured } from '@/lib/supabaseClient';
 
 const elderFormSchema = z.object({
   name: z.string().min(2, {
@@ -29,6 +30,8 @@ const elderFormSchema = z.object({
   }).optional().or(z.literal('')),
   image: z.string().optional(),
   address: z.string().optional(),
+  city: z.string().optional(),
+  postal_code: z.string().optional(),
   ministry_id: z.string().optional().or(z.literal(''))
 });
 
@@ -41,7 +44,6 @@ const ElderManager = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [selectedElder, setSelectedElder] = useState<Member | null>(null);
-  const [roles, setRoles] = useState<Role[]>([]);
 
   const form = useForm<ElderFormValues>({
     resolver: zodResolver(elderFormSchema),
@@ -52,28 +54,17 @@ const ElderManager = () => {
       email: "",
       image: "",
       address: "",
+      city: "",
+      postal_code: "",
       ministry_id: ""
     }
   });
 
-  useEffect(() => {
-    const fetchRoles = async () => {
-      if (!isSupabaseConfigured()) {
-        setRoles([{ id: '1', name: 'elder', created_at: new Date().toISOString() }]);
-        return;
-      }
-
-      try {
-        const { data, error } = await supabase.from('roles').select('*');
-        if (error) throw error;
-        setRoles(data as Role[]);
-      } catch (error) {
-        console.error('Error fetching roles:', error);
-      }
-    };
-
-    fetchRoles();
-  }, []);
+  // Query to fetch roles from database
+  const { data: roles = [] } = useQuery({
+    queryKey: ['roles'],
+    queryFn: getAllRoles
+  });
 
   const { data: elders, isLoading, isError } = useQuery({
     queryKey: ['elders'],
@@ -142,7 +133,7 @@ const ElderManager = () => {
     },
   });
 
-  useEffect(() => {
+  React.useEffect(() => {
     if (selectedElder) {
       form.reset({
         name: selectedElder.name,
@@ -151,6 +142,8 @@ const ElderManager = () => {
         email: selectedElder.email || "",
         image: selectedElder.image || "",
         address: selectedElder.address || "",
+        city: selectedElder.city || "",
+        postal_code: selectedElder.postal_code || "",
         ministry_id: selectedElder.ministry_id || ""
       });
     } else {
@@ -161,6 +154,8 @@ const ElderManager = () => {
         email: "",
         image: "",
         address: "",
+        city: "",
+        postal_code: "",
         ministry_id: ""
       });
     }
@@ -200,6 +195,7 @@ const ElderManager = () => {
       return;
     }
 
+    // Find the elder role ID from the fetched roles
     const elderRoleId = roles.find(r => r.name === 'elder')?.id;
     if (!elderRoleId) {
       toast({
@@ -217,6 +213,8 @@ const ElderManager = () => {
       phone: data.phone || undefined,
       image: data.image || undefined,
       address: data.address || undefined,
+      city: data.city || undefined,
+      postal_code: data.postal_code || undefined,
       ministry_id: data.ministry_id || undefined,
       role_id: elderRoleId
     };
@@ -408,7 +406,7 @@ const ElderManager = () => {
                     <FormLabel>Address</FormLabel>
                     <FormControl>
                       <Textarea
-                        placeholder="Enter full address (for map location)"
+                        placeholder="Enter street address"
                         className="min-h-[80px]"
                         {...field}
                       />
@@ -417,6 +415,36 @@ const ElderManager = () => {
                   </FormItem>
                 )}
               />
+              
+              <div className="grid grid-cols-2 gap-4">
+                <FormField
+                  control={form.control}
+                  name="city"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>City</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Enter city" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                
+                <FormField
+                  control={form.control}
+                  name="postal_code"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Postal Code</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Enter postal code" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
               
               <FormField
                 control={form.control}

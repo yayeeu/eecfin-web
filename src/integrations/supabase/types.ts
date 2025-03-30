@@ -174,6 +174,7 @@ export type Database = {
         Row: {
           address: string | null
           children_names: string | null
+          city: string | null
           created_at: string
           email: string | null
           emergency_contact: string | null
@@ -189,6 +190,7 @@ export type Database = {
           name: string | null
           num_children: number | null
           phone: string | null
+          postal_code: string | null
           previous_church: string | null
           role: string | null
           role_id: string | null
@@ -199,6 +201,7 @@ export type Database = {
         Insert: {
           address?: string | null
           children_names?: string | null
+          city?: string | null
           created_at?: string
           email?: string | null
           emergency_contact?: string | null
@@ -214,6 +217,7 @@ export type Database = {
           name?: string | null
           num_children?: number | null
           phone?: string | null
+          postal_code?: string | null
           previous_church?: string | null
           role?: string | null
           role_id?: string | null
@@ -224,6 +228,7 @@ export type Database = {
         Update: {
           address?: string | null
           children_names?: string | null
+          city?: string | null
           created_at?: string
           email?: string | null
           emergency_contact?: string | null
@@ -239,6 +244,7 @@ export type Database = {
           name?: string | null
           num_children?: number | null
           phone?: string | null
+          postal_code?: string | null
           previous_church?: string | null
           role?: string | null
           role_id?: string | null

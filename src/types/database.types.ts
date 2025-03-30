@@ -25,7 +25,7 @@ export interface Ministry {
 export interface Role {
   id: string;
   created_at: string;
-  name: 'admin' | 'it' | 'member' | 'elder';
+  name: 'admin' | 'it' | 'member' | 'elder' | 'volunteer';
 }
 
 export interface MemberUnderElder {
@@ -64,8 +64,10 @@ export interface Member {
   phone?: string;
   email?: string;
   address?: string;
+  city?: string;
+  postal_code?: string;
   image?: string;
-  role?: 'admin' | 'it' | 'member' | 'elder';
+  role?: 'admin' | 'it' | 'member' | 'elder' | 'volunteer';
   role_id?: string;
   ministry_id?: string;
   // Fields from database

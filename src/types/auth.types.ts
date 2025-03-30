@@ -1,15 +1,11 @@
 
-import { User, Session } from '@supabase/supabase-js';
-import { Member } from './database.types';
-
-// Define user roles
 export type UserRole = 'admin' | 'it' | 'member' | 'elder' | 'volunteer';
 
 export interface AuthContextType {
-  user: User | null;
-  session: Session | null;
-  userProfile: Member | null;
+  user: any;
+  userProfile: any;
   userRole: UserRole | null;
+  session: any;
   loading: boolean;
   signIn: (email: string, password: string) => Promise<void>;
   signUp: (email: string, password: string, formData: any) => Promise<void>;

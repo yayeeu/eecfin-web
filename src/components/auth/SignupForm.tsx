@@ -1,8 +1,9 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
+import { useQuery } from '@tanstack/react-query';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -18,6 +19,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import PasswordInput from './PasswordInput';
 import { UserRole } from '@/types/auth.types';
+import { getAllRoles } from '@/lib/services/roleService';
 
 const signupSchema = z.object({
   name: z.string().min(2, { message: 'Name must be at least 2 characters' }),
@@ -26,6 +28,8 @@ const signupSchema = z.object({
   role: z.enum(['admin', 'it', 'member', 'elder', 'volunteer']).default('member'),
   phone: z.string().optional(),
   address: z.string().optional(),
+  city: z.string().optional(),
+  postal_code: z.string().optional(),
 });
 
 export type SignupFormValues = z.infer<typeof signupSchema>;
@@ -38,6 +42,12 @@ const SignupForm = ({ onSubmit }: SignupFormProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   
+  // Fetch roles from the database
+  const { data: roles = [] } = useQuery({
+    queryKey: ['roles'],
+    queryFn: getAllRoles
+  });
+  
   const form = useForm<SignupFormValues>({
     resolver: zodResolver(signupSchema),
     defaultValues: {
@@ -47,6 +57,8 @@ const SignupForm = ({ onSubmit }: SignupFormProps) => {
       role: 'member',
       phone: '',
       address: '',
+      city: '',
+      postal_code: '',
     },
   });
 
@@ -62,13 +74,11 @@ const SignupForm = ({ onSubmit }: SignupFormProps) => {
     }
   };
 
-  const userRoles = [
-    { value: 'admin', label: 'Administrator' },
-    { value: 'it', label: 'IT Staff' },
-    { value: 'elder', label: 'Elder' },
-    { value: 'member', label: 'Regular Member' },
-    { value: 'volunteer', label: 'Volunteer' },
-  ];
+  // Convert roles to dropdown format
+  const userRoles = roles.map(role => ({
+    value: role.name,
+    label: role.name.charAt(0).toUpperCase() + role.name.slice(1)
+  }));
 
   return (
     <Card>
@@ -168,7 +178,35 @@ const SignupForm = ({ onSubmit }: SignupFormProps) => {
                 <FormItem>
                   <FormLabel>Address (Optional)</FormLabel>
                   <FormControl>
-                    <Input placeholder="123 Main St, City, State" {...field} />
+                    <Input placeholder="123 Main St" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            
+            <FormField
+              control={form.control}
+              name="city"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>City (Optional)</FormLabel>
+                  <FormControl>
+                    <Input placeholder="City" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            
+            <FormField
+              control={form.control}
+              name="postal_code"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Postal Code (Optional)</FormLabel>
+                  <FormControl>
+                    <Input placeholder="12345" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

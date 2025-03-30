@@ -5,7 +5,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { 
   User, Phone, Mail, MapPin, Calendar, Users, 
   HeartHandshake, Building, Award, AlertCircle, 
-  CheckCircle2, XCircle, UserPlus, Briefcase
+  CheckCircle2, XCircle, UserPlus, Briefcase, 
+  Home, Navigation
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { Badge } from '@/components/ui/badge';
@@ -95,6 +96,26 @@ const MemberDetailView: React.FC<MemberDetailViewProps> = ({ member, onClose }) 
                   <div>
                     <p className="text-sm font-medium text-gray-700">Address</p>
                     <p className="text-gray-900">{member.address}</p>
+                  </div>
+                </div>
+              )}
+              
+              {member.city && (
+                <div className="flex items-start gap-3">
+                  <Home className="w-5 h-5 text-gray-500 mt-0.5" />
+                  <div>
+                    <p className="text-sm font-medium text-gray-700">City</p>
+                    <p className="text-gray-900">{member.city}</p>
+                  </div>
+                </div>
+              )}
+              
+              {member.postal_code && (
+                <div className="flex items-start gap-3">
+                  <Navigation className="w-5 h-5 text-gray-500 mt-0.5" />
+                  <div>
+                    <p className="text-sm font-medium text-gray-700">Postal Code</p>
+                    <p className="text-gray-900">{member.postal_code}</p>
                   </div>
                 </div>
               )}

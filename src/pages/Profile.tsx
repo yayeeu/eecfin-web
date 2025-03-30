@@ -26,6 +26,8 @@ const profileSchema = z.object({
   email: z.string().email({ message: 'Please enter a valid email address' }).optional(),
   phone: z.string().optional(),
   address: z.string().optional(),
+  city: z.string().optional(),
+  postal_code: z.string().optional(),
 });
 
 type ProfileFormValues = z.infer<typeof profileSchema>;
@@ -42,6 +44,8 @@ const Profile = () => {
       email: '',
       phone: '',
       address: '',
+      city: '',
+      postal_code: '',
     },
   });
 
@@ -69,6 +73,8 @@ const Profile = () => {
           email: data.email || user.email || '',
           phone: data.phone || '',
           address: data.address || '',
+          city: data.city || '',
+          postal_code: data.postal_code || '',
         });
       } catch (error: any) {
         toast({
@@ -160,6 +166,34 @@ const Profile = () => {
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>Address</FormLabel>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    
+                    <FormField
+                      control={form.control}
+                      name="city"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>City</FormLabel>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    
+                    <FormField
+                      control={form.control}
+                      name="postal_code"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Postal Code</FormLabel>
                           <FormControl>
                             <Input {...field} />
                           </FormControl>
