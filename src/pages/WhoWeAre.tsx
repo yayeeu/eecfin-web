@@ -26,8 +26,31 @@ const WhoWeAre = () => {
         </div>
       </section>
 
-      {/* Mission, Values, Beliefs - Colorful Boxes */}
+      {/* Our Story Section - Moved to top */}
       <section className="py-16 bg-white">
+        <div className="container-custom">
+          <div className="max-w-3xl mx-auto">
+            <h2 className="section-title">Our Story</h2>
+            <p className="mb-4">
+              The Ethiopian Evangelical Church in Finland (EECFIN) was established to serve the spiritual
+              needs of Ethiopian Christians living in Finland. What began as a small gathering of believers
+              has grown into a vibrant church community.
+            </p>
+            <p className="mb-4">
+              Our church was founded on the principles of providing a spiritual home that preserves Ethiopian
+              Christian traditions while helping members integrate into Finnish society. Over the years,
+              we have grown in numbers and impact, serving both the Ethiopian community and reaching out to others.
+            </p>
+            <p>
+              Today, EECFIN continues to be a place of worship, fellowship, and community service,
+              welcoming all who seek to grow in their faith journey.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* Mission, Values, Beliefs - Colorful Boxes */}
+      <section className="py-16 bg-gray-50">
         <div className="container-custom">
           <div className="grid md:grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Mission Box */}
@@ -115,29 +138,6 @@ const WhoWeAre = () => {
                 </Button>
               </CardContent>
             </Card>
-          </div>
-        </div>
-      </section>
-
-      {/* Our Story Section */}
-      <section className="py-16 bg-gray-50">
-        <div className="container-custom">
-          <div className="max-w-3xl mx-auto">
-            <h2 className="section-title">Our Story</h2>
-            <p className="mb-4">
-              The Ethiopian Evangelical Church in Finland (EECFIN) was established to serve the spiritual
-              needs of Ethiopian Christians living in Finland. What began as a small gathering of believers
-              has grown into a vibrant church community.
-            </p>
-            <p className="mb-4">
-              Our church was founded on the principles of providing a spiritual home that preserves Ethiopian
-              Christian traditions while helping members integrate into Finnish society. Over the years,
-              we have grown in numbers and impact, serving both the Ethiopian community and reaching out to others.
-            </p>
-            <p>
-              Today, EECFIN continues to be a place of worship, fellowship, and community service,
-              welcoming all who seek to grow in their faith journey.
-            </p>
           </div>
         </div>
       </section>
