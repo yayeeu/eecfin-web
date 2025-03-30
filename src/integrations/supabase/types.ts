@@ -70,6 +70,7 @@ export type Database = {
           role_id: string | null
           role_in_previous_church: string | null
           spouse_name: string | null
+          status: string | null
         }
         Insert: {
           address?: string | null
@@ -90,6 +91,7 @@ export type Database = {
           role_id?: string | null
           role_in_previous_church?: string | null
           spouse_name?: string | null
+          status?: string | null
         }
         Update: {
           address?: string | null
@@ -110,6 +112,7 @@ export type Database = {
           role_id?: string | null
           role_in_previous_church?: string | null
           spouse_name?: string | null
+          status?: string | null
         }
         Relationships: [
           {
@@ -132,6 +135,7 @@ export type Database = {
         Row: {
           contact_email: string
           contact_name: string
+          contact_person_id: string | null
           contact_phone: string | null
           created_at: string | null
           description: string
@@ -143,6 +147,7 @@ export type Database = {
         Insert: {
           contact_email: string
           contact_name: string
+          contact_person_id?: string | null
           contact_phone?: string | null
           created_at?: string | null
           description: string
@@ -154,6 +159,7 @@ export type Database = {
         Update: {
           contact_email?: string
           contact_name?: string
+          contact_person_id?: string | null
           contact_phone?: string | null
           created_at?: string | null
           description?: string
@@ -162,7 +168,15 @@ export type Database = {
           photo?: string | null
           status?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "ministries_contact_person_id_fkey"
+            columns: ["contact_person_id"]
+            isOneToOne: false
+            referencedRelation: "members"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       roles: {
         Row: {

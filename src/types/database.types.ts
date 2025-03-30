@@ -19,6 +19,7 @@ export interface Ministry {
   contact_phone?: string;
   status: 'active' | 'inactive';
   photo?: string;
+  contact_person_id?: string;
 }
 
 export interface Role {

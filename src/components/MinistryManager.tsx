@@ -1,13 +1,14 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { getMinistries, createMinistry, updateMinistry, deleteMinistry } from '@/lib/ministryService';
-import { Ministry } from '@/types/database.types';
+import { getMembersForDropdown } from '@/lib/memberService';
+import { Ministry, Member } from '@/types/database.types';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Textarea } from './ui/textarea';
 import { Label } from './ui/label';
-import { Pencil, Trash, Plus, Check, X, ImagePlus } from 'lucide-react';
+import { Pencil, Trash, Plus, ImagePlus, User } from 'lucide-react';
 import { toast } from 'sonner';
 import {
   AlertDialog,
@@ -35,12 +36,26 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from './ui/card';
+import { Form, FormField, FormItem, FormLabel, FormControl, FormDescription, FormMessage } from '@/components/ui/form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm } from 'react-hook-form';
+import * as z from 'zod';
 
-const emptyMinistry: Omit<Ministry, 'id' | 'created_at'> = {
+const formSchema = z.object({
+  name: z.string().min(1, 'Ministry name is required'),
+  description: z.string().min(1, 'Description is required'),
+  contact_person_id: z.string().min(1, 'Contact person is required'),
+  contact_phone: z.string().optional(),
+  photo: z.string().optional(),
+  status: z.enum(['active', 'inactive'])
+});
+
+type FormValues = z.infer<typeof formSchema>;
+
+const emptyMinistry: Omit<Ministry, 'id' | 'created_at' | 'contact_name' | 'contact_email'> = {
   name: '',
   description: '',
-  contact_name: '',
-  contact_email: '',
+  contact_person_id: '',
   contact_phone: '',
   status: 'active',
   photo: ''
@@ -49,14 +64,26 @@ const emptyMinistry: Omit<Ministry, 'id' | 'created_at'> = {
 const MinistryManager = () => {
   const queryClient = useQueryClient();
   const [showDialog, setShowDialog] = useState(false);
-  const [editingMinistry, setEditingMinistry] = useState<Partial<Ministry> | null>(null);
-  const [formData, setFormData] = useState<Omit<Ministry, 'id' | 'created_at'>>(emptyMinistry);
+  const [editingMinistry, setEditingMinistry] = useState<Ministry | null>(null);
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
+  const [selectedMember, setSelectedMember] = useState<Member | null>(null);
 
-  const { data: ministries, isLoading, error } = useQuery({
+  const form = useForm<FormValues>({
+    resolver: zodResolver(formSchema),
+    defaultValues: emptyMinistry
+  });
+
+  const { data: ministries, isLoading: ministriesLoading, error: ministriesError } = useQuery({
     queryKey: ['ministries'],
     queryFn: () => getMinistries(),
   });
+
+  const { data: members, isLoading: membersLoading } = useQuery({
+    queryKey: ['members-dropdown'],
+    queryFn: () => getMembersForDropdown(),
+  });
+
+  const activeMembers = members?.filter(member => member.status === 'active') || [];
 
   const createMutation = useMutation({
     mutationFn: createMinistry,
@@ -64,7 +91,7 @@ const MinistryManager = () => {
       queryClient.invalidateQueries({ queryKey: ['ministries'] });
       toast.success('Ministry added successfully');
       setShowDialog(false);
-      setFormData(emptyMinistry);
+      form.reset(emptyMinistry);
     },
     onError: (error) => {
       toast.error(`Error adding ministry: ${error.message}`);
@@ -97,53 +124,56 @@ const MinistryManager = () => {
     }
   });
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
-  };
-
-  const handleStatusChange = (value: string) => {
-    setFormData(prev => ({ 
-      ...prev, 
-      status: value as 'active' | 'inactive' 
-    }));
-  };
-
   const handleAddMinistry = () => {
-    setFormData(emptyMinistry);
     setEditingMinistry(null);
+    form.reset(emptyMinistry);
     setShowDialog(true);
   };
 
   const handleEditMinistry = (ministry: Ministry) => {
     setEditingMinistry(ministry);
-    setFormData({
+    
+    // Find the contact person for this ministry
+    const contactPerson = ministry.contact_person_id ? 
+      members?.find(m => m.id === ministry.contact_person_id) : 
+      null;
+    
+    setSelectedMember(contactPerson || null);
+
+    form.reset({
       name: ministry.name,
       description: ministry.description,
-      contact_name: ministry.contact_name,
-      contact_email: ministry.contact_email,
+      contact_person_id: ministry.contact_person_id || '',
       contact_phone: ministry.contact_phone || '',
       status: ministry.status,
       photo: ministry.photo || ''
     });
+    
     setShowDialog(true);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = (values: FormValues) => {
+    // Find the selected member to get their name and email
+    const selectedMember = members?.find(m => m.id === values.contact_person_id);
     
-    if (!formData.name || !formData.description || !formData.contact_name || !formData.contact_email) {
-      toast.error('Please fill in all required fields');
+    if (!selectedMember) {
+      toast.error('Selected contact person not found');
       return;
     }
+
+    const ministryData = {
+      ...values,
+      contact_name: selectedMember.name || '',
+      contact_email: selectedMember.email || ''
+    };
 
     if (editingMinistry?.id) {
       updateMutation.mutate({ 
         id: editingMinistry.id, 
-        ministry: formData 
+        ministry: ministryData 
       });
     } else {
-      createMutation.mutate(formData);
+      createMutation.mutate(ministryData as any);
     }
   };
 
@@ -157,12 +187,20 @@ const MinistryManager = () => {
     }
   };
 
+  const handleContactPersonChange = (contactPersonId: string) => {
+    const member = members?.find(m => m.id === contactPersonId);
+    setSelectedMember(member || null);
+    form.setValue('contact_person_id', contactPersonId);
+  };
+
+  const isLoading = ministriesLoading || membersLoading;
+
   if (isLoading) {
     return <div className="flex items-center justify-center p-8">Loading ministries...</div>;
   }
 
-  if (error) {
-    return <div className="p-8 text-red-500">Error loading ministries: {error.message}</div>;
+  if (ministriesError) {
+    return <div className="p-8 text-red-500">Error loading ministries: {ministriesError.message}</div>;
   }
 
   return (
@@ -177,57 +215,67 @@ const MinistryManager = () => {
 
       {ministries && ministries.length > 0 ? (
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {ministries.map((ministry) => (
-            <Card key={ministry.id} className="overflow-hidden">
-              {ministry.photo ? (
-                <div className="aspect-video w-full overflow-hidden">
-                  <img 
-                    src={ministry.photo} 
-                    alt={ministry.name} 
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-              ) : (
-                <div className="aspect-video w-full bg-gray-200 flex items-center justify-center">
-                  <ImagePlus className="h-12 w-12 text-gray-400" />
-                </div>
-              )}
-              <CardHeader>
-                <div className="flex justify-between items-start">
-                  <CardTitle className="text-xl">{ministry.name}</CardTitle>
-                  <span className={`text-xs px-2 py-1 rounded-full ${
-                    ministry.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
-                  }`}>
-                    {ministry.status}
-                  </span>
-                </div>
-                <CardDescription>
-                  Contact: {ministry.contact_name}
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-gray-600 line-clamp-3">{ministry.description}</p>
-              </CardContent>
-              <CardFooter className="flex justify-end gap-2 pt-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => handleEditMinistry(ministry)}
-                >
-                  <Pencil className="h-4 w-4 mr-1" />
-                  Edit
-                </Button>
-                <Button
-                  variant="destructive"
-                  size="sm"
-                  onClick={() => handleDeleteClick(ministry.id)}
-                >
-                  <Trash className="h-4 w-4 mr-1" />
-                  Delete
-                </Button>
-              </CardFooter>
-            </Card>
-          ))}
+          {ministries.map((ministry) => {
+            const contactPerson = members?.find(m => m.id === ministry.contact_person_id);
+            
+            return (
+              <Card key={ministry.id} className="overflow-hidden">
+                {ministry.photo ? (
+                  <div className="aspect-video w-full overflow-hidden">
+                    <img 
+                      src={ministry.photo} 
+                      alt={ministry.name} 
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                ) : (
+                  <div className="aspect-video w-full bg-gray-200 flex items-center justify-center">
+                    <ImagePlus className="h-12 w-12 text-gray-400" />
+                  </div>
+                )}
+                <CardHeader>
+                  <div className="flex justify-between items-start">
+                    <CardTitle className="text-xl">{ministry.name}</CardTitle>
+                    <span className={`text-xs px-2 py-1 rounded-full ${
+                      ministry.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
+                    }`}>
+                      {ministry.status}
+                    </span>
+                  </div>
+                  <CardDescription>
+                    Contact: {ministry.contact_name}
+                    {contactPerson && (
+                      <div className="flex items-center mt-1 text-sm text-gray-500">
+                        <User className="h-3 w-3 mr-1" />
+                        <span>Member: {contactPerson.name}</span>
+                      </div>
+                    )}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-gray-600 line-clamp-3">{ministry.description}</p>
+                </CardContent>
+                <CardFooter className="flex justify-end gap-2 pt-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleEditMinistry(ministry)}
+                  >
+                    <Pencil className="h-4 w-4 mr-1" />
+                    Edit
+                  </Button>
+                  <Button
+                    variant="destructive"
+                    size="sm"
+                    onClick={() => handleDeleteClick(ministry.id)}
+                  >
+                    <Trash className="h-4 w-4 mr-1" />
+                    Delete
+                  </Button>
+                </CardFooter>
+              </Card>
+            );
+          })}
         </div>
       ) : (
         <div className="text-center p-8 bg-gray-50 rounded-lg">
@@ -246,99 +294,160 @@ const MinistryManager = () => {
                 : 'Fill in the details to add a new ministry to the system.'}
             </DialogDescription>
           </DialogHeader>
-          <form onSubmit={handleSubmit}>
-            <div className="grid gap-4 py-4">
-              <div className="grid gap-2">
-                <Label htmlFor="name">Ministry Name *</Label>
-                <Input
-                  id="name"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleInputChange}
-                  placeholder="Enter ministry name"
-                  required
-                />
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="description">Description *</Label>
-                <Textarea
-                  id="description"
-                  name="description"
-                  value={formData.description}
-                  onChange={handleInputChange}
-                  placeholder="Enter ministry description"
-                  rows={4}
-                  required
-                />
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="contact_name">Contact Person *</Label>
-                <Input
-                  id="contact_name"
-                  name="contact_name"
-                  value={formData.contact_name}
-                  onChange={handleInputChange}
-                  placeholder="Enter contact person name"
-                  required
-                />
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="contact_email">Contact Email *</Label>
-                <Input
-                  id="contact_email"
-                  name="contact_email"
-                  type="email"
-                  value={formData.contact_email}
-                  onChange={handleInputChange}
-                  placeholder="Enter contact email"
-                  required
-                />
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="contact_phone">Contact Phone</Label>
-                <Input
-                  id="contact_phone"
-                  name="contact_phone"
-                  value={formData.contact_phone}
-                  onChange={handleInputChange}
-                  placeholder="Enter contact phone number (optional)"
-                />
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="photo">Photo URL</Label>
-                <Input
-                  id="photo"
-                  name="photo"
-                  value={formData.photo}
-                  onChange={handleInputChange}
-                  placeholder="Enter photo URL (optional)"
-                />
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="status">Status *</Label>
-                <Select 
-                  value={formData.status} 
-                  onValueChange={handleStatusChange}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select ministry status" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="active">Active</SelectItem>
-                    <SelectItem value="inactive">Inactive</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-            <DialogFooter>
-              <Button type="button" variant="outline" onClick={() => setShowDialog(false)}>
-                Cancel
-              </Button>
-              <Button type="submit" className="bg-eecfin-navy">
-                {editingMinistry ? 'Update Ministry' : 'Add Ministry'}
-              </Button>
-            </DialogFooter>
-          </form>
+          
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+              <FormField
+                control={form.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Ministry Name *</FormLabel>
+                    <FormControl>
+                      <Input 
+                        placeholder="Enter ministry name" 
+                        {...field} 
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="description"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Description *</FormLabel>
+                    <FormControl>
+                      <Textarea 
+                        placeholder="Enter ministry description" 
+                        rows={4} 
+                        {...field} 
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="contact_person_id"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Contact Person *</FormLabel>
+                    <FormControl>
+                      <Select 
+                        value={field.value} 
+                        onValueChange={handleContactPersonChange}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select a contact person" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {activeMembers.length > 0 ? (
+                            activeMembers.map((member) => (
+                              <SelectItem key={member.id} value={member.id}>
+                                {member.name} {member.email ? `(${member.email})` : ''}
+                              </SelectItem>
+                            ))
+                          ) : (
+                            <SelectItem value="none" disabled>
+                              No active members available
+                            </SelectItem>
+                          )}
+                        </SelectContent>
+                      </Select>
+                    </FormControl>
+                    <FormDescription>
+                      Only active members can be selected as contact persons
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              {selectedMember && (
+                <div className="p-3 bg-gray-50 rounded-md">
+                  <p className="text-sm font-medium">Selected Contact Information:</p>
+                  <p className="text-sm">Name: {selectedMember.name}</p>
+                  <p className="text-sm">Email: {selectedMember.email}</p>
+                  {selectedMember.phone && <p className="text-sm">Phone: {selectedMember.phone}</p>}
+                </div>
+              )}
+
+              <FormField
+                control={form.control}
+                name="contact_phone"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Additional Contact Phone</FormLabel>
+                    <FormControl>
+                      <Input 
+                        placeholder="Enter additional contact phone number (optional)" 
+                        {...field} 
+                      />
+                    </FormControl>
+                    <FormDescription>
+                      Optional additional contact phone for this ministry
+                    </FormDescription>
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="photo"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Photo URL</FormLabel>
+                    <FormControl>
+                      <Input 
+                        placeholder="Enter photo URL (optional)" 
+                        {...field} 
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="status"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Status *</FormLabel>
+                    <FormControl>
+                      <Select 
+                        value={field.value} 
+                        onValueChange={field.onChange}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select ministry status" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="active">Active</SelectItem>
+                          <SelectItem value="inactive">Inactive</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <DialogFooter>
+                <Button type="button" variant="outline" onClick={() => setShowDialog(false)}>
+                  Cancel
+                </Button>
+                <Button type="submit" className="bg-eecfin-navy">
+                  {editingMinistry ? 'Update Ministry' : 'Add Ministry'}
+                </Button>
+              </DialogFooter>
+            </form>
+          </Form>
         </DialogContent>
       </Dialog>
 

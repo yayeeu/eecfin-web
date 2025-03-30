@@ -13,7 +13,8 @@ const mockMinistries: Ministry[] = [
     contact_email: 'worship@example.com',
     contact_phone: '+358 40 123 4567',
     status: 'active',
-    created_at: new Date().toISOString()
+    created_at: new Date().toISOString(),
+    contact_person_id: '1'
   },
   {
     id: '2',
@@ -22,7 +23,8 @@ const mockMinistries: Ministry[] = [
     contact_name: 'Sara Tadesse',
     contact_email: 'children@example.com',
     status: 'active',
-    created_at: new Date().toISOString()
+    created_at: new Date().toISOString(),
+    contact_person_id: '2'
   },
   {
     id: '3',
@@ -32,7 +34,8 @@ const mockMinistries: Ministry[] = [
     contact_email: 'prayer@example.com',
     contact_phone: '+358 50 987 6543',
     status: 'active',
-    created_at: new Date().toISOString()
+    created_at: new Date().toISOString(),
+    contact_person_id: '3'
   }
 ];
 
@@ -49,7 +52,7 @@ export const getMinistries = async (activeOnly = false) => {
   
   let query = supabase!
     .from('ministries')
-    .select('*');
+    .select('*, members!ministries_contact_person_id_fkey(id, name, email)');
   
   if (activeOnly) {
     query = query.eq('status', 'active');
@@ -79,7 +82,7 @@ export const getMinistry = async (id: string) => {
   
   const { data, error } = await supabase!
     .from('ministries')
-    .select('*')
+    .select('*, members!ministries_contact_person_id_fkey(id, name, email)')
     .eq('id', id)
     .single();
   
