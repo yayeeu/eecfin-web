@@ -13,6 +13,7 @@ import Dashboard from '@/components/Dashboard';
 import { useAuth } from '@/contexts/AuthContext';
 import RoleGuard from '@/components/auth/RoleGuard';
 import SignupForm from '@/components/auth/SignupForm';
+import { UserRole } from '@/types/auth.types';
 import {
   SidebarProvider, Sidebar, SidebarContent, SidebarHeader, SidebarGroup,
   SidebarGroupLabel, SidebarGroupContent, SidebarMenu, SidebarMenuItem,
