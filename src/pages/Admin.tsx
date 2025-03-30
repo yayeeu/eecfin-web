@@ -1,15 +1,20 @@
+
 import React, { useState } from 'react';
-import { SidebarProvider, Sidebar, SidebarContent, SidebarHeader, SidebarGroup, 
-  SidebarGroupLabel, SidebarGroupContent, SidebarMenu, SidebarMenuItem, 
-  SidebarMenuButton, SidebarFooter } from "@/components/ui/sidebar";
-import { Image, Settings, Home, LogOut, Users, User, BarChart } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
+import { 
+  Settings, Home, LogOut, Users, User, BarChart, Image 
+} from 'lucide-react';
 import { Separator } from "@/components/ui/separator";
 import SliderManager from '@/components/SliderManager';
 import MinistryManager from '@/components/MinistryManager';
 import ElderManager from '@/components/ElderManager';
 import MemberManager from '@/components/MemberManager';
 import Dashboard from '@/components/Dashboard';
+import {
+  SidebarProvider, Sidebar, SidebarContent, SidebarHeader, SidebarGroup,
+  SidebarGroupLabel, SidebarGroupContent, SidebarMenu, SidebarMenuItem,
+  SidebarMenuButton, SidebarFooter
+} from "@/components/ui/sidebar";
 
 const Admin = () => {
   const [activeSection, setActiveSection] = useState<string>('dashboard');

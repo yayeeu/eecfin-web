@@ -1,117 +1,92 @@
 
 import React from 'react';
 import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
+import { useMutation } from '@tanstack/react-query';
+import { createContactLog } from '@/lib/contactLogService';
 import { useToast } from '@/hooks/use-toast';
-import { useQueryClient, useMutation } from '@tanstack/react-query';
-import { Button } from '@/components/ui/button';
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+import { Form, FormControl, FormField, FormItem, FormLabel } from '@/components/ui/form';
 import { Textarea } from '@/components/ui/textarea';
-import { Checkbox } from '@/components/ui/checkbox';
-import { createContactLog, updateContactLog } from '@/lib/contactLogService';
+import { Button } from '@/components/ui/button';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Flag } from 'lucide-react';
+import { Switch } from '@/components/ui/switch';
 import { ContactLog } from '@/types/database.types';
-import { Loader2 } from 'lucide-react';
 
-export interface ContactLogFormProps {
+const formSchema = z.object({
+  contact_type: z.string({ required_error: "Contact type is required" }),
+  notes: z.string().min(1, "Notes are required"),
+  flagged: z.boolean().default(false),
+});
+
+type FormValues = z.infer<typeof formSchema>;
+
+interface ContactLogFormProps {
   elderId: string;
   memberId: string;
-  initialData?: ContactLog;
-  onSuccess: () => void;
-  onCancel: () => void;
+  onSuccess?: () => void;
 }
 
-type FormValues = {
-  contact_type: 'Text Message' | 'In Person' | 'Phone Call' | 'Email' | 'Other';
-  notes?: string;
-  flagged: boolean;
-};
-
-const ContactLogForm: React.FC<ContactLogFormProps> = ({
-  elderId,
-  memberId,
-  initialData,
-  onSuccess,
-  onCancel,
-}) => {
+const ContactLogForm: React.FC<ContactLogFormProps> = ({ elderId, memberId, onSuccess }) => {
   const { toast } = useToast();
-  const queryClient = useQueryClient();
-
+  
   const form = useForm<FormValues>({
+    resolver: zodResolver(formSchema),
     defaultValues: {
-      contact_type: initialData?.contact_type || 'Phone Call',
-      notes: initialData?.notes || '',
-      flagged: initialData?.flagged || false,
+      contact_type: '',
+      notes: '',
+      flagged: false,
     },
   });
-
-  const createMutation = useMutation({
-    mutationFn: createContactLog,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['contact-logs'] });
-      toast({
-        title: 'Contact log created',
-        description: 'The contact log has been created successfully.',
-      });
-      onSuccess();
-    },
-    onError: (error) => {
-      toast({
-        title: 'Error',
-        description: `Failed to create contact log: ${error.message}`,
-        variant: 'destructive',
-      });
-    },
-  });
-
-  const updateMutation = useMutation({
-    mutationFn: updateContactLog,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['contact-logs'] });
-      toast({
-        title: 'Contact log updated',
-        description: 'The contact log has been updated successfully.',
-      });
-      onSuccess();
-    },
-    onError: (error) => {
-      toast({
-        title: 'Error',
-        description: `Failed to update contact log: ${error.message}`,
-        variant: 'destructive',
-      });
-    },
-  });
-
-  const isPending = createMutation.isPending || updateMutation.isPending;
-
-  const onSubmit = (values: FormValues) => {
-    if (initialData?.id) {
-      updateMutation.mutate({
-        id: initialData.id,
-        data: values,
-      });
-    } else {
-      createMutation.mutate({
+  
+  const contactTypes = [
+    { value: 'phone', label: 'Phone Call' },
+    { value: 'visit', label: 'Home Visit' },
+    { value: 'email', label: 'Email' },
+    { value: 'text', label: 'Text Message' },
+    { value: 'meeting', label: 'In-person Meeting' },
+    { value: 'other', label: 'Other' },
+  ];
+  
+  // Update the mutation to accept the correct parameter format
+  const mutation = useMutation({
+    mutationFn: (params: { id: string; data: FormValues }) => {
+      const { id, data } = params;
+      return createContactLog(id, {
         elder_id: elderId,
         member_id: memberId,
-        ...values,
+        contact_type: data.contact_type,
+        notes: data.notes,
+        flagged: data.flagged,
       });
-    }
+    },
+    onSuccess: () => {
+      toast({
+        title: "Contact log created",
+        description: "The contact log has been successfully created.",
+      });
+      
+      form.reset();
+      
+      if (onSuccess) {
+        onSuccess();
+      }
+    },
+    onError: (error) => {
+      console.error('Error creating contact log:', error);
+      toast({
+        title: "Error",
+        description: "There was an error creating the contact log. Please try again.",
+        variant: "destructive",
+      });
+    },
+  });
+  
+  const onSubmit = (data: FormValues) => {
+    mutation.mutate({ id: memberId, data });
   };
-
+  
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -121,10 +96,9 @@ const ContactLogForm: React.FC<ContactLogFormProps> = ({
           render={({ field }) => (
             <FormItem>
               <FormLabel>Contact Type</FormLabel>
-              <Select
-                onValueChange={field.onChange}
+              <Select 
+                onValueChange={field.onChange} 
                 defaultValue={field.value}
-                disabled={isPending}
               >
                 <FormControl>
                   <SelectTrigger>
@@ -132,18 +106,17 @@ const ContactLogForm: React.FC<ContactLogFormProps> = ({
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  <SelectItem value="Phone Call">Phone Call</SelectItem>
-                  <SelectItem value="Text Message">Text Message</SelectItem>
-                  <SelectItem value="Email">Email</SelectItem>
-                  <SelectItem value="In Person">In Person</SelectItem>
-                  <SelectItem value="Other">Other</SelectItem>
+                  {contactTypes.map((type) => (
+                    <SelectItem key={type.value} value={type.value}>
+                      {type.label}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
-              <FormMessage />
             </FormItem>
           )}
         />
-
+        
         <FormField
           control={form.control}
           name="notes"
@@ -152,52 +125,43 @@ const ContactLogForm: React.FC<ContactLogFormProps> = ({
               <FormLabel>Notes</FormLabel>
               <FormControl>
                 <Textarea
-                  placeholder="Enter details about the contact here..."
-                  disabled={isPending}
+                  placeholder="Enter details about the contact..."
+                  rows={4}
                   {...field}
-                  value={field.value || ''}
                 />
               </FormControl>
-              <FormMessage />
             </FormItem>
           )}
         />
-
+        
         <FormField
           control={form.control}
           name="flagged"
           render={({ field }) => (
-            <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
-              <FormControl>
-                <Checkbox
-                  checked={field.value}
-                  onCheckedChange={field.onChange}
-                  disabled={isPending}
-                />
-              </FormControl>
-              <div className="space-y-1 leading-none">
-                <FormLabel>
-                  Flag for follow-up
+            <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3">
+              <div className="space-y-0.5">
+                <FormLabel className="text-base flex items-center">
+                  <Flag className="h-4 w-4 mr-2" />
+                  Flag for Follow-up
                 </FormLabel>
               </div>
+              <FormControl>
+                <Switch
+                  checked={field.value}
+                  onCheckedChange={field.onChange}
+                />
+              </FormControl>
             </FormItem>
           )}
         />
-
-        <div className="flex justify-end space-x-2 pt-2">
-          <Button
-            type="button"
-            variant="outline"
-            onClick={onCancel}
-            disabled={isPending}
-          >
-            Cancel
-          </Button>
-          <Button type="submit" disabled={isPending}>
-            {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            {initialData ? 'Update' : 'Create'} Contact Log
-          </Button>
-        </div>
+        
+        <Button 
+          type="submit" 
+          className="w-full"
+          disabled={mutation.isPending}
+        >
+          {mutation.isPending ? 'Saving...' : 'Save Contact Log'}
+        </Button>
       </form>
     </Form>
   );
