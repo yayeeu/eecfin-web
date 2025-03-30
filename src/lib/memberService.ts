@@ -1,3 +1,4 @@
+
 import { supabase, isSupabaseConfigured } from '@/lib/supabaseClient';
 import { Member } from '@/types/database.types';
 import { v4 as uuidv4 } from 'uuid';
@@ -246,6 +247,38 @@ export const getMembersForDropdown = async () => {
   
   if (error) {
     console.error('Error fetching members for dropdown:', error);
+    throw error;
+  }
+  
+  return data;
+};
+
+// Get elders for dropdown selects (used in ministry form)
+export const getEldersForDropdown = async () => {
+  // If Supabase is not configured, return mock data
+  if (!isSupabaseConfigured()) {
+    console.log('Using mock data for elders dropdown');
+    return Promise.resolve(mockMembers
+      .filter(m => m.role === 'Elder' && m.status === 'active')
+      .map(m => ({
+        id: m.id,
+        name: m.name,
+        email: m.email,
+        phone: m.phone,
+        status: m.status
+      }))
+    );
+  }
+  
+  const { data, error } = await supabase!
+    .from('members')
+    .select('id, name, email, phone, status')
+    .eq('role', 'Elder')
+    .eq('status', 'active')
+    .order('name');
+  
+  if (error) {
+    console.error('Error fetching elders for dropdown:', error);
     throw error;
   }
   

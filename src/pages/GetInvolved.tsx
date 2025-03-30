@@ -38,21 +38,44 @@ const GetInvolved = () => {
             <p className="text-gray-600 mb-4">{ministry.description}</p>
             
             <div className="space-y-2 mb-6">
-              <div className="flex items-center text-gray-700">
-                <User className="h-4 w-4 mr-2 text-eecfin-navy" />
-                <span>{ministry.contact_name}</span>
-              </div>
+              {ministry.members?.name ? (
+                <>
+                  <div className="flex items-start text-gray-700">
+                    <User className="h-4 w-4 mr-2 mt-1 text-eecfin-navy" />
+                    <div>
+                      <p className="font-medium">Contact Elder:</p> 
+                      <p>{ministry.members.name}</p>
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <div className="flex items-center text-gray-700">
+                  <User className="h-4 w-4 mr-2 text-eecfin-navy" />
+                  <span>{ministry.contact_name}</span>
+                </div>
+              )}
+              
               <div className="flex items-center text-gray-700">
                 <Mail className="h-4 w-4 mr-2 text-eecfin-navy" />
                 <a href={`mailto:${ministry.contact_email}`} className="hover:text-eecfin-navy">
                   {ministry.contact_email}
                 </a>
               </div>
+              
               {ministry.contact_phone && (
                 <div className="flex items-center text-gray-700">
                   <Phone className="h-4 w-4 mr-2 text-eecfin-navy" />
                   <a href={`tel:${ministry.contact_phone}`} className="hover:text-eecfin-navy">
                     {ministry.contact_phone}
+                  </a>
+                </div>
+              )}
+              
+              {ministry.members?.phone && (
+                <div className="flex items-center text-gray-700">
+                  <Phone className="h-4 w-4 mr-2 text-eecfin-navy" />
+                  <a href={`tel:${ministry.members.phone}`} className="hover:text-eecfin-navy">
+                    {ministry.members.phone}
                   </a>
                 </div>
               )}

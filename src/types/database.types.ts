@@ -20,6 +20,7 @@ export interface Ministry {
   status: 'active' | 'inactive';
   photo?: string;
   contact_person_id?: string;
+  contact_elder?: Member;
 }
 
 export interface Role {

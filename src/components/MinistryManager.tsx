@@ -1,14 +1,13 @@
-
 import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { getMinistries, createMinistry, updateMinistry, deleteMinistry } from '@/lib/ministryService';
-import { getMembersForDropdown } from '@/lib/memberService';
+import { getMembersForDropdown, getEldersForDropdown } from '@/lib/memberService';
 import { Ministry, Member } from '@/types/database.types';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Textarea } from './ui/textarea';
 import { Label } from './ui/label';
-import { Pencil, Trash, Plus, ImagePlus, User } from 'lucide-react';
+import { Pencil, Trash, Plus, ImagePlus, User, Phone, Mail } from 'lucide-react';
 import { toast } from 'sonner';
 import {
   AlertDialog,
@@ -83,7 +82,13 @@ const MinistryManager = () => {
     queryFn: () => getMembersForDropdown(),
   });
 
+  const { data: elders, isLoading: eldersLoading } = useQuery({
+    queryKey: ['elders-dropdown'],
+    queryFn: () => getEldersForDropdown(),
+  });
+
   const activeMembers = members?.filter(member => member.status === 'active') || [];
+  const activeElders = elders || [];
 
   const createMutation = useMutation({
     mutationFn: createMinistry,
@@ -133,8 +138,8 @@ const MinistryManager = () => {
   const handleEditMinistry = (ministry: Ministry) => {
     setEditingMinistry(ministry);
     
-    // Find the contact person for this ministry
     const contactPerson = ministry.contact_person_id ? 
+      elders?.find(e => e.id === ministry.contact_person_id) || 
       members?.find(m => m.id === ministry.contact_person_id) : 
       null;
     
@@ -153,8 +158,8 @@ const MinistryManager = () => {
   };
 
   const handleSubmit = (values: FormValues) => {
-    // Find the selected member to get their name and email
-    const selectedMember = members?.find(m => m.id === values.contact_person_id);
+    const selectedMember = elders?.find(e => e.id === values.contact_person_id) || 
+                           members?.find(m => m.id === values.contact_person_id);
     
     if (!selectedMember) {
       toast.error('Selected contact person not found');
@@ -177,23 +182,14 @@ const MinistryManager = () => {
     }
   };
 
-  const handleDeleteClick = (id: string) => {
-    setDeleteConfirm(id);
-  };
-
-  const handleConfirmDelete = () => {
-    if (deleteConfirm) {
-      deleteMutation.mutate(deleteConfirm);
-    }
-  };
-
   const handleContactPersonChange = (contactPersonId: string) => {
+    const elder = elders?.find(e => e.id === contactPersonId);
     const member = members?.find(m => m.id === contactPersonId);
-    setSelectedMember(member || null);
+    setSelectedMember(elder || member || null);
     form.setValue('contact_person_id', contactPersonId);
   };
 
-  const isLoading = ministriesLoading || membersLoading;
+  const isLoading = ministriesLoading || membersLoading || eldersLoading;
 
   if (isLoading) {
     return <div className="flex items-center justify-center p-8">Loading ministries...</div>;
@@ -216,7 +212,9 @@ const MinistryManager = () => {
       {ministries && ministries.length > 0 ? (
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {ministries.map((ministry) => {
-            const contactPerson = members?.find(m => m.id === ministry.contact_person_id);
+            const contactPerson = members?.find(m => m.id === ministry.contact_person_id) || null;
+            const contactElder = elders?.find(e => e.id === ministry.contact_person_id) || null;
+            const isElder = !!contactElder;
             
             return (
               <Card key={ministry.id} className="overflow-hidden">
@@ -244,16 +242,33 @@ const MinistryManager = () => {
                   </div>
                   <CardDescription>
                     Contact: {ministry.contact_name}
-                    {contactPerson && (
+                    {(contactPerson || contactElder) && (
                       <div className="flex items-center mt-1 text-sm text-gray-500">
                         <User className="h-3 w-3 mr-1" />
-                        <span>Member: {contactPerson.name}</span>
+                        <span>{isElder ? 'Contact Elder' : 'Member'}: {isElder ? contactElder!.name : contactPerson!.name}</span>
                       </div>
                     )}
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
                   <p className="text-sm text-gray-600 line-clamp-3">{ministry.description}</p>
+                  
+                  {contactElder && (
+                    <div className="mt-4 space-y-2">
+                      <div className="flex items-center text-sm text-gray-600">
+                        <Phone className="h-3 w-3 mr-2" />
+                        <a href={`tel:${contactElder.phone}`} className="hover:text-eecfin-gold">
+                          {contactElder.phone}
+                        </a>
+                      </div>
+                      <div className="flex items-center text-sm text-gray-600">
+                        <Mail className="h-3 w-3 mr-2" />
+                        <a href={`mailto:${contactElder.email}`} className="hover:text-eecfin-gold">
+                          {contactElder.email}
+                        </a>
+                      </div>
+                    </div>
+                  )}
                 </CardContent>
                 <CardFooter className="flex justify-end gap-2 pt-2">
                   <Button
@@ -283,7 +298,6 @@ const MinistryManager = () => {
         </div>
       )}
 
-      {/* Add/Edit Ministry Dialog */}
       <Dialog open={showDialog} onOpenChange={setShowDialog}>
         <DialogContent className="sm:max-w-[600px]">
           <DialogHeader>
@@ -337,16 +351,34 @@ const MinistryManager = () => {
                 name="contact_person_id"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Contact Person *</FormLabel>
+                    <FormLabel>Contact Elder *</FormLabel>
                     <FormControl>
                       <Select 
                         value={field.value} 
                         onValueChange={handleContactPersonChange}
                       >
                         <SelectTrigger>
-                          <SelectValue placeholder="Select a contact person" />
+                          <SelectValue placeholder="Select a contact elder" />
                         </SelectTrigger>
                         <SelectContent>
+                          <div className="p-2 border-b">
+                            <p className="font-semibold">Elders</p>
+                          </div>
+                          {activeElders.length > 0 ? (
+                            activeElders.map((elder) => (
+                              <SelectItem key={elder.id} value={elder.id}>
+                                {elder.name} {elder.email ? `(${elder.email})` : ''}
+                              </SelectItem>
+                            ))
+                          ) : (
+                            <SelectItem value="none" disabled>
+                              No active elders available
+                            </SelectItem>
+                          )}
+                          
+                          <div className="p-2 border-b mt-2">
+                            <p className="font-semibold">Other Members</p>
+                          </div>
                           {activeMembers.length > 0 ? (
                             activeMembers.map((member) => (
                               <SelectItem key={member.id} value={member.id}>
@@ -362,7 +394,7 @@ const MinistryManager = () => {
                       </Select>
                     </FormControl>
                     <FormDescription>
-                      Only active members can be selected as contact persons
+                      Preferably select an elder as the contact person
                     </FormDescription>
                     <FormMessage />
                   </FormItem>
@@ -451,7 +483,6 @@ const MinistryManager = () => {
         </DialogContent>
       </Dialog>
 
-      {/* Delete Confirmation Dialog */}
       <AlertDialog open={!!deleteConfirm} onOpenChange={(open) => !open && setDeleteConfirm(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
