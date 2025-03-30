@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Menu, X, Mail, Heart } from 'lucide-react';
+import { Menu, X, Mail, Heart, Facebook, Instagram, Youtube } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
 
 const Header = () => {
@@ -31,22 +31,46 @@ const Header = () => {
     { title: 'Donate', path: '/get-involved#donate', icon: <Heart size={16} /> },
   ];
 
+  // Social media icons
+  const socialIcons = [
+    { icon: <Facebook size={16} />, url: "#", ariaLabel: "Facebook" },
+    { icon: <Instagram size={16} />, url: "#", ariaLabel: "Instagram" },
+    { icon: <Youtube size={16} />, url: "#", ariaLabel: "YouTube" },
+  ];
+
   return (
     <header>
       {/* Top Navigation Bar */}
       <div className="bg-eecfin-gold/70 py-1 text-eecfin-navy">
         <div className="container-custom">
-          <div className="flex justify-end items-center space-x-4">
-            {topNavItems.map((item) => (
-              <Link 
-                key={item.path} 
-                to={item.path}
-                className="flex items-center text-sm hover:text-eecfin-navy/70 transition-colors"
-              >
-                {item.icon && <span className="mr-1">{item.icon}</span>}
-                {item.title}
-              </Link>
-            ))}
+          <div className="flex justify-between items-center">
+            {/* Social Media Icons */}
+            <div className="flex items-center space-x-3">
+              {socialIcons.map((item, index) => (
+                <a 
+                  key={index} 
+                  href={item.url}
+                  className="flex items-center text-sm hover:text-eecfin-navy/70 transition-colors"
+                  aria-label={item.ariaLabel}
+                >
+                  {item.icon}
+                </a>
+              ))}
+            </div>
+
+            {/* Contact and Donate Links */}
+            <div className="flex items-center space-x-4">
+              {topNavItems.map((item) => (
+                <Link 
+                  key={item.path} 
+                  to={item.path}
+                  className="flex items-center text-sm hover:text-eecfin-navy/70 transition-colors"
+                >
+                  {item.icon && <span className="mr-1">{item.icon}</span>}
+                  {item.title}
+                </Link>
+              ))}
+            </div>
           </div>
         </div>
       </div>
@@ -107,6 +131,19 @@ const Header = () => {
                   {item.title}
                 </Link>
               ))}
+              {/* Add social media icons to mobile menu */}
+              <div className="flex space-x-4 px-4 py-2">
+                {socialIcons.map((item, index) => (
+                  <a 
+                    key={index} 
+                    href={item.url}
+                    className="text-eecfin-gold hover:text-white transition-colors"
+                    aria-label={item.ariaLabel}
+                  >
+                    {item.icon}
+                  </a>
+                ))}
+              </div>
             </nav>
           )}
         </div>
