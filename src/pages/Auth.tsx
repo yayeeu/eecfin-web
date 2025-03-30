@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
-import { Navigate } from 'react-router-dom';
+
+import React, { useState, useEffect } from 'react';
+import { Navigate, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -16,7 +17,7 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
@@ -41,37 +42,66 @@ const Auth = () => {
   const { user, signIn, signUp, loading } = useAuth();
   const [activeTab, setActiveTab] = useState('login');
   const [showPassword, setShowPassword] = useState(false);
+  const navigate = useNavigate();
   
   // Redirect if already logged in
+  useEffect(() => {
+    if (user && !loading) {
+      navigate('/admin', { replace: true });
+    }
+  }, [user, loading, navigate]);
+  
   if (user && !loading) {
-    return <Navigate to="/" replace />;
+    return <Navigate to="/admin" replace />;
   }
 
   return (
     <div className="container flex items-center justify-center py-16 px-4">
       <div className="w-full max-w-md">
-        <Tabs defaultValue="login" value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="login">Sign In</TabsTrigger>
-            <TabsTrigger value="register">Register</TabsTrigger>
-          </TabsList>
-          
-          <TabsContent value="login">
-            <LoginForm
-              onSubmit={signIn}
-              showPassword={showPassword}
-              setShowPassword={setShowPassword}
-            />
-          </TabsContent>
-          
-          <TabsContent value="register">
-            <SignupForm
-              onSubmit={signUp}
-              showPassword={showPassword}
-              setShowPassword={setShowPassword}
-            />
-          </TabsContent>
-        </Tabs>
+        <Card className="border-2 border-eecfin-navy shadow-lg">
+          <CardHeader className="text-center">
+            <div className="mx-auto mb-4">
+              <img 
+                src="/lovable-uploads/010ebde5-605e-4cfe-b2cc-1caacf7c5734.png" 
+                alt="EECFIN Logo" 
+                className="h-16 object-contain mx-auto"
+              />
+            </div>
+            <CardTitle className="text-2xl text-eecfin-navy">Welcome to EECFIN</CardTitle>
+            <CardDescription>Sign in or create an account to access the admin dashboard</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Tabs defaultValue="login" value={activeTab} onValueChange={setActiveTab}>
+              <TabsList className="grid w-full grid-cols-2">
+                <TabsTrigger value="login">Sign In</TabsTrigger>
+                <TabsTrigger value="register">Register</TabsTrigger>
+              </TabsList>
+              
+              <TabsContent value="login">
+                <LoginForm
+                  onSubmit={signIn}
+                  showPassword={showPassword}
+                  setShowPassword={setShowPassword}
+                />
+              </TabsContent>
+              
+              <TabsContent value="register">
+                <SignupForm
+                  onSubmit={signUp}
+                  showPassword={showPassword}
+                  setShowPassword={setShowPassword}
+                />
+              </TabsContent>
+            </Tabs>
+          </CardContent>
+          <CardFooter className="flex justify-center">
+            <Button variant="outline" asChild className="mt-4">
+              <a href="/" className="text-eecfin-navy hover:text-eecfin-gold">
+                Back to Homepage
+              </a>
+            </Button>
+          </CardFooter>
+        </Card>
       </div>
     </div>
   );

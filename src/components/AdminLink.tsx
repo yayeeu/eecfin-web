@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Settings } from 'lucide-react';
+import { Settings, UserCircle } from 'lucide-react';
 import { Button } from './ui/button';
 import { useAuth } from '@/contexts/AuthContext';
 
@@ -13,8 +13,17 @@ const AdminLink = () => {
   return (
     <Button variant="ghost" size="sm" asChild className="text-eecfin-gold hover:text-white">
       <Link to={targetRoute} className="flex items-center gap-1">
-        <Settings className="h-4 w-4" />
-        <span>Admin</span>
+        {user ? (
+          <>
+            <UserCircle className="h-4 w-4" />
+            <span>Dashboard</span>
+          </>
+        ) : (
+          <>
+            <Settings className="h-4 w-4" />
+            <span>Login</span>
+          </>
+        )}
       </Link>
     </Button>
   );

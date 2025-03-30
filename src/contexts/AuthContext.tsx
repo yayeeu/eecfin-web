@@ -1,3 +1,4 @@
+
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
@@ -40,10 +41,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         if (event === 'SIGNED_IN') {
           toast({
             title: 'Signed in successfully',
-            description: 'Welcome back!',
+            description: 'Welcome back! Redirecting to admin dashboard...',
           });
           
           fetchUserProfile(newSession?.user?.id);
+          
+          // Redirect to admin page after login
+          const currentPath = window.location.pathname;
+          if (currentPath === '/auth' || currentPath === '/') {
+            window.location.href = '/admin';
+          }
         } else if (event === 'SIGNED_OUT') {
           setUserProfile(null);
           setUserRole(null);
@@ -158,6 +165,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const signOut = async () => {
     try {
       await supabase.auth.signOut();
+      // Redirect to home page after logout
+      window.location.href = '/';
     } catch (error: any) {
       toast({
         title: 'Error signing out',

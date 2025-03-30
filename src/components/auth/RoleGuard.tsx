@@ -7,12 +7,14 @@ interface RoleGuardProps {
   children: React.ReactNode;
   allowedRoles: UserRole[];
   redirectTo?: string;
+  isPublicRoute?: boolean;
 }
 
 const RoleGuard: React.FC<RoleGuardProps> = ({
   children,
   allowedRoles,
   redirectTo = '/',
+  isPublicRoute = false,
 }) => {
   const { user, loading, userRole, hasPermission } = useAuth();
 
@@ -30,7 +32,16 @@ const RoleGuard: React.FC<RoleGuardProps> = ({
     return <>{children}</>;
   }
 
-  // If the user is not authenticated, redirect to login
+  // Allow public routes to be accessed regardless of auth status
+  if (isPublicRoute) {
+    // If user is logged in and visiting a public route, redirect to admin
+    if (user && window.location.pathname === '/') {
+      return <Navigate to="/admin" replace />;
+    }
+    return <>{children}</>;
+  }
+
+  // For protected routes, if the user is not authenticated, redirect to login
   if (!user) {
     return <Navigate to="/auth" replace />;
   }
