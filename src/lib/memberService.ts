@@ -17,6 +17,46 @@ const mockMembers: Member[] = [
   },
   {
     id: '2',
+    name: 'Bruke Wolde',
+    phone: '+358 451682997',
+    email: 'bruke@example.com',
+    role: 'Elder',
+    role_id: '1',
+    status: 'active',
+    created_at: new Date().toISOString()
+  },
+  {
+    id: '3',
+    name: 'Hizekiel Daniel',
+    phone: '+358 449869685',
+    email: 'hizekiel@example.com',
+    role: 'Elder',
+    role_id: '1',
+    status: 'active',
+    created_at: new Date().toISOString()
+  },
+  {
+    id: '4',
+    name: 'Mekbib Tekle',
+    phone: '+358 44 08 22 798',
+    email: 'mekbib@example.com',
+    role: 'Elder',
+    role_id: '1',
+    status: 'active',
+    created_at: new Date().toISOString()
+  },
+  {
+    id: '5',
+    name: 'Tamirat Teshome',
+    phone: '+358 443514051',
+    email: 'tamirat@example.com',
+    role: 'Elder',
+    role_id: '1',
+    status: 'active',
+    created_at: new Date().toISOString()
+  },
+  {
+    id: '6',
     name: 'John Doe',
     phone: '+358 45 123 4567',
     email: 'john@example.com',
@@ -26,7 +66,7 @@ const mockMembers: Member[] = [
     created_at: new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString()
   },
   {
-    id: '3',
+    id: '7',
     name: 'Jane Smith',
     phone: '+358 44 765 4321',
     email: 'jane@example.com',
