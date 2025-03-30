@@ -41,14 +41,14 @@ export interface Event {
 /**
  * Fetches events from Google Calendar API via Supabase Edge Function
  */
-export async function fetchEvents(): Promise<Event[]> {
+export async function fetchEvents(): Promise<{ events: Event[], error: string | null, status: string }> {
   try {
     // Check if we're in development or if Supabase is not configured
     const isDevelopment = import.meta.env.DEV && !import.meta.env.VITE_SUPABASE_URL;
     
     if (isDevelopment) {
       console.info('Using mock data for events in development environment');
-      return [];  // Return empty array instead of mock data
+      return { events: [], error: null, status: 'development' };
     }
     
     console.log('Fetching events from Supabase Edge Function');
@@ -58,23 +58,50 @@ export async function fetchEvents(): Promise<Event[]> {
       method: 'GET'
     });
     
+    console.log('Response from Edge Function:', data);
+    
     if (error) {
       console.error('Error invoking Supabase Edge Function:', error);
-      return []; 
+      return { 
+        events: [], 
+        error: `Failed to connect to calendar service: ${error.message}`, 
+        status: 'error' 
+      };
     }
     
     if (data.error) {
-      console.error('Error from Google Calendar API:', data.error);
-      return [];
+      console.error('Error from Google Calendar API:', data.error, data.errorDetails || '');
+      return { 
+        events: [], 
+        error: data.message || data.error, 
+        status: 'error' 
+      };
     }
     
-    console.log('Events data received:', data);
+    // No errors, but check if we have any events
+    if (!data.items || data.items.length === 0) {
+      console.log('No events found in calendar');
+      return { 
+        events: [], 
+        error: null, 
+        status: 'empty' 
+      };
+    }
     
     // Format the events returned from the edge function
-    return formatEvents(data.items || []);
+    const formattedEvents = formatEvents(data.items);
+    return { 
+      events: formattedEvents, 
+      error: null, 
+      status: 'success' 
+    };
   } catch (error) {
-    console.error('Error fetching events:', error);
-    return []; 
+    console.error('Unexpected error fetching events:', error);
+    return { 
+      events: [], 
+      error: `Unexpected error: ${error.message}`, 
+      status: 'error' 
+    };
   }
 }
 
@@ -117,5 +144,3 @@ function formatEvents(googleEvents: GoogleCalendarEvent[]): Event[] {
     };
   });
 }
-
-// Remove the getMockEvents function completely as we don't want to use it anymore

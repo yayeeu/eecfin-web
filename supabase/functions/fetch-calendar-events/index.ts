@@ -24,16 +24,18 @@ serve(async (req) => {
     return new Response(
       JSON.stringify({
         error: "Google Calendar API keys not configured",
-        items: []
+        items: [],
+        status: "error",
+        message: "Please configure GOOGLE_API_KEY and GOOGLE_CALENDAR_ID in Supabase Edge Function secrets."
       }),
-      { headers: responseHeaders }
+      { headers: responseHeaders, status: 500 }
     );
   }
 
   try {
     // Get current date and format for API request
     const timeMin = new Date().toISOString();
-    console.log(`Fetching events starting from ${timeMin}`);
+    console.log(`Fetching events starting from ${timeMin} for calendar ID: ${CALENDAR_ID}`);
     
     const url = `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(
       CALENDAR_ID
@@ -46,28 +48,41 @@ serve(async (req) => {
     if (!response.ok) {
       const errorText = await response.text();
       console.error(`Google Calendar API error (${response.status}): ${errorText}`);
-      throw new Error(`Failed to fetch events: ${response.statusText} (${response.status})`);
+      
+      return new Response(
+        JSON.stringify({
+          error: `Failed to fetch events: ${response.statusText} (${response.status})`,
+          items: [],
+          status: "error",
+          errorDetails: errorText,
+          message: "Error from Google Calendar API. Please check your API key and calendar ID."
+        }),
+        { headers: responseHeaders, status: response.status }
+      );
     }
 
     const data = await response.json();
     console.log(`Events fetched successfully. Total events: ${data.items ? data.items.length : 0}`);
     
-    // Ensure we return an empty items array if there are no events
-    if (!data.items) {
-      data.items = [];
-    }
-    
+    // Return success response with events data
     return new Response(
-      JSON.stringify(data),
+      JSON.stringify({
+        ...data,
+        status: "success",
+        message: data.items && data.items.length > 0 
+          ? `Successfully fetched ${data.items.length} events` 
+          : "No upcoming events found"
+      }),
       { headers: responseHeaders }
     );
   } catch (error) {
-    console.error("Error fetching calendar events:", error.message);
+    console.error("Error fetching calendar events:", error.message, error.stack);
     
     return new Response(
       JSON.stringify({ 
         error: error.message, 
         items: [],
+        status: "error",
         message: "Failed to fetch events from Google Calendar. Please check your API key and calendar ID."
       }),
       { headers: responseHeaders, status: 500 }

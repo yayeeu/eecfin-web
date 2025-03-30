@@ -17,12 +17,16 @@ const Events = () => {
   const [viewType, setViewType] = useState<ViewType>("list");
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
 
-  const { data: events = [], isLoading, error } = useQuery({
+  const { data, isLoading, error, isError } = useQuery({
     queryKey: ['events'],
     queryFn: fetchEvents,
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
 
+  const events = data?.events || [];
+  const errorMessage = data?.error || (error as Error)?.message;
+  const status = data?.status;
+  
   const filteredEvents = selectedDate 
     ? events.filter(event => {
         const eventDate = new Date(event.startTime);
@@ -76,12 +80,12 @@ const Events = () => {
             </div>
           )}
 
-          {error && (
+          {(isError || status === 'error') && (
             <div className="bg-red-50 p-8 rounded-lg text-center">
               <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
               <h3 className="text-xl font-medium mb-2">Error Loading Events</h3>
               <p className="text-gray-700 mb-6">
-                There was a problem fetching events from Google Calendar. Please check your configuration and try again.
+                {errorMessage || "There was a problem fetching events from Google Calendar. Please check your configuration and try again."}
               </p>
               <p className="text-sm text-gray-500 mb-4">
                 Make sure your Google Calendar API key and Calendar ID are properly set in Supabase secrets.
@@ -92,7 +96,7 @@ const Events = () => {
             </div>
           )}
 
-          {!isLoading && !error && (
+          {!isLoading && !isError && status !== 'error' && (
             <div>
               {viewType === "list" && <EventListView events={events} />}
               {viewType === "calendar" && (
