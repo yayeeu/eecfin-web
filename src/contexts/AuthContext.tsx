@@ -3,24 +3,16 @@ import React, { createContext, useState, useContext, useEffect } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { Member, Role } from '@/types/database.types';
-import { getRoleByName, updateMemberRole } from '@/lib/memberService';
-
-// Define user roles
-export type UserRole = 'admin' | 'it' | 'member' | 'elder';
-
-type AuthContextType = {
-  user: User | null;
-  session: Session | null;
-  userProfile: Member | null;
-  userRole: UserRole | null;
-  loading: boolean;
-  signIn: (email: string, password: string) => Promise<void>;
-  signUp: (email: string, password: string, formData: any) => Promise<void>;
-  signOut: () => Promise<void>;
-  updateProfile: (data: any) => Promise<void>;
-  hasPermission: (allowedRoles: UserRole[]) => boolean;
-};
+import { Member } from '@/types/database.types';
+import { AuthContextType, UserRole } from '@/types/auth.types';
+import { fetchUserProfile, hasPermission as checkPermission } from '@/utils/authUtils';
+import { 
+  signInWithEmailAndPassword, 
+  signUpWithEmailAndPassword, 
+  signOutUser,
+  updateUserProfile
+} from '@/services/authService';
+import { updateMemberRole } from '@/lib/memberService';
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -44,7 +36,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             description: 'Welcome back! Redirecting to admin dashboard...',
           });
           
-          fetchUserProfile(newSession?.user?.id);
+          if (newSession?.user?.id) {
+            // Use setTimeout to avoid recursive auth state changes
+            setTimeout(() => {
+              loadUserProfile(newSession.user.id);
+            }, 0);
+          }
           
           // Redirect to admin page after login
           const currentPath = window.location.pathname;
@@ -67,7 +64,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setUser(session?.user ?? null);
       
       if (session?.user) {
-        fetchUserProfile(session.user.id);
+        loadUserProfile(session.user.id);
       }
       
       setLoading(false);
@@ -76,53 +73,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return () => subscription.unsubscribe();
   }, [toast]);
 
-  const fetchUserProfile = async (userId: string | undefined) => {
-    if (!userId) return;
-    
-    try {
-      const { data, error } = await supabase
-        .from('members')
-        .select('*, roles(*)')
-        .eq('id', userId)
-        .single();
-      
-      if (error) {
-        console.error('Error fetching user profile:', error);
-        return;
-      }
-      
-      setUserProfile(data as Member);
-      
-      if (data) {
-        let roleName: UserRole | null = null;
-        
-        if (data.roles?.name) {
-          roleName = data.roles.name as UserRole;
-        } else if (data.role) {
-          roleName = data.role as UserRole;
-        } else {
-          roleName = 'member';
-        }
-        
-        setUserRole(roleName);
-        
-        if (roleName && !data.role_id) {
-          try {
-            await updateMemberRole(userId, roleName);
-          } catch (err) {
-            console.error('Error updating member role ID:', err);
-          }
-        }
-      }
-    } catch (error) {
-      console.error('Error in fetch user profile:', error);
-    }
+  const loadUserProfile = async (userId: string) => {
+    const { profile, role } = await fetchUserProfile(userId);
+    setUserProfile(profile);
+    setUserRole(role);
   };
 
   const signIn = async (email: string, password: string) => {
     try {
-      const { error } = await supabase.auth.signInWithPassword({ email, password });
-      if (error) throw error;
+      await signInWithEmailAndPassword(email, password);
     } catch (error: any) {
       toast({
         title: 'Error signing in',
@@ -135,18 +94,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signUp = async (email: string, password: string, formData: any) => {
     try {
-      const { error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          data: {
-            name: formData.name,
-            role: formData.role || 'member',
-          },
-        },
-      });
-      
-      if (error) throw error;
+      await signUpWithEmailAndPassword(email, password, formData);
       
       toast({
         title: 'Account created successfully',
@@ -164,7 +112,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signOut = async () => {
     try {
-      await supabase.auth.signOut();
+      await signOutUser();
       // Redirect to home page after logout
       window.location.href = '/';
     } catch (error: any) {
@@ -188,15 +136,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           throw err;
         }
       } else {
-        const { error } = await supabase
-          .from('members')
-          .update(data)
-          .eq('id', user.id);
-        
-        if (error) throw error;
+        await updateUserProfile(user.id, data);
       }
       
-      fetchUserProfile(user.id);
+      loadUserProfile(user.id);
       
       toast({
         title: 'Profile updated',
@@ -213,11 +156,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const hasPermission = (allowedRoles: UserRole[]): boolean => {
-    if (!userRole) return false;
-    
-    if (userRole === 'admin') return true;
-    
-    return allowedRoles.includes(userRole);
+    return checkPermission(userRole, allowedRoles);
   };
 
   const value = {
@@ -243,3 +182,5 @@ export const useAuth = () => {
   }
   return context;
 };
+
+export { UserRole };
