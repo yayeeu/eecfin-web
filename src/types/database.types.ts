@@ -38,6 +38,16 @@ export interface Member {
   role?: string;
   role_id?: string;
   ministry_id?: string;
+  // New/existing fields from database
+  gender?: string;
+  marital_status?: string;
+  spouse_name?: string;
+  children_names?: string;
+  previous_church?: string;
+  role_in_previous_church?: string;
+  emergency_contact?: string;
+  has_letter_from_prev_church?: boolean;
+  status?: 'active' | 'inactive';
   // Include joined data
   ministries?: Pick<Ministry, 'id' | 'name'>;
   roles?: Pick<Role, 'id' | 'name'>;

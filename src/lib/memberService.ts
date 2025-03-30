@@ -12,6 +12,7 @@ const mockMembers: Member[] = [
     email: 'yeteshawork@example.com',
     role: 'Elder',
     role_id: '1',
+    status: 'active',
     created_at: new Date().toISOString()
   },
   {
@@ -21,6 +22,7 @@ const mockMembers: Member[] = [
     email: 'john@example.com',
     role: 'Member',
     role_id: '2',
+    status: 'active',
     created_at: new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString()
   },
   {
@@ -30,6 +32,7 @@ const mockMembers: Member[] = [
     email: 'jane@example.com',
     role: 'Volunteer',
     role_id: '4',
+    status: 'inactive',
     created_at: new Date(Date.now() - 45 * 24 * 60 * 60 * 1000).toISOString()
   },
 ];
@@ -44,7 +47,7 @@ export const getElderMembers = async () => {
   const { data, error } = await supabase!
     .from('members')
     .select('*, ministries(id, name), roles(id, name)')
-    .eq('roles.name', 'Elder')
+    .eq('role', 'Elder')
     .order('name');
   
   if (error) {
@@ -178,4 +181,30 @@ export const deleteMember = async (id: string) => {
   }
   
   return true;
+};
+
+// Get members for dropdown selects (used in ministry form)
+export const getMembersForDropdown = async () => {
+  // If Supabase is not configured, return mock data
+  if (!isSupabaseConfigured()) {
+    console.log('Using mock data for members dropdown');
+    return Promise.resolve(mockMembers.map(m => ({
+      id: m.id,
+      name: m.name,
+      email: m.email
+    })));
+  }
+  
+  const { data, error } = await supabase!
+    .from('members')
+    .select('id, name, email')
+    .eq('status', 'active')
+    .order('name');
+  
+  if (error) {
+    console.error('Error fetching members for dropdown:', error);
+    throw error;
+  }
+  
+  return data;
 };

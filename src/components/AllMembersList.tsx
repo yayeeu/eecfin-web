@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Member } from '@/types/database.types';
 import { getAllMembers, updateMember } from '@/lib/memberService';
-import { Loader2, User, Pencil } from 'lucide-react';
+import { Loader2, User, Pencil, BadgeCheck } from 'lucide-react';
 import {
   Table,
   TableBody,
@@ -87,6 +87,7 @@ const AllMembersList = () => {
       role_in_previous_church: '',
       emergency_contact: '',
       has_letter_from_prev_church: false,
+      status: 'active'
     }
   });
 
@@ -105,6 +106,7 @@ const AllMembersList = () => {
       role_in_previous_church: member.role_in_previous_church,
       emergency_contact: member.emergency_contact,
       has_letter_from_prev_church: member.has_letter_from_prev_church,
+      status: member.status || 'active'
     });
   };
 
@@ -149,6 +151,7 @@ const AllMembersList = () => {
           <TableRow>
             <TableHead>Name</TableHead>
             <TableHead>Role</TableHead>
+            <TableHead>Status</TableHead>
             <TableHead>Member Since</TableHead>
             <TableHead>Phone</TableHead>
             <TableHead>Email</TableHead>
@@ -179,6 +182,14 @@ const AllMembersList = () => {
               </TableCell>
               <TableCell>
                 {member.roles ? member.roles.name : (member.role || 'Member')}
+              </TableCell>
+              <TableCell>
+                <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs ${
+                  member.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
+                }`}>
+                  {member.status === 'active' && <BadgeCheck className="w-3 h-3 mr-1" />}
+                  {member.status === 'active' ? 'Active' : 'Inactive'}
+                </span>
               </TableCell>
               <TableCell>
                 {member.created_at ? format(new Date(member.created_at), 'MMM d, yyyy') : 'Unknown'}
@@ -261,6 +272,29 @@ const AllMembersList = () => {
                       <FormControl>
                         <Input placeholder="Phone number" {...field} />
                       </FormControl>
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="status"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Status</FormLabel>
+                      <Select 
+                        onValueChange={field.onChange} 
+                        defaultValue={field.value || 'active'}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select status" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="active">Active</SelectItem>
+                          <SelectItem value="inactive">Inactive</SelectItem>
+                        </SelectContent>
+                      </Select>
                     </FormItem>
                   )}
                 />

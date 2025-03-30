@@ -3,7 +3,7 @@ import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Member } from '@/types/database.types';
 import { getElderMembers } from '@/lib/memberService';
-import { Loader2 } from 'lucide-react';
+import { Loader2, BadgeCheck } from 'lucide-react';
 
 const EldersList = () => {
   const { data: elders, isLoading, isError } = useQuery({
@@ -57,6 +57,17 @@ const EldersList = () => {
           </div>
           <h3 className="text-xl font-semibold">{elder.name}</h3>
           <p className="text-eecfin-navy font-medium">{elder.role}</p>
+          
+          <div className="mt-1 text-sm text-gray-600">
+            {elder.status && (
+              <span className={`inline-flex items-center px-2 py-1 rounded-full ${
+                elder.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
+              }`}>
+                {elder.status === 'active' && <BadgeCheck className="w-3 h-3 mr-1" />}
+                {elder.status === 'active' ? 'Active' : 'Inactive'}
+              </span>
+            )}
+          </div>
           
           {elder.phone && (
             <p className="mt-2 text-gray-600">
