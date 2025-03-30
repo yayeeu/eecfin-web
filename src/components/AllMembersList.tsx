@@ -40,11 +40,13 @@ import {
   SelectValue 
 } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
+import MemberDetailView from './members/MemberDetailView';
 
 const AllMembersList = () => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [editingMember, setEditingMember] = useState<Member | null>(null);
+  const [selectedMember, setSelectedMember] = useState<Member | null>(null);
   
   const { data: members, isLoading, isError } = useQuery({
     queryKey: ['members'],
@@ -87,6 +89,8 @@ const AllMembersList = () => {
       role_in_previous_church: '',
       emergency_contact: '',
       has_letter_from_prev_church: false,
+      is_baptised: false,
+      num_children: 0,
       status: 'active'
     }
   });
@@ -107,6 +111,8 @@ const AllMembersList = () => {
       role_in_previous_church: member.role_in_previous_church,
       emergency_contact: member.emergency_contact,
       has_letter_from_prev_church: member.has_letter_from_prev_church,
+      is_baptised: member.is_baptised,
+      num_children: member.num_children,
       status: member.status || 'active'
     });
   };
@@ -118,6 +124,10 @@ const AllMembersList = () => {
       id: editingMember.id,
       member: data
     });
+  };
+
+  const viewMemberDetails = (member: Member) => {
+    setSelectedMember(member);
   };
 
   if (isLoading) {
@@ -161,7 +171,11 @@ const AllMembersList = () => {
         </TableHeader>
         <TableBody>
           {members.map((member) => (
-            <TableRow key={member.id}>
+            <TableRow 
+              key={member.id} 
+              className="cursor-pointer hover:bg-gray-50"
+              onClick={() => viewMemberDetails(member)}
+            >
               <TableCell className="font-medium">
                 <div className="flex items-center gap-2">
                   {member.image ? (
@@ -201,12 +215,15 @@ const AllMembersList = () => {
               <TableCell>
                 {member.email || 'N/A'}
               </TableCell>
-              <TableCell>
+              <TableCell onClick={(e) => e.stopPropagation()}>
                 <Button
                   variant="ghost"
                   size="sm"
                   className="flex items-center gap-1"
-                  onClick={() => openEditDialog(member)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    openEditDialog(member);
+                  }}
                 >
                   <Pencil className="h-4 w-4" />
                   <span>Edit</span>
@@ -216,6 +233,13 @@ const AllMembersList = () => {
           ))}
         </TableBody>
       </Table>
+
+      {selectedMember && (
+        <MemberDetailView 
+          member={selectedMember} 
+          onClose={() => setSelectedMember(null)} 
+        />
+      )}
 
       <Dialog open={!!editingMember} onOpenChange={(open) => !open && setEditingMember(null)}>
         <DialogContent className="sm:max-w-xl max-h-[90vh] overflow-y-auto">
@@ -336,6 +360,43 @@ const AllMembersList = () => {
                           <SelectItem value="Other">Other</SelectItem>
                         </SelectContent>
                       </Select>
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="is_baptised"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-row items-start space-x-3 space-y-0 p-4">
+                      <FormControl>
+                        <Checkbox
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                        />
+                      </FormControl>
+                      <div className="space-y-1 leading-none">
+                        <FormLabel>
+                          Is Baptised
+                        </FormLabel>
+                      </div>
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="num_children"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Number of Children</FormLabel>
+                      <FormControl>
+                        <Input 
+                          type="number" 
+                          min="0"
+                          placeholder="Number of children" 
+                          {...field}
+                          onChange={e => field.onChange(parseInt(e.target.value) || 0)} 
+                        />
+                      </FormControl>
                     </FormItem>
                   )}
                 />

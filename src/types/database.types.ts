@@ -50,6 +50,12 @@ export interface Member {
   emergency_contact?: string;
   has_letter_from_prev_church?: boolean;
   status?: 'active' | 'inactive';
+  // New fields
+  is_baptised?: boolean;
+  num_children?: number;
+  // Geographic coordinates
+  latitude?: number;
+  longitude?: number;
   // Include joined data
   ministries?: Pick<Ministry, 'id' | 'name'>;
   roles?: Pick<Role, 'id' | 'name'>;

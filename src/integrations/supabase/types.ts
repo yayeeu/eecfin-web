@@ -61,11 +61,13 @@ export type Database = {
           has_letter_from_prev_church: boolean | null
           id: string
           image: string | null
+          is_baptised: boolean | null
           latitude: number | null
           longitude: number | null
           marital_status: string | null
           ministry_id: string | null
           name: string | null
+          num_children: number | null
           phone: string | null
           previous_church: string | null
           role: string | null
@@ -84,11 +86,13 @@ export type Database = {
           has_letter_from_prev_church?: boolean | null
           id: string
           image?: string | null
+          is_baptised?: boolean | null
           latitude?: number | null
           longitude?: number | null
           marital_status?: string | null
           ministry_id?: string | null
           name?: string | null
+          num_children?: number | null
           phone?: string | null
           previous_church?: string | null
           role?: string | null
@@ -107,11 +111,13 @@ export type Database = {
           has_letter_from_prev_church?: boolean | null
           id?: string
           image?: string | null
+          is_baptised?: boolean | null
           latitude?: number | null
           longitude?: number | null
           marital_status?: string | null
           ministry_id?: string | null
           name?: string | null
+          num_children?: number | null
           phone?: string | null
           previous_church?: string | null
           role?: string | null
