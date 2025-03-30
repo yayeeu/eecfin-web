@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { Elder, Ministry } from '@/types/database.types';
@@ -173,9 +172,20 @@ const ElderManager = () => {
   };
 
   const onSubmit = (data: ElderFormValues) => {
+    // Ensure that required fields are present
+    if (!data.name || !data.role) {
+      toast({
+        title: "Error",
+        description: "Name and role are required fields",
+        variant: "destructive",
+      });
+      return;
+    }
+
     // Clean up empty strings to undefined for optional fields
     const formattedData = {
-      ...data,
+      name: data.name, // required field
+      role: data.role, // required field
       email: data.email || undefined,
       phone: data.phone || undefined,
       image: data.image || undefined,
