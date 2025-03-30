@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Carousel,
   CarouselContent,
@@ -8,39 +8,57 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import Autoplay from "embla-carousel-autoplay";
-
-interface SlideImage {
-  src: string;
-  alt: string;
-}
+import { fetchSlides } from '@/lib/sliderService';
+import { SlideImage } from '@/components/SliderManager';
+import { Loader2 } from 'lucide-react';
 
 const ImageSlider = () => {
+  const [slides, setSlides] = useState<SlideImage[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
   const plugin = React.useRef(
     Autoplay({ delay: 5000, stopOnInteraction: true })
   );
 
-  const images: SlideImage[] = [
-    {
-      src: "/lovable-uploads/54e6cd73-6658-4990-b0c6-d369f39e1cb9.png",
-      alt: "Ethiopian Evangelical Church worship service"
-    },
-    {
-      src: "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05",
-      alt: "Serene mountain landscape"
-    },
-    {
-      src: "https://images.unsplash.com/photo-1500673922987-e212871fec22",
-      alt: "Warm lights in forest"
-    },
-    {
-      src: "https://images.unsplash.com/photo-1506744038136-46273834b3fb",
-      alt: "Beautiful lake surrounded by trees"
-    },
-    {
-      src: "https://images.unsplash.com/photo-1493397212122-2b85dda8106b",
-      alt: "Modern architecture against blue sky"
-    }
-  ];
+  useEffect(() => {
+    const loadSlides = async () => {
+      try {
+        setLoading(true);
+        const data = await fetchSlides();
+        setSlides(data);
+        setError(null);
+      } catch (err) {
+        console.error("Error loading slides:", err);
+        setError("Failed to load slider images");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadSlides();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="relative w-full h-[400px] bg-gray-100 flex items-center justify-center">
+        <Loader2 className="h-10 w-10 text-eecfin-navy animate-spin" />
+      </div>
+    );
+  }
+
+  if (error || slides.length === 0) {
+    return (
+      <div className="relative w-full h-[400px] bg-gray-200 flex items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold text-gray-500 mb-2">
+            {error || "No slider images available"}
+          </h2>
+          {!error && <p className="text-gray-400">Please add slides in the admin panel</p>}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="relative w-full max-h-[400px] overflow-hidden">
@@ -53,21 +71,21 @@ const ImageSlider = () => {
         }}
       >
         <CarouselContent>
-          {images.map((image, index) => (
-            <CarouselItem key={index} className="relative">
+          {slides.map((slide, index) => (
+            <CarouselItem key={slide.id || index} className="relative">
               <div className="aspect-[16/9] w-full relative">
                 <img
-                  src={image.src}
-                  alt={image.alt}
+                  src={slide.src}
+                  alt={slide.alt}
                   className="w-full h-full object-cover"
                 />
                 <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center">
                   <div className="text-center">
                     <h2 className="text-5xl md:text-7xl font-bold text-white mb-4 font-serif tracking-wider">
-                      Welcome
+                      {slide.title || "Welcome"}
                     </h2>
                     <p className="text-xl md:text-2xl text-eecfin-gold font-medium max-w-3xl mx-auto">
-                      to Ethiopian Evangelical Church in Finland
+                      {slide.subtitle || "to Ethiopian Evangelical Church in Finland"}
                     </p>
                   </div>
                 </div>

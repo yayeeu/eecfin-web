@@ -10,6 +10,7 @@ import WhoWeAre from "./pages/WhoWeAre";
 import Events from "./pages/Events";
 import Contact from "./pages/Contact";
 import GetInvolved from "./pages/GetInvolved";
+import Admin from "./pages/Admin";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -42,6 +43,7 @@ const App = () => (
               <GetInvolved />
             </Layout>
           } />
+          <Route path="/admin" element={<Admin />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
