@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Calendar as CalendarIcon, Clock, MapPin, List, CalendarDays, Image as ImageIcon } from 'lucide-react';
@@ -47,7 +46,6 @@ const Events = () => {
     loadEvents();
   }, []);
 
-  // Filter events based on selected date in calendar view
   const filteredEvents = selectedDate 
     ? events.filter(event => {
         const eventDate = new Date(event.startTime);
@@ -55,9 +53,7 @@ const Events = () => {
       })
     : events;
 
-  // Function to get a fallback image for events without an image
   const getEventFallbackImage = (eventTitle: string) => {
-    // Create initials from the event title
     const initials = eventTitle
       .split(' ')
       .map(word => word[0])
@@ -70,7 +66,6 @@ const Events = () => {
 
   return (
     <div>
-      {/* Hero Section */}
       <section className="bg-eecfin-navy text-white py-12">
         <div className="container-custom text-center">
           <h1 className="text-4xl md:text-5xl font-bold mb-4">Events & Services</h1>
@@ -80,7 +75,6 @@ const Events = () => {
         </div>
       </section>
 
-      {/* View Toggle and Events Display */}
       <section className="py-12 bg-white">
         <div className="container-custom">
           <div className="flex flex-col md:flex-row justify-between items-center mb-8">
@@ -122,8 +116,8 @@ const Events = () => {
                             <span className="uppercase">{event.month}</span>
                             <span>{event.year}</span>
                           </div>
-                          <div className="md:flex flex-grow">
-                            {event.image && (
+                          <div className={`md:flex flex-grow ${!event.image ? 'w-full' : ''}`}>
+                            {event.image ? (
                               <div className="md:w-1/3 h-48 md:h-auto">
                                 <img 
                                   src={event.image} 
@@ -131,8 +125,8 @@ const Events = () => {
                                   className="h-full w-full object-cover"
                                 />
                               </div>
-                            )}
-                            <div className="p-6 md:w-2/3">
+                            ) : null}
+                            <div className={`p-6 ${event.image ? 'md:w-2/3' : 'w-full'}`}>
                               <h3 className="text-xl font-semibold mb-2">{event.title}</h3>
                               <div className="flex items-center text-gray-600 mb-1">
                                 <Clock className="h-4 w-4 mr-2" />
@@ -202,11 +196,9 @@ const Events = () => {
                                       </AvatarFallback>
                                     </Avatar>
                                   ) : (
-                                    <Avatar className="h-14 w-14 rounded-md bg-eecfin-navy text-white">
-                                      <AvatarFallback className="rounded-md">
-                                        {getEventFallbackImage(event.title)}
-                                      </AvatarFallback>
-                                    </Avatar>
+                                    <div className="h-14 w-14 rounded-md bg-eecfin-navy text-white flex items-center justify-center">
+                                      <span className="text-lg font-semibold">{getEventFallbackImage(event.title)}</span>
+                                    </div>
                                   )}
                                   <div className="flex-1">
                                     <h3 className="font-medium text-lg">{event.title}</h3>
@@ -237,7 +229,6 @@ const Events = () => {
         </div>
       </section>
 
-      {/* Subscribe Section */}
       <section className="py-12 bg-gray-50">
         <div className="container-custom text-center">
           <h2 className="section-title mb-4">Stay Updated</h2>

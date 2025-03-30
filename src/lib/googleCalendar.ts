@@ -37,7 +37,7 @@ export interface Event {
   day: number;
   month: string;
   year: number;
-  image?: string; // Added image property for event
+  image?: string; // Optional image property for event
 }
 
 /**
@@ -99,7 +99,7 @@ function formatEvents(googleEvents: GoogleCalendarEvent[]): Event[] {
       day: startTime.getDate(),
       month: format(startTime, 'MMMM'),
       year: startTime.getFullYear(),
-      image: eventImage
+      image: eventImage // Only include image if available
     };
   });
 }
@@ -138,7 +138,7 @@ function getMockEvents(): Event[] {
       day: nextWeek.getDate(),
       month: format(nextWeek, 'MMMM'),
       year: nextWeek.getFullYear(),
-      image: '/images/bible-study.jpg' // Mock image path
+      // No image for this event to demonstrate the conditional rendering
     },
     {
       id: '3',
