@@ -1,3 +1,4 @@
+
 import { Suspense, lazy } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -59,12 +60,12 @@ const protectedRoutes = [
   { 
     path: "/admin", 
     element: <Admin />, 
-    roles: ['admin', 'member', 'elder', 'it'] as UserRole[] 
+    roles: ['admin', 'member', 'elder', 'it', 'volunteer'] as UserRole[] 
   },
   { 
     path: "/profile", 
     element: <Profile />, 
-    roles: ['admin', 'member', 'elder', 'it'] as UserRole[] 
+    roles: ['admin', 'member', 'elder', 'it', 'volunteer'] as UserRole[] 
   }
 ];
 
