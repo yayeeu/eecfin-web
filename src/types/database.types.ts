@@ -21,17 +21,26 @@ export interface Ministry {
   photo?: string;
 }
 
-export interface Elder {
+export interface Role {
+  id: string;
+  created_at: string;
+  name: string;
+}
+
+export interface Member {
   id: string;
   created_at?: string;
   name: string;
   phone?: string;
   email?: string;
+  address?: string;
   image?: string;
-  role: string;
+  role?: string;
+  role_id?: string;
   ministry_id?: string;
   // Include joined data
   ministries?: Pick<Ministry, 'id' | 'name'>;
+  roles?: Pick<Role, 'id' | 'name'>;
 }
 
 export interface Database {
@@ -47,10 +56,15 @@ export interface Database {
         Insert: Omit<Ministry, 'id' | 'created_at'>;
         Update: Partial<Omit<Ministry, 'id' | 'created_at'>>;
       };
-      elders: {
-        Row: Elder;
-        Insert: Omit<Elder, 'id' | 'created_at'>;
-        Update: Partial<Omit<Elder, 'id' | 'created_at'>>;
+      members: {
+        Row: Member;
+        Insert: Omit<Member, 'id' | 'created_at'>;
+        Update: Partial<Omit<Member, 'id' | 'created_at'>>;
+      };
+      roles: {
+        Row: Role;
+        Insert: Omit<Role, 'id' | 'created_at'>;
+        Update: Partial<Omit<Role, 'id' | 'created_at'>>;
       };
     };
     Views: {};

@@ -56,26 +56,53 @@ export type Database = {
           created_at: string
           email: string | null
           id: string
+          image: string | null
+          ministry_id: string | null
           name: string | null
           phone: string | null
+          role: string | null
+          role_id: string | null
         }
         Insert: {
           address?: string | null
           created_at?: string
           email?: string | null
           id: string
+          image?: string | null
+          ministry_id?: string | null
           name?: string | null
           phone?: string | null
+          role?: string | null
+          role_id?: string | null
         }
         Update: {
           address?: string | null
           created_at?: string
           email?: string | null
           id?: string
+          image?: string | null
+          ministry_id?: string | null
           name?: string | null
           phone?: string | null
+          role?: string | null
+          role_id?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "members_ministry_id_fkey"
+            columns: ["ministry_id"]
+            isOneToOne: false
+            referencedRelation: "ministries"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "members_role_id_fkey"
+            columns: ["role_id"]
+            isOneToOne: false
+            referencedRelation: "roles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       ministries: {
         Row: {
@@ -110,6 +137,24 @@ export type Database = {
           name?: string
           photo?: string | null
           status?: string
+        }
+        Relationships: []
+      }
+      roles: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
         }
         Relationships: []
       }

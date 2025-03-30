@@ -1,19 +1,20 @@
+
 import React, { useState, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
-import { Elder, Ministry } from '@/types/database.types';
-import { getElders, createElder, updateElder, deleteElder } from '@/lib/elderService';
+import { Member, Role, Ministry } from '@/types/database.types';
+import { getElderMembers, createMember, updateMember, deleteMember } from '@/lib/memberService';
 import { getMinistries } from '@/lib/ministryService';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Pencil, Trash2, Plus, Loader2, Image } from 'lucide-react';
+import { Pencil, Trash2, Plus, Loader2 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Label } from '@/components/ui/label';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
+import { supabase, isSupabaseConfigured } from '@/lib/supabaseClient';
 
 // Define the form schema
 const elderFormSchema = z.object({
@@ -39,7 +40,8 @@ const ElderManager = () => {
   
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
-  const [selectedElder, setSelectedElder] = useState<Elder | null>(null);
+  const [selectedElder, setSelectedElder] = useState<Member | null>(null);
+  const [roles, setRoles] = useState<Role[]>([]);
 
   // Setup form
   const form = useForm<ElderFormValues>({
@@ -54,10 +56,30 @@ const ElderManager = () => {
     }
   });
 
+  // Fetch roles data
+  useEffect(() => {
+    const fetchRoles = async () => {
+      if (!isSupabaseConfigured()) {
+        setRoles([{ id: '1', name: 'Elder', created_at: new Date().toISOString() }]);
+        return;
+      }
+
+      try {
+        const { data, error } = await supabase.from('roles').select('*');
+        if (error) throw error;
+        setRoles(data as Role[]);
+      } catch (error) {
+        console.error('Error fetching roles:', error);
+      }
+    };
+
+    fetchRoles();
+  }, []);
+
   // Fetch elders data
   const { data: elders, isLoading, isError } = useQuery({
     queryKey: ['elders'],
-    queryFn: getElders
+    queryFn: getElderMembers
   });
 
   // Fetch ministries for the dropdown
@@ -68,7 +90,7 @@ const ElderManager = () => {
 
   // Mutations
   const createElderMutation = useMutation({
-    mutationFn: createElder,
+    mutationFn: (data: Omit<Member, 'id' | 'created_at'>) => createMember(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['elders'] });
       toast({
@@ -87,8 +109,8 @@ const ElderManager = () => {
   });
 
   const updateElderMutation = useMutation({
-    mutationFn: ({ id, data }: { id: string, data: Partial<Elder> }) => 
-      updateElder(id, data),
+    mutationFn: ({ id, data }: { id: string, data: Partial<Member> }) => 
+      updateMember(id, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['elders'] });
       toast({
@@ -107,7 +129,7 @@ const ElderManager = () => {
   });
 
   const deleteElderMutation = useMutation({
-    mutationFn: deleteElder,
+    mutationFn: deleteMember,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['elders'] });
       toast({
@@ -129,7 +151,7 @@ const ElderManager = () => {
     if (selectedElder) {
       form.reset({
         name: selectedElder.name,
-        role: selectedElder.role,
+        role: selectedElder.role || "Elder",
         phone: selectedElder.phone || "",
         email: selectedElder.email || "",
         image: selectedElder.image || "",
@@ -153,7 +175,7 @@ const ElderManager = () => {
     setIsDialogOpen(true);
   };
 
-  const handleEditElder = (elder: Elder) => {
+  const handleEditElder = (elder: Member) => {
     setIsEditing(true);
     setSelectedElder(elder);
     setIsDialogOpen(true);
@@ -182,6 +204,17 @@ const ElderManager = () => {
       return;
     }
 
+    // Get the Elder role ID
+    const elderRoleId = roles.find(r => r.name === 'Elder')?.id;
+    if (!elderRoleId) {
+      toast({
+        title: "Error",
+        description: "Elder role not found",
+        variant: "destructive",
+      });
+      return;
+    }
+
     // Clean up empty strings to undefined for optional fields
     const formattedData = {
       name: data.name, // required field
@@ -189,7 +222,8 @@ const ElderManager = () => {
       email: data.email || undefined,
       phone: data.phone || undefined,
       image: data.image || undefined,
-      ministry_id: data.ministry_id || undefined
+      ministry_id: data.ministry_id || undefined,
+      role_id: elderRoleId // Always set the role_id to Elder
     };
 
     if (isEditing && selectedElder) {
@@ -309,7 +343,7 @@ const ElderManager = () => {
                   <FormItem>
                     <FormLabel>Role*</FormLabel>
                     <FormControl>
-                      <Input placeholder="Enter role" {...field} />
+                      <Input placeholder="Enter role" value="Elder" disabled {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

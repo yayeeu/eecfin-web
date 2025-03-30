@@ -1,14 +1,14 @@
 
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { Elder } from '@/types/database.types';
-import { getElders } from '@/lib/elderService';
+import { Member } from '@/types/database.types';
+import { getElderMembers } from '@/lib/memberService';
 import { Loader2 } from 'lucide-react';
 
 const EldersList = () => {
   const { data: elders, isLoading, isError } = useQuery({
     queryKey: ['elders'],
-    queryFn: getElders
+    queryFn: getElderMembers
   });
 
   if (isLoading) {
