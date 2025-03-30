@@ -1,3 +1,4 @@
+
 import { supabase, isSupabaseConfigured } from '@/lib/supabaseClient';
 import { Member } from '@/types/database.types';
 import { v4 as uuidv4 } from 'uuid';
@@ -9,7 +10,7 @@ const mockElders: Member[] = [
     name: 'Yeteshawork Berhanu',
     phone: '+358 41 522 58 89',
     email: 'yeteshawork@example.com',
-    role: 'Elder',
+    role: 'elder',
     role_id: '1',
     created_at: new Date().toISOString()
   },
@@ -18,7 +19,7 @@ const mockElders: Member[] = [
     name: 'Bruke Wolde',
     phone: '+358 45 168 2997',
     email: 'bruke@example.com',
-    role: 'Elder',
+    role: 'elder',
     role_id: '1',
     created_at: new Date().toISOString()
   },
@@ -27,7 +28,7 @@ const mockElders: Member[] = [
     name: 'Hizekiel Daniel',
     phone: '+358 44 986 9685',
     email: 'hizekiel@example.com',
-    role: 'Elder',
+    role: 'elder',
     role_id: '1',
     created_at: new Date().toISOString()
   },
@@ -36,7 +37,7 @@ const mockElders: Member[] = [
     name: 'Mekbib Tekle',
     phone: '+358 44 08 22 798',
     email: 'mekbib@example.com',
-    role: 'Elder',
+    role: 'elder',
     role_id: '1',
     created_at: new Date().toISOString()
   },
@@ -45,7 +46,7 @@ const mockElders: Member[] = [
     name: 'Tamirat Teshome',
     phone: '+358 44 351 4051',
     email: 'tamirat@example.com',
-    role: 'Elder',
+    role: 'elder',
     role_id: '1',
     created_at: new Date().toISOString()
   }

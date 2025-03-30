@@ -47,7 +47,7 @@ const ElderManager = () => {
     resolver: zodResolver(elderFormSchema),
     defaultValues: {
       name: "",
-      role: "Elder",
+      role: "elder",
       phone: "",
       email: "",
       image: "",
@@ -59,7 +59,7 @@ const ElderManager = () => {
   useEffect(() => {
     const fetchRoles = async () => {
       if (!isSupabaseConfigured()) {
-        setRoles([{ id: '1', name: 'Elder', created_at: new Date().toISOString() }]);
+        setRoles([{ id: '1', name: 'elder', created_at: new Date().toISOString() }]);
         return;
       }
 
@@ -146,7 +146,7 @@ const ElderManager = () => {
     if (selectedElder) {
       form.reset({
         name: selectedElder.name,
-        role: selectedElder.role || "Elder",
+        role: selectedElder.role || "elder",
         phone: selectedElder.phone || "",
         email: selectedElder.email || "",
         image: selectedElder.image || "",
@@ -156,7 +156,7 @@ const ElderManager = () => {
     } else {
       form.reset({
         name: "",
-        role: "Elder",
+        role: "elder",
         phone: "",
         email: "",
         image: "",
@@ -200,7 +200,7 @@ const ElderManager = () => {
       return;
     }
 
-    const elderRoleId = roles.find(r => r.name === 'Elder')?.id;
+    const elderRoleId = roles.find(r => r.name === 'elder')?.id;
     if (!elderRoleId) {
       toast({
         title: "Error",
@@ -212,7 +212,7 @@ const ElderManager = () => {
 
     const formattedData = {
       name: data.name,
-      role: data.role,
+      role: 'elder' as const,
       email: data.email || undefined,
       phone: data.phone || undefined,
       image: data.image || undefined,
@@ -337,7 +337,7 @@ const ElderManager = () => {
                   <FormItem>
                     <FormLabel>Role*</FormLabel>
                     <FormControl>
-                      <Input placeholder="Enter role" value="Elder" disabled {...field} />
+                      <Input placeholder="Enter role" value="elder" disabled {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

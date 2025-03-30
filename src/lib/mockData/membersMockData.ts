@@ -9,7 +9,7 @@ export const mockMembers: Member[] = [
     name: 'Yeteshawork Berhanu',
     phone: '+358 41 522 58 89',
     email: 'yeteshawork@example.com',
-    role: 'Elder',
+    role: 'elder',
     role_id: '1',
     status: 'active',
     created_at: new Date().toISOString()
@@ -19,7 +19,7 @@ export const mockMembers: Member[] = [
     name: 'Bruke Wolde',
     phone: '+358 451682997',
     email: 'bruke@example.com',
-    role: 'Elder',
+    role: 'elder',
     role_id: '1',
     status: 'active',
     created_at: new Date().toISOString()
@@ -29,7 +29,7 @@ export const mockMembers: Member[] = [
     name: 'Hizekiel Daniel',
     phone: '+358 449869685',
     email: 'hizekiel@example.com',
-    role: 'Elder',
+    role: 'elder',
     role_id: '1',
     status: 'active',
     created_at: new Date().toISOString()
@@ -39,7 +39,7 @@ export const mockMembers: Member[] = [
     name: 'Mekbib Tekle',
     phone: '+358 44 08 22 798',
     email: 'mekbib@example.com',
-    role: 'Elder',
+    role: 'elder',
     role_id: '1',
     status: 'active',
     created_at: new Date().toISOString()
@@ -49,7 +49,7 @@ export const mockMembers: Member[] = [
     name: 'Tamirat Teshome',
     phone: '+358 443514051',
     email: 'tamirat@example.com',
-    role: 'Elder',
+    role: 'elder',
     role_id: '1',
     status: 'active',
     created_at: new Date().toISOString()
@@ -59,7 +59,7 @@ export const mockMembers: Member[] = [
     name: 'John Doe',
     phone: '+358 45 123 4567',
     email: 'john@example.com',
-    role: 'Member',
+    role: 'member',
     role_id: '2',
     status: 'active',
     created_at: new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString()
@@ -69,7 +69,7 @@ export const mockMembers: Member[] = [
     name: 'Jane Smith',
     phone: '+358 44 765 4321',
     email: 'jane@example.com',
-    role: 'Volunteer',
+    role: 'member', // Changed from 'Volunteer' to a valid role
     role_id: '4',
     status: 'inactive',
     created_at: new Date(Date.now() - 45 * 24 * 60 * 60 * 1000).toISOString()

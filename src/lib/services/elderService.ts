@@ -7,13 +7,13 @@ export const getElderMembers = async () => {
   // If Supabase is not configured, return mock data
   if (!isSupabaseConfigured()) {
     console.log('Using mock data for elder members');
-    return Promise.resolve(mockMembers.filter(m => m.role === 'Elder'));
+    return Promise.resolve(mockMembers.filter(m => m.role === 'elder'));
   }
   
   const { data, error } = await supabase!
     .from('members')
     .select('*, ministries(id, name), roles(id, name)')
-    .eq('role', 'Elder')
+    .eq('role', 'elder')
     .order('name');
   
   if (error) {
@@ -30,7 +30,7 @@ export const getEldersForDropdown = async () => {
   if (!isSupabaseConfigured()) {
     console.log('Using mock data for elders dropdown');
     return Promise.resolve(mockMembers
-      .filter(m => m.role === 'Elder' && m.status === 'active')
+      .filter(m => m.role === 'elder' && m.status === 'active')
       .map(m => ({
         id: m.id,
         name: m.name,
@@ -44,7 +44,7 @@ export const getEldersForDropdown = async () => {
   const { data, error } = await supabase!
     .from('members')
     .select('id, name, email, phone, status')
-    .eq('role', 'Elder')
+    .eq('role', 'elder')
     .eq('status', 'active')
     .order('name');
   
