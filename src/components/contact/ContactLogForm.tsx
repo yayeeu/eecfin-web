@@ -1,15 +1,11 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
+import { createContactLog } from '@/lib/contactLogService';
 import { useToast } from '@/hooks/use-toast';
-import { ContactLog } from '@/types/database.types';
-import { createContactLog, updateContactLog } from '@/lib/contactLogService';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
-import { Loader2 } from 'lucide-react';
 import {
   Form,
   FormControl,
@@ -25,99 +21,82 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Checkbox } from '@/components/ui/checkbox';
+import { Textarea } from '@/components/ui/textarea';
+import { Switch } from '@/components/ui/switch';
+import { Loader2 } from 'lucide-react';
+import { ContactLog } from '@/types/database.types';
 
-const contactLogSchema = z.object({
+const formSchema = z.object({
   contact_type: z.enum(['Text Message', 'In Person', 'Phone Call', 'Email', 'Other'], {
-    required_error: 'Please select a contact type.',
+    required_error: "Please select a contact type",
   }),
   notes: z.string().optional(),
   flagged: z.boolean().default(false),
 });
 
-type ContactLogFormValues = z.infer<typeof contactLogSchema>;
+type FormValues = z.infer<typeof formSchema>;
 
 interface ContactLogFormProps {
   elderId: string;
   memberId: string;
-  initialData?: ContactLog;
   onSuccess?: () => void;
-  onCancel?: () => void;
 }
 
-const ContactLogForm: React.FC<ContactLogFormProps> = ({ 
-  elderId, 
-  memberId, 
-  initialData, 
-  onSuccess, 
-  onCancel 
+const ContactLogForm: React.FC<ContactLogFormProps> = ({
+  elderId,
+  memberId,
+  onSuccess,
 }) => {
   const { toast } = useToast();
-  const queryClient = useQueryClient();
-  const isEditing = !!initialData;
-  
-  const form = useForm<ContactLogFormValues>({
-    resolver: zodResolver(contactLogSchema),
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const form = useForm<FormValues>({
+    resolver: zodResolver(formSchema),
     defaultValues: {
-      contact_type: initialData?.contact_type || 'In Person',
-      notes: initialData?.notes || '',
-      flagged: initialData?.flagged || false,
+      contact_type: undefined,
+      notes: '',
+      flagged: false,
     },
   });
 
-  const createMutation = useMutation({
-    mutationFn: (data: ContactLogFormValues) => 
-      createContactLog({
-        ...data,
+  const onSubmit = async (values: FormValues) => {
+    setIsSubmitting(true);
+    try {
+      const newLog: Omit<ContactLog, 'id' | 'created_at' | 'updated_at'> = {
         elder_id: elderId,
         member_id: memberId,
-      }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['contact-logs'] });
+        contact_type: values.contact_type,
+        notes: values.notes,
+        flagged: values.flagged,
+      };
+      
+      await createContactLog(newLog);
+      
       toast({
-        title: 'Contact log created',
-        description: 'The contact log has been created successfully.',
+        title: 'Contact logged',
+        description: 'The contact has been successfully recorded',
       });
-      if (onSuccess) onSuccess();
-    },
-    onError: (error) => {
-      toast({
-        title: 'Error',
-        description: `Failed to create contact log: ${error.message}`,
-        variant: 'destructive',
+      
+      form.reset({
+        contact_type: undefined,
+        notes: '',
+        flagged: false,
       });
-    }
-  });
-
-  const updateMutation = useMutation({
-    mutationFn: (data: ContactLogFormValues) => 
-      updateContactLog(initialData!.id, data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['contact-logs'] });
-      toast({
-        title: 'Contact log updated',
-        description: 'The contact log has been updated successfully.',
-      });
-      if (onSuccess) onSuccess();
-    },
-    onError: (error) => {
+      
+      if (onSuccess) {
+        onSuccess();
+      }
+    } catch (error) {
+      console.error('Error creating contact log:', error);
       toast({
         title: 'Error',
-        description: `Failed to update contact log: ${error.message}`,
+        description: 'Failed to log contact. Please try again.',
         variant: 'destructive',
       });
-    }
-  });
-
-  const onSubmit = (data: ContactLogFormValues) => {
-    if (isEditing) {
-      updateMutation.mutate(data);
-    } else {
-      createMutation.mutate(data);
+    } finally {
+      setIsSubmitting(false);
     }
   };
-
-  const isPending = createMutation.isPending || updateMutation.isPending;
 
   return (
     <Form {...form}>
@@ -131,11 +110,10 @@ const ContactLogForm: React.FC<ContactLogFormProps> = ({
               <Select 
                 onValueChange={field.onChange} 
                 defaultValue={field.value}
-                disabled={isPending}
               >
                 <FormControl>
                   <SelectTrigger>
-                    <SelectValue placeholder="Select contact type" />
+                    <SelectValue placeholder="Select a contact type" />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
@@ -150,7 +128,7 @@ const ContactLogForm: React.FC<ContactLogFormProps> = ({
             </FormItem>
           )}
         />
-
+        
         <FormField
           control={form.control}
           name="notes"
@@ -160,54 +138,43 @@ const ContactLogForm: React.FC<ContactLogFormProps> = ({
               <FormControl>
                 <Textarea 
                   placeholder="Enter notes about the contact" 
+                  className="min-h-[100px]" 
                   {...field} 
-                  disabled={isPending}
-                  className="min-h-[100px]"
                 />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
-
+        
         <FormField
           control={form.control}
           name="flagged"
           render={({ field }) => (
-            <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
+            <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3">
+              <div className="space-y-0.5">
+                <FormLabel>Flag for follow-up</FormLabel>
+              </div>
               <FormControl>
-                <Checkbox
+                <Switch
                   checked={field.value}
                   onCheckedChange={field.onChange}
-                  disabled={isPending}
                 />
               </FormControl>
-              <div className="space-y-1 leading-none">
-                <FormLabel>Flag for follow-up</FormLabel>
-                <p className="text-sm text-muted-foreground">
-                  Check this if the contact requires additional attention or follow-up
-                </p>
-              </div>
             </FormItem>
           )}
         />
-
-        <div className="flex justify-end space-x-2 pt-4">
-          {onCancel && (
-            <Button 
-              type="button" 
-              variant="outline" 
-              onClick={onCancel}
-              disabled={isPending}
-            >
-              Cancel
-            </Button>
+        
+        <Button type="submit" className="w-full" disabled={isSubmitting}>
+          {isSubmitting ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Saving...
+            </>
+          ) : (
+            'Log Contact'
           )}
-          <Button type="submit" disabled={isPending}>
-            {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            {isEditing ? 'Update' : 'Save'} Contact Log
-          </Button>
-        </div>
+        </Button>
       </form>
     </Form>
   );

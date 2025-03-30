@@ -1,4 +1,3 @@
-
 import { supabase, isSupabaseConfigured } from '@/lib/supabaseClient';
 import { Member, MemberUnderElder } from '@/types/database.types';
 import { v4 as uuidv4 } from 'uuid';
@@ -462,4 +461,35 @@ export const getElderAssignment = async (memberId: string) => {
   }
   
   return data;
+};
+
+// New function to get members assigned to a specific elder
+export const getMembersByElderId = async (elderId: string) => {
+  if (!isSupabaseConfigured()) {
+    // Return mock data filtered by elder ID
+    const assignedMemberIds = mockElderAssignments
+      .filter(a => a.elder_id === elderId)
+      .map(a => a.member_id);
+    
+    return mockMembers.filter(m => assignedMemberIds.includes(m.id));
+  }
+  
+  const { data, error } = await supabase!
+    .from('member_under_elder')
+    .select(`
+      member_id,
+      member:members!member_under_elder_member_id_fkey(
+        id, name, email, phone, role, status, image, 
+        created_at, address, gender, marital_status
+      )
+    `)
+    .eq('elder_id', elderId);
+  
+  if (error) {
+    console.error('Error fetching members assigned to elder:', error);
+    throw error;
+  }
+  
+  // Transform the data structure to return just the member objects
+  return data.map(item => item.member) as Member[];
 };

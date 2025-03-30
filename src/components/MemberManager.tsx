@@ -6,20 +6,26 @@ import EldersList from '@/components/EldersList';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import MemberContactLogs from '@/components/members/MemberContactLogs';
+import MyMembersList from '@/components/MyMembersList';
+import { useAuth } from '@/contexts/AuthContext';
 
 const MemberManager: React.FC = () => {
   const { toast } = useToast();
+  const { userProfile } = useAuth();
   const [selectedMemberId, setSelectedMemberId] = useState<string | null>(null);
 
   const handleMemberSelect = (memberId: string) => {
     setSelectedMemberId(memberId);
   };
 
+  const isElder = userProfile?.role === 'Elder';
+
   return (
     <div className="space-y-6">
       <Tabs defaultValue="all-members" className="w-full">
-        <TabsList className="grid w-full grid-cols-3">
+        <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="all-members">All Members</TabsTrigger>
+          {isElder && <TabsTrigger value="my-members">My Members</TabsTrigger>}
           <TabsTrigger value="elders">Elders</TabsTrigger>
           <TabsTrigger value="contact-logs" disabled={!selectedMemberId}>
             Contact Logs {selectedMemberId ? '(Selected Member)' : ''}
@@ -40,6 +46,22 @@ const MemberManager: React.FC = () => {
             </CardContent>
           </Card>
         </TabsContent>
+        
+        {isElder && (
+          <TabsContent value="my-members">
+            <Card>
+              <CardHeader>
+                <CardTitle>My Assigned Members</CardTitle>
+                <CardDescription>
+                  View and manage members that are assigned to you. You can track interactions and add contact logs for these members.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <MyMembersList onMemberSelect={handleMemberSelect} />
+              </CardContent>
+            </Card>
+          </TabsContent>
+        )}
         
         <TabsContent value="elders">
           <Card>
