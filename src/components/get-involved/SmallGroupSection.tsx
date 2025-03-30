@@ -1,17 +1,17 @@
 
-import React from 'react';
+import React, { memo } from 'react';
 import { Users, Calendar, MapPin, MessageCircle, Heart, Church } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/card';
 
-const SmallGroupSection: React.FC = () => {
-  const smallGroupBenefits = [
-    { icon: <MessageCircle size={16} />, text: "Discuss faith in a comfortable setting" },
-    { icon: <Calendar size={16} />, text: "Weekly or bi-weekly gatherings" },
-    { icon: <MapPin size={16} />, text: "Meet in homes throughout the city" }
-  ];
+const smallGroupBenefits = [
+  { icon: <MessageCircle size={16} />, text: "Discuss faith in a comfortable setting" },
+  { icon: <Calendar size={16} />, text: "Weekly or bi-weekly gatherings" },
+  { icon: <MapPin size={16} />, text: "Meet in homes throughout the city" }
+];
 
+const SmallGroupSection: React.FC = () => {
   return (
     <section className="h-full">
       <h2 className="section-title mb-6 text-purple-800">Ways to Get Involved</h2>
@@ -86,4 +86,5 @@ const SmallGroupSection: React.FC = () => {
   );
 };
 
-export default SmallGroupSection;
+// Use React.memo to prevent unnecessary re-renders
+export default memo(SmallGroupSection);

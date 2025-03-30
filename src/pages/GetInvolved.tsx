@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { memo } from 'react';
 import InvolvedHero from '@/components/get-involved/InvolvedHero';
 import MinistrySection from '@/components/get-involved/MinistrySection';
 import SmallGroupSection from '@/components/get-involved/SmallGroupSection';

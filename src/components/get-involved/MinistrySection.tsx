@@ -2,7 +2,7 @@
 import React, { useMemo, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { getMinistries } from '@/lib/ministryService';
-import { Handshake, ChevronRight, ChevronLeft } from 'lucide-react';
+import { Handshake } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import MinistryCard from './MinistryCard';
@@ -17,7 +17,7 @@ import {
 
 const MinistrySection: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
-  const ministriesPerPage = 6; // Changed from 3 to 6
+  const ministriesPerPage = 6; // Display 6 ministries per page
   
   // Optimize data fetching
   const { data: ministries, isLoading, error } = useQuery({

@@ -1,7 +1,5 @@
 
-import React from 'react';
-import { Button } from '@/components/ui/button';
-import { Link } from 'react-router-dom';
+import React, { memo } from 'react';
 
 const SupportSection: React.FC = () => {
   return (
@@ -20,4 +18,5 @@ const SupportSection: React.FC = () => {
   );
 };
 
-export default SupportSection;
+// Use React.memo to prevent unnecessary re-renders
+export default memo(SupportSection);
