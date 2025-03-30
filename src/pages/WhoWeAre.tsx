@@ -6,11 +6,19 @@ import { Link } from 'react-router-dom';
 const WhoWeAre = () => {
   return (
     <div>
-      {/* Hero Section */}
-      <section className="bg-eecfin-navy text-white py-16">
-        <div className="container-custom text-center">
-          <h1 className="text-4xl md:text-5xl font-bold mb-6">Who We Are</h1>
-          <p className="text-xl max-w-3xl mx-auto">
+      {/* Hero Section with Background Image */}
+      <section className="relative bg-eecfin-navy overflow-hidden">
+        <div className="absolute inset-0 z-0">
+          <img 
+            src="/lovable-uploads/54e6cd73-6658-4990-b0c6-d369f39e1cb9.png" 
+            alt="Church background" 
+            className="w-full h-full object-cover opacity-20"
+          />
+          <div className="absolute inset-0 bg-eecfin-navy/70"></div>
+        </div>
+        <div className="container-custom text-center relative z-10 py-20">
+          <h1 className="text-4xl md:text-5xl font-bold mb-6 text-white">Who We Are</h1>
+          <p className="text-xl max-w-3xl mx-auto text-white/90">
             Learn about our church, our beliefs, and our journey serving the Ethiopian community in Finland.
           </p>
         </div>
