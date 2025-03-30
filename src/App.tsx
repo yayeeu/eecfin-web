@@ -83,17 +83,15 @@ const App = () => (
                 key={route.path} 
                 path={route.path} 
                 element={
-                  <RoleGuard allowedRoles={['admin', 'member', 'elder', 'it'] as UserRole[]} isPublicRoute={true}>
-                    {route.path === "/" ? (
-                      route.element
-                    ) : (
-                      <Layout>
-                        <Suspense fallback={<PageLoader />}>
-                          {route.element}
-                        </Suspense>
-                      </Layout>
-                    )}
-                  </RoleGuard>
+                  route.path === "/" ? (
+                    route.element
+                  ) : (
+                    <Layout>
+                      <Suspense fallback={<PageLoader />}>
+                        {route.element}
+                      </Suspense>
+                    </Layout>
+                  )
                 } 
               />
             ))}
