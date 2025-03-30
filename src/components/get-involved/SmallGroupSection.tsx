@@ -13,35 +13,35 @@ const SmallGroupSection: React.FC = () => {
   ];
 
   return (
-    <section>
-      <h2 className="section-title mb-6">Join a Small Group</h2>
+    <section className="h-full">
+      <h2 className="section-title mb-6 text-purple-800">Join a Small Group</h2>
       
       <div className="space-y-4">
-        <p className="text-gray-700">
+        <p className="text-purple-900">
           Connect with others in a smaller setting where you can build relationships,
           study the Bible, and grow in your faith journey together.
         </p>
         
-        <Card className="bg-gray-50 border-none">
+        <Card className="bg-purple-100 border-purple-200">
           <CardContent className="p-5">
             <div className="flex items-start">
-              <Users className="h-10 w-10 text-eecfin-navy mr-4 flex-shrink-0 opacity-70" />
+              <Users className="h-10 w-10 text-purple-700 mr-4 flex-shrink-0" />
               <div>
-                <h3 className="text-lg font-semibold mb-2">Our Small Groups Program</h3>
-                <p className="text-gray-600 text-sm mb-4">
+                <h3 className="text-lg font-semibold mb-2 text-purple-800">Our Small Groups Program</h3>
+                <p className="text-purple-900 text-sm mb-4">
                   We're organizing small groups for this season. Contact us if you're interested in joining or leading a group.
                 </p>
                 
                 <div className="space-y-2 mb-4">
                   {smallGroupBenefits.map((benefit, index) => (
-                    <div key={index} className="flex items-center text-sm">
-                      <div className="text-eecfin-navy mr-2">{benefit.icon}</div>
+                    <div key={index} className="flex items-center text-sm text-purple-800">
+                      <div className="text-purple-600 mr-2">{benefit.icon}</div>
                       <span>{benefit.text}</span>
                     </div>
                   ))}
                 </div>
                 
-                <Button asChild className="bg-eecfin-navy hover:bg-eecfin-navy/80 w-full">
+                <Button asChild className="bg-purple-700 hover:bg-purple-800 w-full">
                   <Link to="/contact">Inquire About Small Groups</Link>
                 </Button>
               </div>

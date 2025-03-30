@@ -2,13 +2,14 @@
 import React, { useMemo, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { getMinistries } from '@/lib/ministryService';
-import { Handshake, ChevronRight } from 'lucide-react';
+import { Handshake, ChevronRight, ChevronLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import MinistryCard from './MinistryCard';
 
 const MinistrySection: React.FC = () => {
-  const [showAll, setShowAll] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const ministriesPerPage = 3;
   
   // Optimize data fetching
   const { data: ministries, isLoading, error } = useQuery({
@@ -18,21 +19,44 @@ const MinistrySection: React.FC = () => {
     refetchOnWindowFocus: false,
   });
   
+  // Calculate total pages
+  const totalPages = useMemo(() => {
+    if (!ministries) return 1;
+    return Math.ceil(ministries.length / ministriesPerPage);
+  }, [ministries]);
+  
+  // Get current ministries for this page
+  const currentMinistries = useMemo(() => {
+    if (!ministries) return [];
+    const startIndex = (currentPage - 1) * ministriesPerPage;
+    return ministries.slice(startIndex, startIndex + ministriesPerPage);
+  }, [ministries, currentPage]);
+  
+  // Handle pagination
+  const goToNextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
+  
+  const goToPrevPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
+  
   // Memoize ministry cards to prevent unnecessary re-renders
   const ministryCards = useMemo(() => {
-    if (!ministries || ministries.length === 0) return null;
-    
-    // Show only first 8 ministries by default, or all if showAll is true
-    const displayMinistries = showAll ? ministries : ministries.slice(0, 8);
+    if (!currentMinistries || currentMinistries.length === 0) return null;
     
     return (
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-        {displayMinistries.map((ministry) => (
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {currentMinistries.map((ministry) => (
           <MinistryCard key={ministry.id} ministry={ministry} />
         ))}
       </div>
     );
-  }, [ministries, showAll]);
+  }, [currentMinistries]);
 
   // Memoize the empty state
   const emptyState = useMemo(() => (
@@ -57,17 +81,33 @@ const MinistrySection: React.FC = () => {
       ) : error ? (
         <div className="text-center p-4 text-red-500">Error loading ministries. Please try again.</div>
       ) : ministries && ministries.length > 0 ? (
-        <div className="space-y-4">
+        <div className="space-y-6">
           {ministryCards}
           
-          {ministries.length > 8 && (
-            <div className="text-center mt-4">
+          {/* Pagination controls */}
+          {totalPages > 1 && (
+            <div className="flex items-center justify-center gap-4 mt-8">
               <Button 
                 variant="outline" 
-                onClick={() => setShowAll(!showAll)}
+                onClick={goToPrevPage}
+                disabled={currentPage === 1}
                 className="text-eecfin-navy"
               >
-                {showAll ? 'Show Less' : 'View All Ministries'} 
+                <ChevronLeft className="h-4 w-4 mr-1" />
+                Previous
+              </Button>
+              
+              <span className="text-sm">
+                Page {currentPage} of {totalPages}
+              </span>
+              
+              <Button 
+                variant="outline" 
+                onClick={goToNextPage}
+                disabled={currentPage === totalPages}
+                className="text-eecfin-navy"
+              >
+                Next
                 <ChevronRight className="h-4 w-4 ml-1" />
               </Button>
             </div>
