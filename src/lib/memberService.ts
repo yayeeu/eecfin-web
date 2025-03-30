@@ -16,47 +16,29 @@ const mockMembers: Member[] = [
   },
   {
     id: '2',
-    name: 'Bruke Wolde',
-    phone: '+358 45 168 2997',
-    email: 'bruke@example.com',
-    role: 'Elder',
-    role_id: '1',
-    created_at: new Date().toISOString()
+    name: 'John Doe',
+    phone: '+358 45 123 4567',
+    email: 'john@example.com',
+    role: 'Member',
+    role_id: '2',
+    created_at: new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString()
   },
   {
     id: '3',
-    name: 'Hizekiel Daniel',
-    phone: '+358 44 986 9685',
-    email: 'hizekiel@example.com',
-    role: 'Elder',
-    role_id: '1',
-    created_at: new Date().toISOString()
+    name: 'Jane Smith',
+    phone: '+358 44 765 4321',
+    email: 'jane@example.com',
+    role: 'Volunteer',
+    role_id: '4',
+    created_at: new Date(Date.now() - 45 * 24 * 60 * 60 * 1000).toISOString()
   },
-  {
-    id: '4',
-    name: 'Mekbib Tekle',
-    phone: '+358 44 08 22 798',
-    email: 'mekbib@example.com',
-    role: 'Elder',
-    role_id: '1',
-    created_at: new Date().toISOString()
-  },
-  {
-    id: '5',
-    name: 'Tamirat Teshome',
-    phone: '+358 44 351 4051',
-    email: 'tamirat@example.com',
-    role: 'Elder',
-    role_id: '1',
-    created_at: new Date().toISOString()
-  }
 ];
 
 export const getElderMembers = async () => {
   // If Supabase is not configured, return mock data
   if (!isSupabaseConfigured()) {
     console.log('Using mock data for elder members');
-    return Promise.resolve(mockMembers);
+    return Promise.resolve(mockMembers.filter(m => m.role === 'Elder'));
   }
   
   const { data, error } = await supabase!
@@ -67,6 +49,26 @@ export const getElderMembers = async () => {
   
   if (error) {
     console.error('Error fetching elder members:', error);
+    throw error;
+  }
+  
+  return data as Member[];
+};
+
+export const getAllMembers = async () => {
+  // If Supabase is not configured, return mock data
+  if (!isSupabaseConfigured()) {
+    console.log('Using mock data for all members');
+    return Promise.resolve(mockMembers);
+  }
+  
+  const { data, error } = await supabase!
+    .from('members')
+    .select('*, roles(id, name)')
+    .order('name');
+  
+  if (error) {
+    console.error('Error fetching all members:', error);
     throw error;
   }
   

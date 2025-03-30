@@ -1,16 +1,16 @@
-
 import { supabase, isSupabaseConfigured } from '@/lib/supabaseClient';
-import { Elder } from '@/types/database.types';
+import { Member } from '@/types/database.types';
 import { v4 as uuidv4 } from 'uuid';
 
 // Mock data for development mode
-const mockElders: Elder[] = [
+const mockElders: Member[] = [
   {
     id: '1',
     name: 'Yeteshawork Berhanu',
     phone: '+358 41 522 58 89',
     email: 'yeteshawork@example.com',
     role: 'Elder',
+    role_id: '1',
     created_at: new Date().toISOString()
   },
   {
@@ -19,6 +19,7 @@ const mockElders: Elder[] = [
     phone: '+358 45 168 2997',
     email: 'bruke@example.com',
     role: 'Elder',
+    role_id: '1',
     created_at: new Date().toISOString()
   },
   {
@@ -27,6 +28,7 @@ const mockElders: Elder[] = [
     phone: '+358 44 986 9685',
     email: 'hizekiel@example.com',
     role: 'Elder',
+    role_id: '1',
     created_at: new Date().toISOString()
   },
   {
@@ -35,6 +37,7 @@ const mockElders: Elder[] = [
     phone: '+358 44 08 22 798',
     email: 'mekbib@example.com',
     role: 'Elder',
+    role_id: '1',
     created_at: new Date().toISOString()
   },
   {
@@ -43,6 +46,7 @@ const mockElders: Elder[] = [
     phone: '+358 44 351 4051',
     email: 'tamirat@example.com',
     role: 'Elder',
+    role_id: '1',
     created_at: new Date().toISOString()
   }
 ];
@@ -55,8 +59,9 @@ export const getElders = async () => {
   }
   
   const { data, error } = await supabase!
-    .from('elders')
-    .select('*, ministries(name)')
+    .from('members')
+    .select('*, ministries(id, name), roles(id, name)')
+    .eq('roles.name', 'Elder')
     .order('name');
   
   if (error) {
@@ -64,7 +69,7 @@ export const getElders = async () => {
     throw error;
   }
   
-  return data as Elder[];
+  return data as Member[];
 };
 
 export const getElder = async (id: string) => {
@@ -78,8 +83,8 @@ export const getElder = async (id: string) => {
   }
   
   const { data, error } = await supabase!
-    .from('elders')
-    .select('*, ministries(id, name)')
+    .from('members')
+    .select('*, ministries(id, name), roles(id, name)')
     .eq('id', id)
     .single();
   
@@ -88,13 +93,13 @@ export const getElder = async (id: string) => {
     throw error;
   }
   
-  return data as Elder;
+  return data as Member;
 };
 
-export const createElder = async (elder: Omit<Elder, 'id' | 'created_at'>) => {
+export const createElder = async (elder: Omit<Member, 'id' | 'created_at'>) => {
   // If Supabase is not configured, use mock data
   if (!isSupabaseConfigured()) {
-    const newElder: Elder = {
+    const newElder: Member = {
       id: uuidv4(),
       created_at: new Date().toISOString(),
       ...elder
@@ -104,7 +109,7 @@ export const createElder = async (elder: Omit<Elder, 'id' | 'created_at'>) => {
   }
   
   const { data, error } = await supabase!
-    .from('elders')
+    .from('members')
     .insert(elder)
     .select()
     .single();
@@ -114,10 +119,10 @@ export const createElder = async (elder: Omit<Elder, 'id' | 'created_at'>) => {
     throw error;
   }
   
-  return data as Elder;
+  return data as Member;
 };
 
-export const updateElder = async (id: string, elder: Partial<Omit<Elder, 'id' | 'created_at'>>) => {
+export const updateElder = async (id: string, elder: Partial<Omit<Member, 'id' | 'created_at'>>) => {
   // If Supabase is not configured, use mock data
   if (!isSupabaseConfigured()) {
     const index = mockElders.findIndex(e => e.id === id);
@@ -134,7 +139,7 @@ export const updateElder = async (id: string, elder: Partial<Omit<Elder, 'id' | 
   }
   
   const { data, error } = await supabase!
-    .from('elders')
+    .from('members')
     .update(elder)
     .eq('id', id)
     .select()
@@ -145,7 +150,7 @@ export const updateElder = async (id: string, elder: Partial<Omit<Elder, 'id' | 
     throw error;
   }
   
-  return data as Elder;
+  return data as Member;
 };
 
 export const deleteElder = async (id: string) => {
@@ -160,7 +165,7 @@ export const deleteElder = async (id: string) => {
   }
   
   const { error } = await supabase!
-    .from('elders')
+    .from('members')
     .delete()
     .eq('id', id);
   

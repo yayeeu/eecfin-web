@@ -3,12 +3,13 @@ import React, { useState } from 'react';
 import { SidebarProvider, Sidebar, SidebarContent, SidebarHeader, SidebarGroup, 
   SidebarGroupLabel, SidebarGroupContent, SidebarMenu, SidebarMenuItem, 
   SidebarMenuButton, SidebarFooter } from "@/components/ui/sidebar";
-import { Image, Settings, Home, LogOut, Users, UserCheck } from 'lucide-react';
+import { Image, Settings, Home, LogOut, Users, UserCheck, User } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Separator } from "@/components/ui/separator";
 import SliderManager from '@/components/SliderManager';
 import MinistryManager from '@/components/MinistryManager';
 import ElderManager from '@/components/ElderManager';
+import MemberManager from '@/components/MemberManager';
 
 const Admin = () => {
   const [activeSection, setActiveSection] = useState<string>('slider');
@@ -18,6 +19,7 @@ const Admin = () => {
     { id: 'slider', label: 'Slider Images', icon: Image },
     { id: 'ministries', label: 'Ministries', icon: Users },
     { id: 'elders', label: 'Church Elders', icon: UserCheck },
+    { id: 'members', label: 'All Members', icon: User },
     { id: 'settings', label: 'Settings', icon: Settings },
   ];
 
@@ -105,7 +107,8 @@ const Admin = () => {
               <h1 className="text-3xl font-bold text-eecfin-navy">
                 {activeSection === 'slider' ? 'Manage Slider Images' : 
                  activeSection === 'ministries' ? 'Manage Ministries' :
-                 activeSection === 'elders' ? 'Manage Church Elders' : 
+                 activeSection === 'elders' ? 'Manage Church Elders' :
+                 activeSection === 'members' ? 'All Church Members' :
                  'Settings'}
               </h1>
               <p className="text-gray-500 mt-2">
@@ -115,6 +118,8 @@ const Admin = () => {
                   ? 'Add, edit, or delete ministry information displayed on the Get Involved page.'
                   : activeSection === 'elders'
                   ? 'Add, edit, or delete church elders displayed on the Who We Are page.'
+                  : activeSection === 'members'
+                  ? 'View all church members and their assigned roles.'
                   : 'Configure website settings.'}
               </p>
             </div>
@@ -122,6 +127,7 @@ const Admin = () => {
             {activeSection === 'slider' && <SliderManager />}
             {activeSection === 'ministries' && <MinistryManager />}
             {activeSection === 'elders' && <ElderManager />}
+            {activeSection === 'members' && <MemberManager />}
             {activeSection === 'settings' && (
               <div className="bg-white p-6 rounded-lg shadow">
                 <h2 className="text-xl font-semibold mb-4">Site Settings</h2>
