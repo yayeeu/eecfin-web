@@ -5,6 +5,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { AuthProvider } from "@/contexts/AuthContext";
 import Layout from "@/components/Layout";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
@@ -19,6 +20,8 @@ const Sermons = lazy(() => import("./pages/Sermons"));
 const Give = lazy(() => import("./pages/Give"));
 const Constitution = lazy(() => import("./pages/Constitution"));
 const Admin = lazy(() => import("./pages/Admin"));
+const Auth = lazy(() => import("./pages/Auth"));
+const Profile = lazy(() => import("./pages/Profile"));
 
 // Configure the query client with performance optimizations
 const queryClient = new QueryClient({
@@ -40,77 +43,89 @@ const PageLoader = () => (
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/who-we-are" element={
-            <Layout>
+    <AuthProvider>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/who-we-are" element={
+              <Layout>
+                <Suspense fallback={<PageLoader />}>
+                  <WhoWeAre />
+                </Suspense>
+              </Layout>
+            } />
+            <Route path="/our-faith" element={
+              <Layout>
+                <Suspense fallback={<PageLoader />}>
+                  <OurFaith />
+                </Suspense>
+              </Layout>
+            } />
+            <Route path="/events" element={
+              <Layout>
+                <Suspense fallback={<PageLoader />}>
+                  <Events />
+                </Suspense>
+              </Layout>
+            } />
+            <Route path="/sermons" element={
+              <Layout>
+                <Suspense fallback={<PageLoader />}>
+                  <Sermons />
+                </Suspense>
+              </Layout>
+            } />
+            <Route path="/contact" element={
+              <Layout>
+                <Suspense fallback={<PageLoader />}>
+                  <Contact />
+                </Suspense>
+              </Layout>
+            } />
+            <Route path="/get-involved" element={
+              <Layout>
+                <Suspense fallback={<PageLoader />}>
+                  <GetInvolved />
+                </Suspense>
+              </Layout>
+            } />
+            <Route path="/give" element={
+              <Layout>
+                <Suspense fallback={<PageLoader />}>
+                  <Give />
+                </Suspense>
+              </Layout>
+            } />
+            <Route path="/constitution" element={
+              <Layout>
+                <Suspense fallback={<PageLoader />}>
+                  <Constitution />
+                </Suspense>
+              </Layout>
+            } />
+            <Route path="/auth" element={
               <Suspense fallback={<PageLoader />}>
-                <WhoWeAre />
+                <Auth />
               </Suspense>
-            </Layout>
-          } />
-          <Route path="/our-faith" element={
-            <Layout>
+            } />
+            <Route path="/profile" element={
               <Suspense fallback={<PageLoader />}>
-                <OurFaith />
+                <Profile />
               </Suspense>
-            </Layout>
-          } />
-          <Route path="/events" element={
-            <Layout>
+            } />
+            <Route path="/admin" element={
               <Suspense fallback={<PageLoader />}>
-                <Events />
+                <Admin />
               </Suspense>
-            </Layout>
-          } />
-          <Route path="/sermons" element={
-            <Layout>
-              <Suspense fallback={<PageLoader />}>
-                <Sermons />
-              </Suspense>
-            </Layout>
-          } />
-          <Route path="/contact" element={
-            <Layout>
-              <Suspense fallback={<PageLoader />}>
-                <Contact />
-              </Suspense>
-            </Layout>
-          } />
-          <Route path="/get-involved" element={
-            <Layout>
-              <Suspense fallback={<PageLoader />}>
-                <GetInvolved />
-              </Suspense>
-            </Layout>
-          } />
-          <Route path="/give" element={
-            <Layout>
-              <Suspense fallback={<PageLoader />}>
-                <Give />
-              </Suspense>
-            </Layout>
-          } />
-          <Route path="/constitution" element={
-            <Layout>
-              <Suspense fallback={<PageLoader />}>
-                <Constitution />
-              </Suspense>
-            </Layout>
-          } />
-          <Route path="/admin" element={
-            <Suspense fallback={<PageLoader />}>
-              <Admin />
-            </Suspense>
-          } />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
-    </TooltipProvider>
+            } />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </BrowserRouter>
+      </TooltipProvider>
+    </AuthProvider>
   </QueryClientProvider>
 );
 
