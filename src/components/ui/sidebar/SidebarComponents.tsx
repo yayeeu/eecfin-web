@@ -31,6 +31,7 @@ export const Sidebar = React.forwardRef<
   ) => {
     const { isMobile, state, openMobile, setOpenMobile } = useSidebar()
 
+    // For non-collapsible sidebar, just render a simple div
     if (collapsible === "none") {
       return (
         <div
@@ -46,6 +47,7 @@ export const Sidebar = React.forwardRef<
       )
     }
 
+    // For mobile, render a Sheet component
     if (isMobile) {
       return (
         <Sheet open={openMobile} onOpenChange={setOpenMobile} {...props}>
@@ -66,6 +68,7 @@ export const Sidebar = React.forwardRef<
       )
     }
 
+    // For desktop, render a responsive sidebar
     return (
       <div
         ref={ref}
@@ -75,7 +78,7 @@ export const Sidebar = React.forwardRef<
         data-variant={variant}
         data-side={side}
       >
-        {/* This is what handles the sidebar gap on desktop */}
+        {/* This div controls sidebar width and spacing */}
         <div
           className={cn(
             "duration-200 relative h-svh w-[--sidebar-width] bg-transparent transition-[width] ease-linear",
@@ -86,13 +89,14 @@ export const Sidebar = React.forwardRef<
               : "group-data-[collapsible=icon]:w-[--sidebar-width-icon]"
           )}
         />
+        {/* This div is the actual sidebar content */}
         <div
           className={cn(
             "duration-200 fixed inset-y-0 z-10 hidden h-svh w-[--sidebar-width] transition-[left,right,width] ease-linear md:flex",
             side === "left"
               ? "left-0 group-data-[collapsible=offcanvas]:left-[calc(var(--sidebar-width)*-1)]"
               : "right-0 group-data-[collapsible=offcanvas]:right-[calc(var(--sidebar-width)*-1)]",
-            // Adjust the padding for floating and inset variants.
+            // Adjust the padding for floating and inset variants
             variant === "floating" || variant === "inset"
               ? "p-2 group-data-[collapsible=icon]:w-[calc(var(--sidebar-width-icon)_+_theme(spacing.4)_+2px)]"
               : "group-data-[collapsible=icon]:w-[--sidebar-width-icon] group-data-[side=left]:border-r group-data-[side=right]:border-l",
@@ -113,7 +117,7 @@ export const Sidebar = React.forwardRef<
 )
 Sidebar.displayName = "Sidebar"
 
-// Sidebar Trigger Component
+// Sidebar Trigger Component - toggle sidebar visibility
 export const SidebarTrigger = React.forwardRef<
   React.ElementRef<typeof Button>,
   React.ComponentProps<typeof Button>
@@ -140,7 +144,7 @@ export const SidebarTrigger = React.forwardRef<
 })
 SidebarTrigger.displayName = "SidebarTrigger"
 
-// Sidebar Rail Component
+// Sidebar Rail Component - resize handle
 export const SidebarRail = React.forwardRef<
   HTMLButtonElement,
   React.ComponentProps<"button">
@@ -266,7 +270,7 @@ export const SidebarContent = React.forwardRef<
       ref={ref}
       data-sidebar="content"
       className={cn(
-        "flex min-h-0 flex-1 flex-col gap-2 overflow-auto group-data-[collapsible=icon]:overflow-hidden",
+        "flex min-h-0 flex-1 flex-col gap-2 overflow-auto scrollbar-thin scrollbar-thumb-sidebar-border scrollbar-track-transparent group-data-[collapsible=icon]:overflow-hidden",
         className
       )}
       {...props}

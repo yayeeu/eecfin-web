@@ -1,14 +1,16 @@
+
 import * as React from "react"
 import { TooltipProvider } from "@/components/ui/tooltip"
 import { cn } from "@/lib/utils"
 import { useIsMobile } from "@/hooks/use-mobile"
 
-const SIDEBAR_COOKIE_NAME = "sidebar:state"
-const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7
-const SIDEBAR_WIDTH = "16rem"
-const SIDEBAR_WIDTH_MOBILE = "18rem"
-const SIDEBAR_WIDTH_ICON = "3rem"
-const SIDEBAR_KEYBOARD_SHORTCUT = "b"
+// Constants
+export const SIDEBAR_COOKIE_NAME = "sidebar:state"
+export const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7 // 7 days
+export const SIDEBAR_WIDTH = "16rem"
+export const SIDEBAR_WIDTH_MOBILE = "18rem"
+export const SIDEBAR_WIDTH_ICON = "3rem"
+export const SIDEBAR_KEYBOARD_SHORTCUT = "b"
 
 type SidebarContext = {
   state: "expanded" | "collapsed"
@@ -54,10 +56,22 @@ export const SidebarProvider = React.forwardRef<
     const isMobile = useIsMobile()
     const [openMobile, setOpenMobile] = React.useState(false)
 
-    // This is the internal state of the sidebar.
-    // We use openProp and setOpenProp for control from outside the component.
-    const [_open, _setOpen] = React.useState(defaultOpen)
+    // Read sidebar state from cookie on mount
+    const [_open, _setOpen] = React.useState(() => {
+      // Use provided default or check cookie
+      if (typeof window !== 'undefined') {
+        const match = document.cookie.match(
+          new RegExp(`(^| )${SIDEBAR_COOKIE_NAME}=([^;]+)`)
+        )
+        return match ? match[2] === 'true' : defaultOpen
+      }
+      return defaultOpen
+    })
+    
+    // Use external or internal state
     const open = openProp ?? _open
+    
+    // Memoize the setOpen function to avoid unnecessary rerenders
     const setOpen = React.useCallback(
       (value: boolean | ((value: boolean) => boolean)) => {
         const openState = typeof value === "function" ? value(open) : value
@@ -67,20 +81,22 @@ export const SidebarProvider = React.forwardRef<
           _setOpen(openState)
         }
 
-        // This sets the cookie to keep the sidebar state.
-        document.cookie = `${SIDEBAR_COOKIE_NAME}=${openState}; path=/; max-age=${SIDEBAR_COOKIE_MAX_AGE}`
+        // Set cookie to persist preference
+        if (typeof window !== 'undefined') {
+          document.cookie = `${SIDEBAR_COOKIE_NAME}=${openState}; path=/; max-age=${SIDEBAR_COOKIE_MAX_AGE}`
+        }
       },
       [setOpenProp, open]
     )
 
-    // Helper to toggle the sidebar.
+    // Memoize toggle function
     const toggleSidebar = React.useCallback(() => {
       return isMobile
         ? setOpenMobile((open) => !open)
         : setOpen((open) => !open)
     }, [isMobile, setOpen, setOpenMobile])
 
-    // Adds a keyboard shortcut to toggle the sidebar.
+    // Keyboard shortcut handler
     React.useEffect(() => {
       const handleKeyDown = (event: KeyboardEvent) => {
         if (
@@ -96,10 +112,10 @@ export const SidebarProvider = React.forwardRef<
       return () => window.removeEventListener("keydown", handleKeyDown)
     }, [toggleSidebar])
 
-    // We add a state so that we can do data-state="expanded" or "collapsed".
-    // This makes it easier to style the sidebar with Tailwind classes.
+    // Generate state value
     const state = open ? "expanded" : "collapsed"
 
+    // Memoize context value to prevent unnecessary rerenders
     const contextValue = React.useMemo<SidebarContext>(
       () => ({
         state,
@@ -121,6 +137,7 @@ export const SidebarProvider = React.forwardRef<
               {
                 "--sidebar-width": SIDEBAR_WIDTH,
                 "--sidebar-width-icon": SIDEBAR_WIDTH_ICON,
+                "--sidebar-width-mobile": SIDEBAR_WIDTH_MOBILE,
                 ...style,
               } as React.CSSProperties
             }
@@ -140,6 +157,5 @@ export const SidebarProvider = React.forwardRef<
 )
 SidebarProvider.displayName = "SidebarProvider"
 
-// Export constants for other sidebar components
-export { SIDEBAR_WIDTH, SIDEBAR_WIDTH_MOBILE, SIDEBAR_WIDTH_ICON }
+// Export for use in other components
 export { SidebarContext }
