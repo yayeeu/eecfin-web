@@ -24,8 +24,9 @@ export const getMemberMinistries = async (memberId: string) => {
     throw error;
   }
   
-  // Extract the ministry objects from each row and return them
-  return data.map(item => item.ministry) as Ministry[];
+  // Extract the ministry objects from each row and return a properly typed array
+  const ministries = data.map(item => item.ministry);
+  return ministries as Ministry[];
 };
 
 // Assign ministry to member
