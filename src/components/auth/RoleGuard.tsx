@@ -6,14 +6,14 @@ import { UserRole } from '@/types/auth.types';
 
 interface RoleGuardProps {
   children: React.ReactNode;
-  allowedRoles: UserRole[];
+  allowedRoles?: UserRole[];
   redirectTo?: string;
   isPublicRoute?: boolean;
 }
 
 const RoleGuard: React.FC<RoleGuardProps> = ({
   children,
-  allowedRoles,
+  allowedRoles = [],
   redirectTo = '/',
   isPublicRoute = false,
 }) => {
@@ -46,7 +46,7 @@ const RoleGuard: React.FC<RoleGuardProps> = ({
   }
 
   // If user doesn't have the required role, redirect
-  if (!hasPermission(allowedRoles)) {
+  if (allowedRoles.length > 0 && !hasPermission(allowedRoles)) {
     console.log('User does not have required role:', allowedRoles);
     return <Navigate to={redirectTo} replace />;
   }
