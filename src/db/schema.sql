@@ -42,6 +42,19 @@ CREATE TABLE IF NOT EXISTS member_under_elder (
 CREATE INDEX IF NOT EXISTS member_under_elder_member_id_idx ON member_under_elder(member_id);
 CREATE INDEX IF NOT EXISTS member_under_elder_elder_id_idx ON member_under_elder(elder_id);
 
+-- Create the member_ministry table (many-to-many relationship)
+CREATE TABLE IF NOT EXISTS member_ministry (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  member_id UUID NOT NULL REFERENCES members(id) ON DELETE CASCADE,
+  ministry_id UUID NOT NULL REFERENCES ministries(id) ON DELETE CASCADE,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  UNIQUE(member_id, ministry_id)
+);
+
+-- Create indexes for faster lookups on member_ministry
+CREATE INDEX IF NOT EXISTS member_ministry_member_id_idx ON member_ministry(member_id);
+CREATE INDEX IF NOT EXISTS member_ministry_ministry_id_idx ON member_ministry(ministry_id);
+
 -- Create the contact_log table
 CREATE TABLE IF NOT EXISTS contact_log (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -113,6 +126,23 @@ USING (true);
 -- Create policy to allow authenticated users to modify member-elder relationships
 CREATE POLICY "Allow authenticated users full access to member_under_elder" 
 ON member_under_elder 
+FOR ALL 
+TO authenticated
+USING (true);
+
+-- Set up Row Level Security for the member_ministry table
+ALTER TABLE member_ministry ENABLE ROW LEVEL SECURITY;
+
+-- Create policy to allow authenticated users to view member-ministry relationships
+CREATE POLICY "Allow authenticated read access to member_ministry" 
+ON member_ministry 
+FOR SELECT 
+TO authenticated
+USING (true);
+
+-- Create policy to allow authenticated users to modify member-ministry relationships
+CREATE POLICY "Allow authenticated users full access to member_ministry" 
+ON member_ministry 
 FOR ALL 
 TO authenticated
 USING (true);

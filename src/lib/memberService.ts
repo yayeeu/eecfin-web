@@ -23,3 +23,10 @@ export {
 export {
   getMembersForDropdown
 } from '@/lib/services/memberDropdownService';
+
+export {
+  getMemberMinistries,
+  assignMinistryToMember,
+  removeMinistryFromMember,
+  getMembersByMinistryId
+} from '@/lib/services/memberMinistryService';

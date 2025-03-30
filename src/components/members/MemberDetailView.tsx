@@ -5,10 +5,12 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { 
   User, Phone, Mail, MapPin, Calendar, Users, 
   HeartHandshake, Building, Award, AlertCircle, 
-  CheckCircle2, XCircle, UserPlus
+  CheckCircle2, XCircle, UserPlus, Briefcase
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { Badge } from '@/components/ui/badge';
+import MemberMinistryAssignments from './MemberMinistryAssignments';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface MemberDetailViewProps {
   member: Member;
@@ -16,6 +18,9 @@ interface MemberDetailViewProps {
 }
 
 const MemberDetailView: React.FC<MemberDetailViewProps> = ({ member, onClose }) => {
+  const { userRole } = useAuth();
+  const isReadOnly = userRole === 'elder';
+  
   if (!member) return null;
 
   return (
@@ -183,6 +188,16 @@ const MemberDetailView: React.FC<MemberDetailViewProps> = ({ member, onClose }) 
                   </div>
                 </div>
               )}
+            </div>
+          </div>
+          
+          <div className="mt-6 pt-6 border-t">
+            <div className="flex items-center gap-2">
+              <Briefcase className="w-5 h-5 text-gray-500" />
+              <h3 className="text-lg font-semibold">Ministry Assignments</h3>
+            </div>
+            <div className="mt-3">
+              <MemberMinistryAssignments member={member} readOnly={isReadOnly} />
             </div>
           </div>
           

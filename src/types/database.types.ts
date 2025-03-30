@@ -37,6 +37,14 @@ export interface MemberUnderElder {
   elder?: Member;
 }
 
+export interface MemberMinistry {
+  id: string;
+  created_at?: string;
+  member_id: string;
+  ministry_id: string;
+  ministry?: Ministry;
+}
+
 export interface ContactLog {
   id: string;
   created_at?: string;
@@ -82,6 +90,8 @@ export interface Member {
   roles?: Pick<Role, 'id' | 'name'>;
   // Assigned elder
   assigned_elder?: MemberUnderElder;
+  // Ministry assignments
+  ministry_assignments?: MemberMinistry[];
 }
 
 export interface Database {
@@ -111,6 +121,11 @@ export interface Database {
         Row: MemberUnderElder;
         Insert: Omit<MemberUnderElder, 'id' | 'created_at'>;
         Update: Partial<Omit<MemberUnderElder, 'id' | 'created_at'>>;
+      };
+      member_ministry: {
+        Row: MemberMinistry;
+        Insert: Omit<MemberMinistry, 'id' | 'created_at'>;
+        Update: Partial<Omit<MemberMinistry, 'id' | 'created_at'>>;
       };
       contact_log: {
         Row: ContactLog;

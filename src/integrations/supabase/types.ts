@@ -98,6 +98,42 @@ export type Database = {
           },
         ]
       }
+      member_ministry: {
+        Row: {
+          created_at: string | null
+          id: string
+          member_id: string
+          ministry_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          member_id: string
+          ministry_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          member_id?: string
+          ministry_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "member_ministry_member_id_fkey"
+            columns: ["member_id"]
+            isOneToOne: false
+            referencedRelation: "members"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "member_ministry_ministry_id_fkey"
+            columns: ["ministry_id"]
+            isOneToOne: false
+            referencedRelation: "ministries"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       member_under_elder: {
         Row: {
           created_at: string | null
