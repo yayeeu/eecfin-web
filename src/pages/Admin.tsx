@@ -25,15 +25,17 @@ const Admin = () => {
 
   return (
     <div className="flex flex-col min-h-screen">
-      {/* Church Logo Header */}
-      <header className="w-full bg-eecfin-navy py-2 px-4">
+      {/* Church Logo Header - Improved sizing and padding */}
+      <header className="w-full bg-eecfin-navy py-4 px-4">
         <div className="container mx-auto flex items-center">
-          <img 
-            src="/lovable-uploads/010ebde5-605e-4cfe-b2cc-1caacf7c5734.png" 
-            alt="EECFIN Logo" 
-            className="h-16"
-          />
-          <h1 className="text-eecfin-gold text-2xl ml-4 font-bold">Admin Dashboard</h1>
+          <div className="h-12 w-auto flex-shrink-0">
+            <img 
+              src="/lovable-uploads/010ebde5-605e-4cfe-b2cc-1caacf7c5734.png" 
+              alt="EECFIN Logo" 
+              className="h-full object-contain"
+            />
+          </div>
+          <h1 className="text-eecfin-gold text-2xl ml-6 font-bold">Admin Dashboard</h1>
         </div>
       </header>
 
