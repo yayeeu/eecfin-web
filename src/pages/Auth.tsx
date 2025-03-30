@@ -7,7 +7,7 @@ import * as z from 'zod';
 import { Eye, EyeOff } from 'lucide-react';
 
 import Layout from '@/components/Layout';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth, UserRole } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import {
   Form,
@@ -20,6 +20,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 const loginSchema = z.object({
   email: z.string().email({ message: 'Please enter a valid email address' }),
@@ -30,6 +31,7 @@ const signupSchema = z.object({
   name: z.string().min(2, { message: 'Name must be at least 2 characters' }),
   email: z.string().email({ message: 'Please enter a valid email address' }),
   password: z.string().min(6, { message: 'Password must be at least 6 characters' }),
+  role: z.enum(['admin', 'it', 'member', 'elder']).default('member'),
   phone: z.string().optional(),
   address: z.string().optional(),
 });
@@ -186,6 +188,7 @@ const SignupForm = ({
       name: '',
       email: '',
       password: '',
+      role: 'member',
       phone: '',
       address: '',
     },
@@ -202,6 +205,13 @@ const SignupForm = ({
       setIsLoading(false);
     }
   };
+
+  const userRoles = [
+    { value: 'admin', label: 'Administrator' },
+    { value: 'it', label: 'IT Staff' },
+    { value: 'elder', label: 'Elder' },
+    { value: 'member', label: 'Regular Member' },
+  ];
 
   return (
     <Card>
@@ -262,6 +272,34 @@ const SignupForm = ({
                       </button>
                     </div>
                   </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            
+            <FormField
+              control={form.control}
+              name="role"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Role</FormLabel>
+                  <Select 
+                    onValueChange={field.onChange} 
+                    defaultValue={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select your role" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {userRoles.map((role) => (
+                        <SelectItem key={role.value} value={role.value}>
+                          {role.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                   <FormMessage />
                 </FormItem>
               )}

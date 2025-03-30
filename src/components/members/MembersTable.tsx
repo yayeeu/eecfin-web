@@ -15,9 +15,14 @@ import { Mail, Phone, MapPin, User } from 'lucide-react';
 interface MembersTableProps {
   members: Member[];
   onMemberClick: (memberId: string) => void;
+  readOnly?: boolean;
 }
 
-const MembersTable: React.FC<MembersTableProps> = ({ members, onMemberClick }) => {
+const MembersTable: React.FC<MembersTableProps> = ({ 
+  members, 
+  onMemberClick,
+  readOnly = false
+}) => {
   if (members.length === 0) {
     return (
       <div className="p-8 text-center">
@@ -38,13 +43,14 @@ const MembersTable: React.FC<MembersTableProps> = ({ members, onMemberClick }) =
           <TableHead>Contact</TableHead>
           <TableHead>Address</TableHead>
           <TableHead>Status</TableHead>
+          {!readOnly && <TableHead>Role</TableHead>}
         </TableRow>
       </TableHeader>
       <TableBody>
         {members.map((member) => (
           <TableRow 
             key={member.id} 
-            className="cursor-pointer hover:bg-gray-50"
+            className={`${!readOnly ? 'cursor-pointer hover:bg-gray-50' : ''}`}
             onClick={() => onMemberClick(member.id)}
           >
             <TableCell className="font-medium">
@@ -87,6 +93,13 @@ const MembersTable: React.FC<MembersTableProps> = ({ members, onMemberClick }) =
                 {member.status || 'Unknown'}
               </Badge>
             </TableCell>
+            {!readOnly && (
+              <TableCell>
+                <span className="text-sm">
+                  {member.roles?.name || member.role || 'Regular Member'}
+                </span>
+              </TableCell>
+            )}
           </TableRow>
         ))}
       </TableBody>

@@ -2,21 +2,29 @@
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
+import * as z from 'zod';
 import { useMutation } from '@tanstack/react-query';
 import { createContactLog } from '@/lib/contactLogService';
 import { useToast } from '@/hooks/use-toast';
-import { Form, FormControl, FormField, FormItem, FormLabel } from '@/components/ui/form';
-import { Textarea } from '@/components/ui/textarea';
-import { Button } from '@/components/ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Flag } from 'lucide-react';
-import { Switch } from '@/components/ui/switch';
 import { ContactLog } from '@/types/database.types';
 
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form';
+import { Button } from '@/components/ui/button';
+import { Textarea } from '@/components/ui/textarea';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+
+// Update the form schema to use the correct contact type values
 const formSchema = z.object({
-  contact_type: z.string({ required_error: "Contact type is required" }),
-  notes: z.string().min(1, "Notes are required"),
+  contact_type: z.enum(['Text Message', 'In Person', 'Phone Call', 'Email', 'Other']),
+  notes: z.string().min(1, 'Notes are required'),
   flagged: z.boolean().default(false),
 });
 
@@ -42,19 +50,18 @@ const ContactLogForm: React.FC<ContactLogFormProps> = ({
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      contact_type: initialData?.contact_type || '',
+      contact_type: initialData?.contact_type as 'Text Message' | 'In Person' | 'Phone Call' | 'Email' | 'Other' || 'In Person',
       notes: initialData?.notes || '',
       flagged: initialData?.flagged || false,
     },
   });
   
   const contactTypes = [
-    { value: 'phone', label: 'Phone Call' },
-    { value: 'visit', label: 'Home Visit' },
-    { value: 'email', label: 'Email' },
-    { value: 'text', label: 'Text Message' },
-    { value: 'meeting', label: 'In-person Meeting' },
-    { value: 'other', label: 'Other' },
+    { value: 'Text Message', label: 'Text Message' },
+    { value: 'In Person', label: 'In Person' },
+    { value: 'Phone Call', label: 'Phone Call' },
+    { value: 'Email', label: 'Email' },
+    { value: 'Other', label: 'Other' },
   ];
   
   // Fix: Update the mutation to accept the correct parameter format
@@ -70,12 +77,10 @@ const ContactLogForm: React.FC<ContactLogFormProps> = ({
     },
     onSuccess: () => {
       toast({
-        title: "Contact log created",
-        description: "The contact log has been successfully created.",
+        title: 'Contact log created',
+        description: 'The contact log has been created successfully',
       });
-      
       form.reset();
-      
       if (onSuccess) {
         onSuccess();
       }
@@ -83,9 +88,9 @@ const ContactLogForm: React.FC<ContactLogFormProps> = ({
     onError: (error) => {
       console.error('Error creating contact log:', error);
       toast({
-        title: "Error",
-        description: "There was an error creating the contact log. Please try again.",
-        variant: "destructive",
+        title: 'Error',
+        description: 'There was a problem creating the contact log',
+        variant: 'destructive',
       });
     },
   });
@@ -126,6 +131,7 @@ const ContactLogForm: React.FC<ContactLogFormProps> = ({
                   ))}
                 </SelectContent>
               </Select>
+              <FormMessage />
             </FormItem>
           )}
         />
@@ -137,12 +143,13 @@ const ContactLogForm: React.FC<ContactLogFormProps> = ({
             <FormItem>
               <FormLabel>Notes</FormLabel>
               <FormControl>
-                <Textarea
-                  placeholder="Enter details about the contact..."
-                  rows={4}
-                  {...field}
+                <Textarea 
+                  placeholder="Enter notes about the contact" 
+                  className="min-h-[120px]" 
+                  {...field} 
                 />
               </FormControl>
+              <FormMessage />
             </FormItem>
           )}
         />
@@ -151,19 +158,19 @@ const ContactLogForm: React.FC<ContactLogFormProps> = ({
           control={form.control}
           name="flagged"
           render={({ field }) => (
-            <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3">
-              <div className="space-y-0.5">
-                <FormLabel className="text-base flex items-center">
-                  <Flag className="h-4 w-4 mr-2" />
-                  Flag for Follow-up
-                </FormLabel>
-              </div>
+            <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
               <FormControl>
-                <Switch
+                <Checkbox
                   checked={field.value}
                   onCheckedChange={field.onChange}
                 />
               </FormControl>
+              <div className="space-y-1 leading-none">
+                <FormLabel>Flag for Follow-up</FormLabel>
+                <p className="text-sm text-gray-500">
+                  Mark this contact for follow-up action
+                </p>
+              </div>
             </FormItem>
           )}
         />

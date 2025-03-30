@@ -5,15 +5,20 @@ import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { Member } from '@/types/database.types';
 
+// Define user roles
+export type UserRole = 'admin' | 'it' | 'member' | 'elder';
+
 type AuthContextType = {
   user: User | null;
   session: Session | null;
   userProfile: Member | null;
+  userRole: UserRole | null;
   loading: boolean;
   signIn: (email: string, password: string) => Promise<void>;
   signUp: (email: string, password: string, formData: any) => Promise<void>;
   signOut: () => Promise<void>;
   updateProfile: (data: any) => Promise<void>;
+  hasPermission: (allowedRoles: UserRole[]) => boolean;
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -21,6 +26,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [userProfile, setUserProfile] = useState<Member | null>(null);
+  const [userRole, setUserRole] = useState<UserRole | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
@@ -42,6 +48,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           fetchUserProfile(newSession?.user?.id);
         } else if (event === 'SIGNED_OUT') {
           setUserProfile(null);
+          setUserRole(null);
           toast({
             title: 'Signed out successfully',
             description: 'You have been logged out.',
@@ -82,6 +89,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
       
       setUserProfile(data as Member);
+      
+      // Determine user role from profile data
+      if (data) {
+        const roleName = data.roles?.name?.toLowerCase() || data.role?.toLowerCase();
+        if (roleName === 'admin') {
+          setUserRole('admin');
+        } else if (roleName === 'it') {
+          setUserRole('it');
+        } else if (roleName === 'elder') {
+          setUserRole('elder');
+        } else {
+          setUserRole('member');
+        }
+      }
     } catch (error) {
       console.error('Error in fetch user profile:', error);
     }
@@ -109,6 +130,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         options: {
           data: {
             name: formData.name,
+            role: formData.role || 'member', // Default to member role
           },
         },
       });
@@ -169,15 +191,28 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  // Helper function to check if user has permission based on role
+  const hasPermission = (allowedRoles: UserRole[]): boolean => {
+    if (!userRole) return false;
+    
+    // Admin always has permission to everything
+    if (userRole === 'admin') return true;
+    
+    // Check if user's role is in the list of allowed roles
+    return allowedRoles.includes(userRole);
+  };
+
   const value = {
     user,
     userProfile,
+    userRole,
     session,
     loading,
     signIn,
     signUp,
     signOut,
     updateProfile,
+    hasPermission,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
