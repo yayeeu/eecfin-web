@@ -6,10 +6,18 @@ import { Handshake, ChevronRight, ChevronLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import MinistryCard from './MinistryCard';
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 
 const MinistrySection: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
-  const ministriesPerPage = 3;
+  const ministriesPerPage = 6; // Changed from 3 to 6
   
   // Optimize data fetching
   const { data: ministries, isLoading, error } = useQuery({
@@ -86,31 +94,35 @@ const MinistrySection: React.FC = () => {
           
           {/* Pagination controls */}
           {totalPages > 1 && (
-            <div className="flex items-center justify-center gap-4 mt-8">
-              <Button 
-                variant="outline" 
-                onClick={goToPrevPage}
-                disabled={currentPage === 1}
-                className="text-eecfin-navy"
-              >
-                <ChevronLeft className="h-4 w-4 mr-1" />
-                Previous
-              </Button>
-              
-              <span className="text-sm">
-                Page {currentPage} of {totalPages}
-              </span>
-              
-              <Button 
-                variant="outline" 
-                onClick={goToNextPage}
-                disabled={currentPage === totalPages}
-                className="text-eecfin-navy"
-              >
-                Next
-                <ChevronRight className="h-4 w-4 ml-1" />
-              </Button>
-            </div>
+            <Pagination className="mt-8">
+              <PaginationContent>
+                <PaginationItem>
+                  <PaginationPrevious 
+                    onClick={goToPrevPage} 
+                    className={currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer text-eecfin-navy"}
+                  />
+                </PaginationItem>
+                
+                {Array.from({ length: totalPages }).map((_, i) => (
+                  <PaginationItem key={i}>
+                    <PaginationLink 
+                      isActive={currentPage === i + 1}
+                      onClick={() => setCurrentPage(i + 1)}
+                      className={currentPage === i + 1 ? "bg-eecfin-navy text-white hover:bg-eecfin-navy/90" : "text-eecfin-navy"}
+                    >
+                      {i + 1}
+                    </PaginationLink>
+                  </PaginationItem>
+                ))}
+                
+                <PaginationItem>
+                  <PaginationNext 
+                    onClick={goToNextPage} 
+                    className={currentPage === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer text-eecfin-navy"}
+                  />
+                </PaginationItem>
+              </PaginationContent>
+            </Pagination>
           )}
         </div>
       ) : (
