@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { Calendar, Users, Heart, Video } from 'lucide-react';
@@ -7,6 +6,7 @@ import ImageSlider from '../components/ImageSlider';
 import YouTubeEmbed from '../components/YouTubeEmbed';
 import { useQuery } from '@tanstack/react-query';
 import { fetchEvents } from '@/lib/googleCalendar';
+import EmptyState from '@/components/events/EmptyState';
 
 const Home = () => {
   const { data: events, isLoading } = useQuery({
@@ -166,17 +166,9 @@ const Home = () => {
               ))}
             </div>
           ) : (
-            <div className="bg-gray-50 rounded-lg p-8 text-center">
-              <Calendar className="h-12 w-12 text-eecfin-navy mx-auto mb-4 opacity-60" />
-              <h3 className="text-xl font-medium mb-2">No upcoming events</h3>
-              <p className="text-gray-600 mb-6">
-                We don't have any events scheduled at the moment. 
-                Please check back soon for upcoming services and gatherings.
-              </p>
-              <Button asChild className="bg-eecfin-navy hover:bg-eecfin-navy/80">
-                <Link to="/contact">Contact Us</Link>
-              </Button>
-            </div>
+            <EmptyState 
+              message="We don't have any events scheduled at the moment. Please check back soon for upcoming services and gatherings." 
+            />
           )}
         </div>
       </section>
