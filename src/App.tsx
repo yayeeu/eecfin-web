@@ -42,6 +42,24 @@ const PageLoader = () => (
   </div>
 );
 
+// Define public routes and protected routes
+const publicRoutes = [
+  { path: "/", element: <Index /> },
+  { path: "/who-we-are", element: <WhoWeAre /> },
+  { path: "/our-faith", element: <OurFaith /> },
+  { path: "/events", element: <Events /> },
+  { path: "/sermons", element: <Sermons /> },
+  { path: "/contact", element: <Contact /> },
+  { path: "/get-involved", element: <GetInvolved /> },
+  { path: "/give", element: <Give /> },
+  { path: "/constitution", element: <Constitution /> }
+];
+
+const protectedRoutes = [
+  { path: "/admin", element: <Admin />, roles: ['admin', 'member', 'elder', 'it'] },
+  { path: "/profile", element: <Profile />, roles: ['admin', 'member', 'elder', 'it'] }
+];
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <AuthProvider>
@@ -50,102 +68,53 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <Routes>
-            <Route path="/" element={
-              <RoleGuard allowedRoles={['admin', 'member', 'elder', 'it']} isPublicRoute={true}>
-                <Index />
-              </RoleGuard>
-            } />
-            <Route path="/who-we-are" element={
-              <RoleGuard allowedRoles={['admin', 'member', 'elder', 'it']} isPublicRoute={true}>
-                <Layout>
-                  <Suspense fallback={<PageLoader />}>
-                    <WhoWeAre />
-                  </Suspense>
-                </Layout>
-              </RoleGuard>
-            } />
-            <Route path="/our-faith" element={
-              <RoleGuard allowedRoles={['admin', 'member', 'elder', 'it']} isPublicRoute={true}>
-                <Layout>
-                  <Suspense fallback={<PageLoader />}>
-                    <OurFaith />
-                  </Suspense>
-                </Layout>
-              </RoleGuard>
-            } />
-            <Route path="/events" element={
-              <RoleGuard allowedRoles={['admin', 'member', 'elder', 'it']} isPublicRoute={true}>
-                <Layout>
-                  <Suspense fallback={<PageLoader />}>
-                    <Events />
-                  </Suspense>
-                </Layout>
-              </RoleGuard>
-            } />
-            <Route path="/sermons" element={
-              <RoleGuard allowedRoles={['admin', 'member', 'elder', 'it']} isPublicRoute={true}>
-                <Layout>
-                  <Suspense fallback={<PageLoader />}>
-                    <Sermons />
-                  </Suspense>
-                </Layout>
-              </RoleGuard>
-            } />
-            <Route path="/contact" element={
-              <RoleGuard allowedRoles={['admin', 'member', 'elder', 'it']} isPublicRoute={true}>
-                <Layout>
-                  <Suspense fallback={<PageLoader />}>
-                    <Contact />
-                  </Suspense>
-                </Layout>
-              </RoleGuard>
-            } />
-            <Route path="/get-involved" element={
-              <RoleGuard allowedRoles={['admin', 'member', 'elder', 'it']} isPublicRoute={true}>
-                <Layout>
-                  <Suspense fallback={<PageLoader />}>
-                    <GetInvolved />
-                  </Suspense>
-                </Layout>
-              </RoleGuard>
-            } />
-            <Route path="/give" element={
-              <RoleGuard allowedRoles={['admin', 'member', 'elder', 'it']} isPublicRoute={true}>
-                <Layout>
-                  <Suspense fallback={<PageLoader />}>
-                    <Give />
-                  </Suspense>
-                </Layout>
-              </RoleGuard>
-            } />
-            <Route path="/constitution" element={
-              <RoleGuard allowedRoles={['admin', 'member', 'elder', 'it']} isPublicRoute={true}>
-                <Layout>
-                  <Suspense fallback={<PageLoader />}>
-                    <Constitution />
-                  </Suspense>
-                </Layout>
-              </RoleGuard>
-            } />
-            <Route path="/auth" element={
-              <Suspense fallback={<PageLoader />}>
-                <Auth />
-              </Suspense>
-            } />
-            <Route path="/profile" element={
-              <RoleGuard allowedRoles={['admin', 'member', 'elder', 'it']}>
+            {/* Public Routes */}
+            {publicRoutes.map(route => (
+              <Route 
+                key={route.path} 
+                path={route.path} 
+                element={
+                  <RoleGuard allowedRoles={['admin', 'member', 'elder', 'it']} isPublicRoute={true}>
+                    {route.path === "/" ? (
+                      route.element
+                    ) : (
+                      <Layout>
+                        <Suspense fallback={<PageLoader />}>
+                          {route.element}
+                        </Suspense>
+                      </Layout>
+                    )}
+                  </RoleGuard>
+                } 
+              />
+            ))}
+
+            {/* Auth Route */}
+            <Route 
+              path="/auth" 
+              element={
                 <Suspense fallback={<PageLoader />}>
-                  <Profile />
+                  <Auth />
                 </Suspense>
-              </RoleGuard>
-            } />
-            <Route path="/admin" element={
-              <RoleGuard allowedRoles={['admin', 'member', 'elder', 'it']}>
-                <Suspense fallback={<PageLoader />}>
-                  <Admin />
-                </Suspense>
-              </RoleGuard>
-            } />
+              } 
+            />
+
+            {/* Protected Routes */}
+            {protectedRoutes.map(route => (
+              <Route 
+                key={route.path} 
+                path={route.path} 
+                element={
+                  <RoleGuard allowedRoles={route.roles}>
+                    <Suspense fallback={<PageLoader />}>
+                      {route.element}
+                    </Suspense>
+                  </RoleGuard>
+                } 
+              />
+            ))}
+
+            {/* 404 Route */}
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>

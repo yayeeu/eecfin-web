@@ -8,11 +8,9 @@ import { useAuth } from '@/contexts/AuthContext';
 const AdminLink = () => {
   const { user } = useAuth();
   
-  const targetRoute = user ? "/admin" : "/auth";
-  
   return (
     <Button variant="ghost" size="sm" asChild className="text-eecfin-gold hover:text-white">
-      <Link to={targetRoute} className="flex items-center gap-1">
+      <Link to={user ? "/admin" : "/auth"} className="flex items-center gap-1">
         {user ? (
           <>
             <UserCircle className="h-4 w-4" />
