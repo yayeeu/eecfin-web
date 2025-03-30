@@ -52,7 +52,7 @@ export const getMinistries = async (activeOnly = false) => {
   
   let query = supabase!
     .from('ministries')
-    .select('*, members!ministries_contact_person_id_fkey(id, name, email, phone)');
+    .select('*, contact_elder:members!ministries_contact_person_id_fkey(id, name, email, phone)');
   
   if (activeOnly) {
     query = query.eq('status', 'active');
@@ -82,7 +82,7 @@ export const getMinistry = async (id: string) => {
   
   const { data, error } = await supabase!
     .from('ministries')
-    .select('*, members!ministries_contact_person_id_fkey(id, name, email)')
+    .select('*, contact_elder:members!ministries_contact_person_id_fkey(id, name, email, phone)')
     .eq('id', id)
     .single();
   

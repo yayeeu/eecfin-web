@@ -38,13 +38,13 @@ const GetInvolved = () => {
             <p className="text-gray-600 mb-4">{ministry.description}</p>
             
             <div className="space-y-2 mb-6">
-              {ministry.members?.name ? (
+              {ministry.contact_elder ? (
                 <>
                   <div className="flex items-start text-gray-700">
                     <User className="h-4 w-4 mr-2 mt-1 text-eecfin-navy" />
                     <div>
                       <p className="font-medium">Contact Elder:</p> 
-                      <p>{ministry.members.name}</p>
+                      <p>{ministry.contact_elder.name}</p>
                     </div>
                   </div>
                 </>
@@ -71,11 +71,11 @@ const GetInvolved = () => {
                 </div>
               )}
               
-              {ministry.members?.phone && (
+              {ministry.contact_elder?.phone && (
                 <div className="flex items-center text-gray-700">
                   <Phone className="h-4 w-4 mr-2 text-eecfin-navy" />
-                  <a href={`tel:${ministry.members.phone}`} className="hover:text-eecfin-navy">
-                    {ministry.members.phone}
+                  <a href={`tel:${ministry.contact_elder.phone}`} className="hover:text-eecfin-navy">
+                    {ministry.contact_elder.phone}
                   </a>
                 </div>
               )}

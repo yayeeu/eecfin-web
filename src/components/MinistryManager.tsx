@@ -189,6 +189,16 @@ const MinistryManager = () => {
     form.setValue('contact_person_id', contactPersonId);
   };
 
+  const handleDeleteClick = (id: string) => {
+    setDeleteConfirm(id);
+  };
+
+  const handleConfirmDelete = () => {
+    if (deleteConfirm) {
+      deleteMutation.mutate(deleteConfirm);
+    }
+  };
+
   const isLoading = ministriesLoading || membersLoading || eldersLoading;
 
   if (isLoading) {
