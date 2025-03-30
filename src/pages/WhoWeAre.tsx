@@ -16,7 +16,7 @@ const WhoWeAre = () => {
           />
           <div className="absolute inset-0 bg-eecfin-navy/50"></div>
         </div>
-        <div className="container-custom text-center relative z-10 py-20">
+        <div className="container-custom text-center relative z-10 py-16">
           <h1 className="text-4xl md:text-5xl font-bold mb-6 text-white">Who We Are</h1>
           <p className="text-xl max-w-3xl mx-auto text-white/90">
             Learn about our church, our beliefs, and our journey serving the Ethiopian community in Finland.
