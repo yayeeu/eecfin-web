@@ -79,7 +79,7 @@ const MembersTable: React.FC<MembersTableProps> = ({ members, onMemberClick }) =
             <TableCell>
               <Badge 
                 variant={
-                  member.status === 'active' ? 'default' : 
+                  member.status === 'active' ? 'success' : 
                   member.status === 'inactive' ? 'secondary' : 
                   'outline'
                 }

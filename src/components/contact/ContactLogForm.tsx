@@ -25,18 +25,26 @@ type FormValues = z.infer<typeof formSchema>;
 interface ContactLogFormProps {
   elderId: string;
   memberId: string;
+  initialData?: ContactLog;
   onSuccess?: () => void;
+  onCancel?: () => void;
 }
 
-const ContactLogForm: React.FC<ContactLogFormProps> = ({ elderId, memberId, onSuccess }) => {
+const ContactLogForm: React.FC<ContactLogFormProps> = ({ 
+  elderId, 
+  memberId, 
+  initialData, 
+  onSuccess,
+  onCancel 
+}) => {
   const { toast } = useToast();
   
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      contact_type: '',
-      notes: '',
-      flagged: false,
+      contact_type: initialData?.contact_type || '',
+      notes: initialData?.notes || '',
+      flagged: initialData?.flagged || false,
     },
   });
   
@@ -49,11 +57,10 @@ const ContactLogForm: React.FC<ContactLogFormProps> = ({ elderId, memberId, onSu
     { value: 'other', label: 'Other' },
   ];
   
-  // Update the mutation to accept the correct parameter format
+  // Fix: Update the mutation to accept the correct parameter format
   const mutation = useMutation({
-    mutationFn: (params: { id: string; data: FormValues }) => {
-      const { id, data } = params;
-      return createContactLog(id, {
+    mutationFn: (data: FormValues) => {
+      return createContactLog({
         elder_id: elderId,
         member_id: memberId,
         contact_type: data.contact_type,
@@ -84,7 +91,13 @@ const ContactLogForm: React.FC<ContactLogFormProps> = ({ elderId, memberId, onSu
   });
   
   const onSubmit = (data: FormValues) => {
-    mutation.mutate({ id: memberId, data });
+    mutation.mutate(data);
+  };
+
+  const handleCancel = () => {
+    if (onCancel) {
+      onCancel();
+    }
   };
   
   return (
@@ -155,13 +168,23 @@ const ContactLogForm: React.FC<ContactLogFormProps> = ({ elderId, memberId, onSu
           )}
         />
         
-        <Button 
-          type="submit" 
-          className="w-full"
-          disabled={mutation.isPending}
-        >
-          {mutation.isPending ? 'Saving...' : 'Save Contact Log'}
-        </Button>
+        <div className="flex justify-end space-x-2">
+          {onCancel && (
+            <Button 
+              type="button" 
+              variant="outline"
+              onClick={handleCancel}
+            >
+              Cancel
+            </Button>
+          )}
+          <Button 
+            type="submit" 
+            disabled={mutation.isPending}
+          >
+            {mutation.isPending ? 'Saving...' : initialData ? 'Update Contact Log' : 'Save Contact Log'}
+          </Button>
+        </div>
       </form>
     </Form>
   );
