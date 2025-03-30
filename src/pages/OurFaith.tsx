@@ -30,11 +30,12 @@ const OurFaith = () => {
           <img 
             src="/lovable-uploads/01e779b2-ee2a-4a84-a799-ad97fdc1319f.png" 
             alt="Statement of Faith" 
-            className="w-full h-full object-cover"
+            className="w-full h-full object-cover opacity-30"
           />
+          <div className="absolute inset-0 bg-eecfin-navy/50"></div>
         </div>
-        <div className="container-custom text-center relative z-10 py-24">
-          <h1 className="text-5xl md:text-6xl font-bold mb-6 text-eecfin-gold">
+        <div className="container-custom text-center relative z-10 py-16">
+          <h1 className="text-4xl md:text-5xl font-bold mb-6 text-white">
             EECFIN
           </h1>
           <h2 className="text-3xl md:text-4xl font-semibold text-white mb-4">
