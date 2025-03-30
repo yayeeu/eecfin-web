@@ -1,9 +1,6 @@
 
 import { format } from 'date-fns';
-
-// The Google Calendar API key (this is a placeholder - you'll need to replace with your actual API key)
-const API_KEY = 'YOUR_GOOGLE_API_KEY'; // Replace with your actual API key
-const CALENDAR_ID = 'YOUR_CALENDAR_ID'; // Replace with your actual calendar ID (typically an email address)
+import { supabase } from "@/integrations/supabase/client";
 
 // Type for the Google Calendar API response
 interface GoogleCalendarEvent {
@@ -41,34 +38,35 @@ export interface Event {
 }
 
 /**
- * Fetches events from Google Calendar API
+ * Fetches events from Google Calendar API via Supabase Edge Function
  */
 export async function fetchEvents(): Promise<Event[]> {
-  // For development/testing, return mock data
-  // Remove this and uncomment the API fetch code when you have your API key
-  return getMockEvents();
-
-  // Uncomment this code when you have your Google Calendar API key
-  /*
   try {
-    const timeMin = new Date().toISOString();
-    const url = `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(
-      CALENDAR_ID
-    )}/events?key=${API_KEY}&timeMin=${timeMin}&maxResults=10&singleEvents=true&orderBy=startTime`;
-
-    const response = await fetch(url);
+    // Check if we're in development or if Supabase is not configured
+    const isDevelopment = import.meta.env.DEV && !import.meta.env.VITE_SUPABASE_URL;
     
-    if (!response.ok) {
-      throw new Error(`Failed to fetch events: ${response.statusText}`);
+    if (isDevelopment) {
+      console.info('Using mock data for events');
+      return getMockEvents();
     }
-
-    const data = await response.json();
+    
+    // Call the Supabase Edge Function to get calendar events
+    const { data, error } = await supabase.functions.invoke('fetch-calendar-events', {
+      method: 'GET'
+    });
+    
+    if (error) {
+      console.error('Error fetching events:', error);
+      throw error;
+    }
+    
+    // Format the events returned from the edge function
     return formatEvents(data.items);
   } catch (error) {
     console.error('Error fetching events:', error);
-    throw error;
+    // Return mock events as fallback
+    return getMockEvents();
   }
-  */
 }
 
 /**
