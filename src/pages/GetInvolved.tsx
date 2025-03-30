@@ -14,10 +14,14 @@ const GetInvolved = () => {
       <div className="bg-white py-16">
         <div className="container-custom grid md:grid-cols-2 gap-8">
           {/* Left column - Ministries */}
-          <MinistrySection />
+          <div className="md:col-span-1">
+            <MinistrySection />
+          </div>
           
           {/* Right column - Small Groups */}
-          <SmallGroupSection />
+          <div className="md:col-span-1">
+            <SmallGroupSection />
+          </div>
         </div>
       </div>
       
