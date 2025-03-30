@@ -38,7 +38,7 @@ export interface Member {
   role?: string;
   role_id?: string;
   ministry_id?: string;
-  // New/existing fields from database
+  // Fields from database
   gender?: string;
   marital_status?: string;
   spouse_name?: string;

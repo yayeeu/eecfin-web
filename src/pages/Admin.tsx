@@ -3,19 +3,21 @@ import React, { useState } from 'react';
 import { SidebarProvider, Sidebar, SidebarContent, SidebarHeader, SidebarGroup, 
   SidebarGroupLabel, SidebarGroupContent, SidebarMenu, SidebarMenuItem, 
   SidebarMenuButton, SidebarFooter } from "@/components/ui/sidebar";
-import { Image, Settings, Home, LogOut, Users, UserCheck, User } from 'lucide-react';
+import { Image, Settings, Home, LogOut, Users, UserCheck, User, BarChart } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Separator } from "@/components/ui/separator";
 import SliderManager from '@/components/SliderManager';
 import MinistryManager from '@/components/MinistryManager';
 import ElderManager from '@/components/ElderManager';
 import MemberManager from '@/components/MemberManager';
+import Dashboard from '@/components/Dashboard';
 
 const Admin = () => {
-  const [activeSection, setActiveSection] = useState<string>('slider');
+  const [activeSection, setActiveSection] = useState<string>('dashboard');
   const navigate = useNavigate();
 
   const menuItems = [
+    { id: 'dashboard', label: 'Dashboard', icon: BarChart },
     { id: 'slider', label: 'Slider Images', icon: Image },
     { id: 'ministries', label: 'Ministries', icon: Users },
     { id: 'elders', label: 'Church Elders', icon: UserCheck },
@@ -105,14 +107,17 @@ const Admin = () => {
           <div className="flex-1 p-6">
             <div className="mb-8">
               <h1 className="text-3xl font-bold text-eecfin-navy">
-                {activeSection === 'slider' ? 'Manage Slider Images' : 
+                {activeSection === 'dashboard' ? 'Church Dashboard' :
+                 activeSection === 'slider' ? 'Manage Slider Images' : 
                  activeSection === 'ministries' ? 'Manage Ministries' :
                  activeSection === 'elders' ? 'Manage Church Elders' :
                  activeSection === 'members' ? 'All Church Members' :
                  'Settings'}
               </h1>
               <p className="text-gray-500 mt-2">
-                {activeSection === 'slider' 
+                {activeSection === 'dashboard'
+                  ? 'Overview of church metrics, member statistics, and ministry activity.'
+                  : activeSection === 'slider' 
                   ? 'Add, edit, or delete slider images displayed on the homepage.' 
                   : activeSection === 'ministries'
                   ? 'Add, edit, or delete ministry information displayed on the Get Involved page.'
@@ -124,6 +129,7 @@ const Admin = () => {
               </p>
             </div>
             
+            {activeSection === 'dashboard' && <Dashboard />}
             {activeSection === 'slider' && <SliderManager />}
             {activeSection === 'ministries' && <MinistryManager />}
             {activeSection === 'elders' && <ElderManager />}
