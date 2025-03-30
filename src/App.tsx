@@ -110,22 +110,31 @@ const App = () => (
               } 
             />
 
-            {/* Protected Routes */}
-            {protectedRoutes.map(route => (
-              <Route 
-                key={route.path} 
-                path={route.path} 
-                element={
-                  <RoleGuard allowedRoles={route.roles}>
-                    <Layout>
-                      <Suspense fallback={<PageLoader />}>
-                        {route.element}
-                      </Suspense>
-                    </Layout>
-                  </RoleGuard>
-                } 
-              />
-            ))}
+            {/* Admin Route - Without Layout component */}
+            <Route 
+              path="/admin" 
+              element={
+                <RoleGuard allowedRoles={['admin', 'elder', 'it', 'volunteer']}>
+                  <Suspense fallback={<PageLoader />}>
+                    <Admin />
+                  </Suspense>
+                </RoleGuard>
+              } 
+            />
+
+            {/* Profile Route */}
+            <Route 
+              path="/profile" 
+              element={
+                <RoleGuard allowedRoles={['admin', 'member', 'elder', 'it', 'volunteer']}>
+                  <Layout>
+                    <Suspense fallback={<PageLoader />}>
+                      <Profile />
+                    </Suspense>
+                  </Layout>
+                </RoleGuard>
+              } 
+            />
 
             {/* 404 Route */}
             <Route path="*" element={<NotFound />} />
