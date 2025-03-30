@@ -30,6 +30,11 @@ serve(async (req) => {
 
     const data = await response.json();
     
+    // Ensure we return an empty items array if there are no events
+    if (!data.items) {
+      data.items = [];
+    }
+    
     return new Response(
       JSON.stringify(data),
       { headers: { "Content-Type": "application/json" } }

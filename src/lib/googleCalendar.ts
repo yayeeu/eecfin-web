@@ -46,8 +46,8 @@ export async function fetchEvents(): Promise<Event[]> {
     const isDevelopment = import.meta.env.DEV && !import.meta.env.VITE_SUPABASE_URL;
     
     if (isDevelopment) {
-      console.info('Using mock data for events');
-      return getMockEvents();
+      console.info('Using mock data for events in development environment');
+      return [];  // Return empty array instead of mock data
     }
     
     // Call the Supabase Edge Function to get calendar events
@@ -57,15 +57,14 @@ export async function fetchEvents(): Promise<Event[]> {
     
     if (error) {
       console.error('Error fetching events:', error);
-      throw error;
+      return []; // Return empty array instead of falling back to mock data
     }
     
     // Format the events returned from the edge function
-    return formatEvents(data.items);
+    return formatEvents(data.items || []);
   } catch (error) {
     console.error('Error fetching events:', error);
-    // Return mock events as fallback
-    return getMockEvents();
+    return []; // Return empty array instead of falling back to mock data
   }
 }
 
@@ -73,6 +72,10 @@ export async function fetchEvents(): Promise<Event[]> {
  * Formats the Google Calendar events into our application format
  */
 function formatEvents(googleEvents: GoogleCalendarEvent[]): Event[] {
+  if (!googleEvents || googleEvents.length === 0) {
+    return [];
+  }
+  
   return googleEvents.map(event => {
     const startTime = new Date(event.start.dateTime);
     
@@ -102,53 +105,4 @@ function formatEvents(googleEvents: GoogleCalendarEvent[]): Event[] {
   });
 }
 
-/**
- * Returns mock events for development/testing
- */
-function getMockEvents(): Event[] {
-  const today = new Date();
-  const nextWeek = new Date(today);
-  nextWeek.setDate(today.getDate() + 7);
-  
-  const twoWeeks = new Date(today);
-  twoWeeks.setDate(today.getDate() + 14);
-  
-  return [
-    {
-      id: '1',
-      title: 'Sunday Worship Service',
-      description: 'Join us for our weekly worship service with praise, prayer, and a message from God\'s Word.',
-      location: 'Main Hall, Helsinki',
-      startTime: new Date(today.setHours(10, 0, 0, 0)),
-      endTime: new Date(today.setHours(12, 0, 0, 0)),
-      day: today.getDate(),
-      month: format(today, 'MMMM'),
-      year: today.getFullYear(),
-      image: '/images/worship-service.jpg' // Mock image path
-    },
-    {
-      id: '2',
-      title: 'Midweek Bible Study',
-      description: 'Deepen your understanding of Scripture in our midweek Bible study group.',
-      location: 'Community Room, Helsinki',
-      startTime: new Date(nextWeek.setHours(18, 30, 0, 0)),
-      endTime: new Date(nextWeek.setHours(20, 0, 0, 0)),
-      day: nextWeek.getDate(),
-      month: format(nextWeek, 'MMMM'),
-      year: nextWeek.getFullYear(),
-      // No image for this event to demonstrate the conditional rendering
-    },
-    {
-      id: '3',
-      title: 'Youth Fellowship',
-      description: 'Special gathering for teenagers and young adults with games, discussions, and fellowship.',
-      location: 'Youth Center, Helsinki',
-      startTime: new Date(twoWeeks.setHours(15, 0, 0, 0)),
-      endTime: new Date(twoWeeks.setHours(17, 0, 0, 0)),
-      day: twoWeeks.getDate(),
-      month: format(twoWeeks, 'MMMM'),
-      year: twoWeeks.getFullYear(),
-      image: '/images/youth-fellowship.jpg' // Mock image path
-    }
-  ];
-}
+// Remove the getMockEvents function completely as we don't want to use it anymore

@@ -9,14 +9,14 @@ import { fetchEvents } from '@/lib/googleCalendar';
 import EmptyState from '@/components/events/EmptyState';
 
 const Home = () => {
-  const { data: events, isLoading } = useQuery({
+  const { data: events = [], isLoading } = useQuery({
     queryKey: ['events-preview'],
     queryFn: fetchEvents,
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
 
   // Get only the next 3 upcoming events
-  const upcomingEvents = events?.slice(0, 3) || [];
+  const upcomingEvents = events.slice(0, 3);
 
   return (
     <div>
