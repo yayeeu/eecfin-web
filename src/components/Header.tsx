@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Menu, X, Mail, Heart, Facebook, Instagram, Youtube } from 'lucide-react';
@@ -16,23 +15,21 @@ const Header = () => {
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
 
-  // Modified navItems to include Constitution
   const navItems = [
     { title: 'Home', path: '/' },
     { title: 'Who We Are', path: '/who-we-are' },
+    { title: 'Our Faith', path: '/our-faith' },
     { title: 'Constitution', path: '/constitution' },
     { title: 'Events', path: '/events' },
     { title: 'Sermons', path: '/sermons' },
     { title: 'Get Involved', path: '/get-involved' },
   ];
 
-  // Top navigation items - Changed "Donate" to "Give"
   const topNavItems = [
     { title: 'Contact', path: '/contact', icon: <Mail size={16} /> },
     { title: 'Give', path: '/give', icon: <Heart size={16} /> },
   ];
 
-  // Social media icons
   const socialIcons = [
     { icon: <Facebook size={16} />, url: "#", ariaLabel: "Facebook" },
     { icon: <Instagram size={16} />, url: "#", ariaLabel: "Instagram" },
@@ -41,11 +38,9 @@ const Header = () => {
 
   return (
     <header>
-      {/* Top Navigation Bar */}
       <div className="bg-eecfin-gold/70 py-1 text-eecfin-navy">
         <div className="container-custom">
           <div className="flex justify-between items-center">
-            {/* Social Media Icons */}
             <div className="flex items-center space-x-3">
               {socialIcons.map((item, index) => (
                 <a 
@@ -59,7 +54,6 @@ const Header = () => {
               ))}
             </div>
 
-            {/* Contact and Donate Links */}
             <div className="flex items-center space-x-4">
               {topNavItems.map((item) => (
                 <Link 
@@ -76,7 +70,6 @@ const Header = () => {
         </div>
       </div>
       
-      {/* Main Navigation */}
       <div className="bg-eecfin-navy py-4 w-full">
         <div className="container-custom">
           <div className="flex items-center justify-between">
@@ -88,7 +81,6 @@ const Header = () => {
               />
             </Link>
 
-            {/* Desktop Navigation */}
             <nav className="hidden md:flex space-x-8">
               {navItems.map((item) => (
                 <Link key={item.path} to={item.path} className="nav-link">
@@ -97,7 +89,6 @@ const Header = () => {
               ))}
             </nav>
 
-            {/* Mobile Menu Button */}
             <button 
               className="md:hidden text-eecfin-gold p-2 focus:outline-none"
               onClick={toggleMenu}
@@ -107,7 +98,6 @@ const Header = () => {
             </button>
           </div>
 
-          {/* Mobile Navigation */}
           {isMenuOpen && (
             <nav className="md:hidden bg-eecfin-navy py-4 flex flex-col space-y-4">
               {navItems.map((item) => (
@@ -120,7 +110,6 @@ const Header = () => {
                   {item.title}
                 </Link>
               ))}
-              {/* Add the top nav items to mobile menu as well */}
               {topNavItems.map((item) => (
                 <Link 
                   key={item.path} 
@@ -132,7 +121,6 @@ const Header = () => {
                   {item.title}
                 </Link>
               ))}
-              {/* Add social media icons to mobile menu */}
               <div className="flex space-x-4 px-4 py-2">
                 {socialIcons.map((item, index) => (
                   <a 

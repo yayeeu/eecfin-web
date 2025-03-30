@@ -11,6 +11,7 @@ import NotFound from "./pages/NotFound";
 
 // Lazy-loaded components for better initial loading performance
 const WhoWeAre = lazy(() => import("./pages/WhoWeAre"));
+const OurFaith = lazy(() => import("./pages/OurFaith"));
 const Events = lazy(() => import("./pages/Events"));
 const Contact = lazy(() => import("./pages/Contact"));
 const GetInvolved = lazy(() => import("./pages/GetInvolved"));
@@ -49,6 +50,13 @@ const App = () => (
             <Layout>
               <Suspense fallback={<PageLoader />}>
                 <WhoWeAre />
+              </Suspense>
+            </Layout>
+          } />
+          <Route path="/our-faith" element={
+            <Layout>
+              <Suspense fallback={<PageLoader />}>
+                <OurFaith />
               </Suspense>
             </Layout>
           } />
