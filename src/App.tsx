@@ -1,4 +1,3 @@
-
 import { Suspense, lazy } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -88,7 +87,9 @@ const App = () => (
                   ) : (
                     <Layout>
                       <Suspense fallback={<PageLoader />}>
-                        {route.element}
+                        <RoleGuard isPublicRoute={true}>
+                          {route.element}
+                        </RoleGuard>
                       </Suspense>
                     </Layout>
                   )
@@ -115,9 +116,11 @@ const App = () => (
                 path={route.path} 
                 element={
                   <RoleGuard allowedRoles={route.roles}>
-                    <Suspense fallback={<PageLoader />}>
-                      {route.element}
-                    </Suspense>
+                    <Layout>
+                      <Suspense fallback={<PageLoader />}>
+                        {route.element}
+                      </Suspense>
+                    </Layout>
                   </RoleGuard>
                 } 
               />

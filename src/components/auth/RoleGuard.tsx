@@ -17,7 +17,7 @@ const RoleGuard: React.FC<RoleGuardProps> = ({
   redirectTo = '/',
   isPublicRoute = false,
 }) => {
-  const { user, loading, hasPermission } = useAuth();
+  const { user, loading, hasPermission, userRole } = useAuth();
   const location = useLocation();
   const currentPath = location.pathname;
   
@@ -42,12 +42,13 @@ const RoleGuard: React.FC<RoleGuardProps> = ({
 
   // For protected routes, if the user is not authenticated, redirect to login
   if (!user) {
+    console.log('User not authenticated, redirecting to auth');
     return <Navigate to="/auth" replace />;
   }
 
   // If user doesn't have the required role, redirect
   if (allowedRoles.length > 0 && !hasPermission(allowedRoles)) {
-    console.log('User does not have required role:', allowedRoles);
+    console.log('User does not have required role:', allowedRoles, 'Current role:', userRole);
     return <Navigate to={redirectTo} replace />;
   }
 
