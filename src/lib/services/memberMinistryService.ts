@@ -16,7 +16,7 @@ export const getMemberMinistries = async (memberId: string) => {
   
   const { data, error } = await supabase!
     .from('member_ministry')
-    .select('ministry_id, ministries(id, name, description, status)')
+    .select('ministry_id, ministry:ministries(id, name, description, contact_name, contact_email, contact_phone, status)')
     .eq('member_id', memberId);
   
   if (error) {
@@ -24,7 +24,8 @@ export const getMemberMinistries = async (memberId: string) => {
     throw error;
   }
   
-  return data.map(item => item.ministries) as Ministry[];
+  // Extract the ministry objects from each row and return them
+  return data.map(item => item.ministry) as Ministry[];
 };
 
 // Assign ministry to member
