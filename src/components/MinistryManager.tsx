@@ -18,6 +18,7 @@ const formSchema = z.object({
   name: z.string().min(1, 'Ministry name is required'),
   description: z.string().min(1, 'Description is required'),
   contact_person_id: z.string().min(1, 'Contact person is required'),
+  contact_email: z.string().email('Please enter a valid email address').min(1, 'Email is required'),
   photo: z.string().optional(),
   status: z.enum(['active', 'inactive'])
 });
@@ -63,8 +64,8 @@ const MinistryManager = () => {
     const ministryData = {
       ...values,
       contact_name: selectedMember.name || '',
-      contact_email: selectedMember.email || '',
-      contact_phone: selectedMember.phone || ''  // This should now work correctly
+      contact_email: values.contact_email, // Use the email from the form
+      contact_phone: selectedMember.phone || ''
     };
 
     console.log("Submitting ministry data:", ministryData);

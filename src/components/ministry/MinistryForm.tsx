@@ -32,6 +32,7 @@ const formSchema = z.object({
   name: z.string().min(1, 'Ministry name is required'),
   description: z.string().min(1, 'Description is required'),
   contact_person_id: z.string().min(1, 'Contact person is required'),
+  contact_email: z.string().email('Please enter a valid email address').min(1, 'Email is required'),
   photo: z.string().optional(),
   status: z.enum(['active', 'inactive'])
 });
@@ -61,10 +62,11 @@ const MinistryForm: React.FC<MinistryFormProps> = ({
   const [imagePreview, setImagePreview] = useState<string | null>(ministry?.photo || null);
   const [isUploading, setIsUploading] = useState(false);
 
-  const emptyMinistry: Omit<Ministry, 'id' | 'created_at' | 'contact_name' | 'contact_email' | 'contact_phone'> = {
+  const emptyMinistry: Omit<Ministry, 'id' | 'created_at' | 'contact_name' | 'contact_phone'> = {
     name: '',
     description: '',
     contact_person_id: '',
+    contact_email: '',
     status: 'active',
     photo: ''
   };
@@ -75,6 +77,7 @@ const MinistryForm: React.FC<MinistryFormProps> = ({
       name: ministry.name,
       description: ministry.description,
       contact_person_id: ministry.contact_person_id || '',
+      contact_email: ministry.contact_email || '',
       status: ministry.status,
       photo: ministry.photo || ''
     } : emptyMinistry
@@ -123,96 +126,125 @@ const MinistryForm: React.FC<MinistryFormProps> = ({
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleFormSubmit)} className="space-y-4">
-        <div className="mb-6">
-          <FormLabel>Ministry Image</FormLabel>
-          <div className="mt-2 flex flex-col items-center">
-            {imagePreview ? (
-              <div className="relative w-full max-w-md aspect-video mb-4 rounded overflow-hidden">
-                <img 
-                  src={imagePreview} 
-                  alt="Ministry preview" 
-                  className="w-full h-full object-cover"
-                />
-                <Button 
-                  type="button"
-                  variant="outline" 
-                  size="sm"
-                  className="absolute bottom-2 right-2 bg-white/80"
-                  onClick={() => {
-                    setImagePreview(null);
-                    form.setValue('photo', '');
-                  }}
-                >
-                  Remove
-                </Button>
-              </div>
-            ) : (
-              <div className="w-full max-w-md aspect-video mb-4 flex items-center justify-center bg-gray-100 rounded">
-                <ImagePlus className="h-12 w-12 text-gray-400" />
-              </div>
-            )}
+      <form onSubmit={form.handleSubmit(handleFormSubmit)} className="space-y-4 max-h-[70vh] overflow-y-auto px-1">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <FormField
+              control={form.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Ministry Name *</FormLabel>
+                  <FormControl>
+                    <Input 
+                      placeholder="Enter ministry name" 
+                      {...field} 
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
             
-            <div className="flex items-center justify-center w-full">
-              <label className="flex flex-col items-center justify-center w-full cursor-pointer">
-                <div className="flex flex-col items-center justify-center">
-                  <Button type="button" variant="outline" className="flex items-center gap-2">
-                    <ImagePlus className="h-4 w-4" />
-                    {imagePreview ? 'Change Image' : 'Upload Image'}
+            <FormField
+              control={form.control}
+              name="description"
+              render={({ field }) => (
+                <FormItem className="mt-4">
+                  <FormLabel>Description *</FormLabel>
+                  <FormControl>
+                    <Textarea 
+                      placeholder="Enter ministry description" 
+                      rows={4} 
+                      {...field} 
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+          
+          <div>
+            <FormLabel className="block mb-2">Ministry Image</FormLabel>
+            <div className="flex flex-col items-center">
+              {imagePreview ? (
+                <div className="relative w-full h-40 mb-4 rounded overflow-hidden">
+                  <img 
+                    src={imagePreview} 
+                    alt="Ministry preview" 
+                    className="w-full h-full object-cover"
+                  />
+                  <Button 
+                    type="button"
+                    variant="outline" 
+                    size="sm"
+                    className="absolute bottom-2 right-2 bg-white/80"
+                    onClick={() => {
+                      setImagePreview(null);
+                      form.setValue('photo', '');
+                    }}
+                  >
+                    Remove
                   </Button>
                 </div>
-                <input 
-                  type="file" 
-                  className="hidden" 
-                  accept="image/*"
-                  onChange={handleImageChange}
-                />
-              </label>
+              ) : (
+                <div className="w-full h-40 mb-4 flex items-center justify-center bg-gray-100 rounded">
+                  <ImagePlus className="h-12 w-12 text-gray-400" />
+                </div>
+              )}
+              
+              <div className="flex items-center justify-center w-full">
+                <label className="flex flex-col items-center justify-center w-full cursor-pointer">
+                  <div className="flex flex-col items-center justify-center">
+                    <Button type="button" variant="outline" className="flex items-center gap-2">
+                      <ImagePlus className="h-4 w-4" />
+                      {imagePreview ? 'Change Image' : 'Upload Image'}
+                    </Button>
+                  </div>
+                  <input 
+                    type="file" 
+                    className="hidden" 
+                    accept="image/*"
+                    onChange={handleImageChange}
+                  />
+                </label>
+              </div>
             </div>
+
+            <FormField
+              control={form.control}
+              name="status"
+              render={({ field }) => (
+                <FormItem className="mt-4">
+                  <FormLabel>Status *</FormLabel>
+                  <FormControl>
+                    <Select 
+                      value={field.value} 
+                      onValueChange={field.onChange}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select ministry status" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="active">Active</SelectItem>
+                        <SelectItem value="inactive">Inactive</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
           </div>
         </div>
-
-        <FormField
-          control={form.control}
-          name="name"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Ministry Name *</FormLabel>
-              <FormControl>
-                <Input 
-                  placeholder="Enter ministry name" 
-                  {...field} 
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="description"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Description *</FormLabel>
-              <FormControl>
-                <Textarea 
-                  placeholder="Enter ministry description" 
-                  rows={4} 
-                  {...field} 
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
 
         <FormField
           control={form.control}
           name="contact_person_id"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Contact Elder *</FormLabel>
+              <FormLabel>Contact Person *</FormLabel>
               <FormControl>
                 <Select 
                   value={field.value} 
@@ -222,7 +254,7 @@ const MinistryForm: React.FC<MinistryFormProps> = ({
                   }}
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="Select a contact elder" />
+                    <SelectValue placeholder="Select a contact person" />
                   </SelectTrigger>
                   <SelectContent>
                     <div className="p-2 border-b">
@@ -265,6 +297,27 @@ const MinistryForm: React.FC<MinistryFormProps> = ({
           )}
         />
 
+        <FormField
+          control={form.control}
+          name="contact_email"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Ministry Email *</FormLabel>
+              <FormControl>
+                <Input 
+                  placeholder="ministry@example.com" 
+                  type="email"
+                  {...field} 
+                />
+              </FormControl>
+              <FormDescription>
+                Email address for the ministry (may be different from contact person's email)
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
         {selectedMember && (
           <div className="p-3 bg-gray-50 rounded-md">
             <p className="text-sm font-medium">Selected Contact Information:</p>
@@ -274,32 +327,7 @@ const MinistryForm: React.FC<MinistryFormProps> = ({
           </div>
         )}
 
-        <FormField
-          control={form.control}
-          name="status"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Status *</FormLabel>
-              <FormControl>
-                <Select 
-                  value={field.value} 
-                  onValueChange={field.onChange}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select ministry status" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="active">Active</SelectItem>
-                    <SelectItem value="inactive">Inactive</SelectItem>
-                  </SelectContent>
-                </Select>
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <DialogFooter>
+        <DialogFooter className="mt-6">
           <Button type="button" variant="outline" onClick={onCancel}>
             Cancel
           </Button>

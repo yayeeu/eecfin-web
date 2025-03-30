@@ -26,7 +26,7 @@ const MinistryCard: React.FC<MinistryCardProps> = ({
     <Card key={ministry.id} className="overflow-hidden">
       {ministry.photo ? (
         <div 
-          className="aspect-video w-full overflow-hidden cursor-pointer hover:opacity-90 transition-opacity relative"
+          className="aspect-video w-full h-40 overflow-hidden cursor-pointer hover:opacity-90 transition-opacity relative"
           onClick={() => onEdit(ministry)}
         >
           <img 
@@ -40,7 +40,7 @@ const MinistryCard: React.FC<MinistryCardProps> = ({
         </div>
       ) : (
         <div 
-          className="aspect-video w-full bg-gray-200 flex items-center justify-center cursor-pointer hover:bg-gray-300 transition-colors"
+          className="aspect-video w-full h-40 bg-gray-200 flex items-center justify-center cursor-pointer hover:bg-gray-300 transition-colors"
           onClick={() => onEdit(ministry)}
         >
           <ImagePlus className="h-12 w-12 text-gray-400" />
@@ -68,22 +68,25 @@ const MinistryCard: React.FC<MinistryCardProps> = ({
       <CardContent>
         <p className="text-sm text-gray-600 line-clamp-3">{ministry.description}</p>
         
-        {contactElder && (
-          <div className="mt-4 space-y-2">
+        <div className="mt-4 space-y-2">
+          {contactElder && contactElder.phone && (
             <div className="flex items-center text-sm text-gray-600">
               <Phone className="h-3 w-3 mr-2" />
               <a href={`tel:${contactElder.phone}`} className="hover:text-eecfin-gold">
                 {contactElder.phone}
               </a>
             </div>
+          )}
+          
+          {ministry.contact_email && (
             <div className="flex items-center text-sm text-gray-600">
               <Mail className="h-3 w-3 mr-2" />
-              <a href={`mailto:${contactElder.email}`} className="hover:text-eecfin-gold">
-                {contactElder.email}
+              <a href={`mailto:${ministry.contact_email}`} className="hover:text-eecfin-gold">
+                {ministry.contact_email}
               </a>
             </div>
-          </div>
-        )}
+          )}
+        </div>
       </CardContent>
       <CardFooter className="flex justify-end gap-2 pt-2">
         <Button
