@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { Calendar, Users, Heart, Video, AlertCircle } from 'lucide-react';
@@ -193,19 +192,6 @@ const Home = () => {
                 : "There was an issue retrieving events. Please check back later."}
             />
           )}
-        </div>
-      </section>
-
-      {/* CTA Section */}
-      <section className="py-16 bg-eecfin-navy text-white text-center">
-        <div className="container-custom">
-          <h2 className="text-3xl md:text-4xl font-bold mb-6">Come Worship With Us</h2>
-          <p className="text-xl mb-8 max-w-2xl mx-auto">
-            We welcome you to join our community and grow together in faith.
-          </p>
-          <Button asChild className="bg-eecfin-gold text-eecfin-navy hover:bg-eecfin-accent">
-            <Link to="/contact">Plan Your Visit</Link>
-          </Button>
         </div>
       </section>
     </div>
