@@ -1,193 +1,203 @@
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
-import { Calendar, Clock, MapPin } from 'lucide-react';
+import { Calendar as CalendarIcon, Clock, MapPin, List, CalendarDays } from 'lucide-react';
+import { Calendar } from "@/components/ui/calendar";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { fetchEvents } from "@/lib/googleCalendar";
+
+type ViewType = "list" | "calendar";
+type Event = {
+  id: string;
+  title: string;
+  description: string;
+  location: string;
+  startTime: Date;
+  endTime: Date;
+  day: number;
+  month: string;
+  year: number;
+};
 
 const Events = () => {
+  const [viewType, setViewType] = useState<ViewType>("list");
+  const [events, setEvents] = useState<Event[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
+
+  useEffect(() => {
+    async function loadEvents() {
+      try {
+        setIsLoading(true);
+        const data = await fetchEvents();
+        setEvents(data);
+      } catch (err) {
+        console.error("Failed to fetch events:", err);
+        setError("Failed to load events. Please try again later.");
+      } finally {
+        setIsLoading(false);
+      }
+    }
+
+    loadEvents();
+  }, []);
+
+  // Filter events based on selected date in calendar view
+  const filteredEvents = selectedDate 
+    ? events.filter(event => {
+        const eventDate = new Date(event.startTime);
+        return eventDate.toDateString() === selectedDate.toDateString();
+      })
+    : events;
+
   return (
     <div>
       {/* Hero Section */}
-      <section className="bg-eecfin-navy text-white py-16">
+      <section className="bg-eecfin-navy text-white py-12">
         <div className="container-custom text-center">
-          <h1 className="text-4xl md:text-5xl font-bold mb-6">Events & Services</h1>
+          <h1 className="text-4xl md:text-5xl font-bold mb-4">Events & Services</h1>
           <p className="text-xl max-w-3xl mx-auto">
             Join us for worship services, prayer meetings, and community events.
           </p>
         </div>
       </section>
 
-      {/* Regular Services */}
-      <section className="py-16 bg-white">
+      {/* View Toggle and Events Display */}
+      <section className="py-12 bg-white">
         <div className="container-custom">
-          <h2 className="section-title mb-8">Regular Services</h2>
-          <div className="grid md:grid-cols-2 gap-8">
-            <div className="border border-gray-200 rounded-lg p-6">
-              <h3 className="text-xl font-semibold mb-4">Sunday Worship Service</h3>
-              <div className="flex items-start mb-3">
-                <Calendar className="h-5 w-5 mr-3 text-eecfin-navy flex-shrink-0 mt-1" />
-                <p>Every Sunday</p>
-              </div>
-              <div className="flex items-start mb-3">
-                <Clock className="h-5 w-5 mr-3 text-eecfin-navy flex-shrink-0 mt-1" />
-                <p>10:00 AM - 12:00 PM</p>
-              </div>
-              <div className="flex items-start mb-5">
-                <MapPin className="h-5 w-5 mr-3 text-eecfin-navy flex-shrink-0 mt-1" />
-                <p>Main Hall, Helsinki</p>
-              </div>
-              <p className="text-gray-600">
-                Our main worship service includes praise and worship, prayer, and a sermon.
-                Translation services available in Finnish and English.
-              </p>
-            </div>
-
-            <div className="border border-gray-200 rounded-lg p-6">
-              <h3 className="text-xl font-semibold mb-4">Midweek Bible Study</h3>
-              <div className="flex items-start mb-3">
-                <Calendar className="h-5 w-5 mr-3 text-eecfin-navy flex-shrink-0 mt-1" />
-                <p>Every Wednesday</p>
-              </div>
-              <div className="flex items-start mb-3">
-                <Clock className="h-5 w-5 mr-3 text-eecfin-navy flex-shrink-0 mt-1" />
-                <p>6:30 PM - 8:00 PM</p>
-              </div>
-              <div className="flex items-start mb-5">
-                <MapPin className="h-5 w-5 mr-3 text-eecfin-navy flex-shrink-0 mt-1" />
-                <p>Community Room, Helsinki</p>
-              </div>
-              <p className="text-gray-600">
-                Join us for an in-depth study of scripture, prayer, and discussion in a smaller group setting.
-              </p>
-            </div>
+          <div className="flex flex-col md:flex-row justify-between items-center mb-8">
+            <h2 className="section-title mb-4 md:mb-0">Upcoming Events</h2>
+            <ToggleGroup type="single" defaultValue="list" value={viewType} onValueChange={(value) => value && setViewType(value as ViewType)}>
+              <ToggleGroupItem value="list" aria-label="Toggle list view">
+                <List className="h-4 w-4 mr-2" />
+                List
+              </ToggleGroupItem>
+              <ToggleGroupItem value="calendar" aria-label="Toggle calendar view">
+                <CalendarDays className="h-4 w-4 mr-2" />
+                Calendar
+              </ToggleGroupItem>
+            </ToggleGroup>
           </div>
+
+          {isLoading && (
+            <div className="flex justify-center items-center py-12">
+              <p className="text-lg">Loading events...</p>
+            </div>
+          )}
+
+          {error && (
+            <div className="bg-red-50 text-red-800 p-4 rounded-lg mb-6">
+              <p>{error}</p>
+            </div>
+          )}
+
+          {!isLoading && !error && (
+            <div>
+              {viewType === "list" && (
+                <div className="space-y-6">
+                  {events.length > 0 ? (
+                    events.map((event) => (
+                      <div key={event.id} className="bg-white rounded-lg shadow-md overflow-hidden">
+                        <div className="md:flex">
+                          <div className="bg-eecfin-navy text-white md:w-48 flex-shrink-0 flex flex-col justify-center items-center p-6 md:p-8">
+                            <span className="text-2xl font-bold">{event.day}</span>
+                            <span className="uppercase">{event.month}</span>
+                            <span>{event.year}</span>
+                          </div>
+                          <div className="p-6">
+                            <h3 className="text-xl font-semibold mb-2">{event.title}</h3>
+                            <div className="flex items-center text-gray-600 mb-1">
+                              <Clock className="h-4 w-4 mr-2" />
+                              <span>{new Date(event.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - {new Date(event.endTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                            </div>
+                            <div className="flex items-center text-gray-600 mb-4">
+                              <MapPin className="h-4 w-4 mr-2" />
+                              <span>{event.location}</span>
+                            </div>
+                            <p className="text-gray-600 mb-4">{event.description}</p>
+                            <Button size="sm" className="bg-eecfin-navy hover:bg-eecfin-navy/80">
+                              Add to Calendar
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="text-center py-10">
+                      <p className="text-lg text-gray-600">No upcoming events found.</p>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {viewType === "calendar" && (
+                <div className="grid md:grid-cols-[300px_1fr] gap-8">
+                  <div>
+                    <Card>
+                      <CardHeader>
+                        <CardTitle>Select Date</CardTitle>
+                        <CardDescription>Click on a date to view events</CardDescription>
+                      </CardHeader>
+                      <CardContent>
+                        <Calendar
+                          mode="single"
+                          selected={selectedDate}
+                          onSelect={setSelectedDate}
+                          className="border rounded-md"
+                        />
+                      </CardContent>
+                    </Card>
+                  </div>
+                  <div>
+                    <Card>
+                      <CardHeader>
+                        <CardTitle>
+                          {selectedDate ? (
+                            <>Events for {selectedDate.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</>
+                          ) : (
+                            <>All Upcoming Events</>
+                          )}
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        {filteredEvents.length > 0 ? (
+                          <div className="space-y-4">
+                            {filteredEvents.map((event) => (
+                              <div key={event.id} className="border-b pb-4 last:border-0">
+                                <h3 className="font-medium text-lg">{event.title}</h3>
+                                <div className="flex items-center text-sm text-gray-600 mt-1">
+                                  <Clock className="h-4 w-4 mr-1" />
+                                  <span>{new Date(event.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - {new Date(event.endTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                                </div>
+                                <div className="flex items-center text-sm text-gray-600 mt-1 mb-2">
+                                  <MapPin className="h-4 w-4 mr-1" />
+                                  <span>{event.location}</span>
+                                </div>
+                                <p className="text-sm text-gray-700">{event.description}</p>
+                              </div>
+                            ))}
+                          </div>
+                        ) : (
+                          <p className="text-center py-8 text-gray-500">No events found for this date.</p>
+                        )}
+                      </CardContent>
+                    </Card>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </section>
 
-      {/* Upcoming Events */}
-      <section className="py-16 bg-gray-50">
-        <div className="container-custom">
-          <h2 className="section-title mb-8">Upcoming Events</h2>
-          <div className="space-y-6">
-            {/* Event 1 */}
-            <div className="bg-white rounded-lg shadow-md overflow-hidden">
-              <div className="md:flex">
-                <div className="bg-eecfin-navy text-white md:w-48 flex-shrink-0 flex flex-col justify-center items-center p-6 md:p-8">
-                  <span className="text-2xl font-bold">14</span>
-                  <span className="uppercase">January</span>
-                  <span>2024</span>
-                </div>
-                <div className="p-6">
-                  <h3 className="text-xl font-semibold mb-2">Sunday Worship Service</h3>
-                  <div className="flex items-center text-gray-600 mb-1">
-                    <Clock className="h-4 w-4 mr-2" />
-                    <span>10:00 AM - 12:00 PM</span>
-                  </div>
-                  <div className="flex items-center text-gray-600 mb-4">
-                    <MapPin className="h-4 w-4 mr-2" />
-                    <span>Main Hall, Helsinki</span>
-                  </div>
-                  <p className="text-gray-600 mb-4">
-                    Join us for our weekly worship service with praise, prayer, and a message from God's Word.
-                  </p>
-                  <Button size="sm" className="bg-eecfin-navy hover:bg-eecfin-navy/80">
-                    Add to Calendar
-                  </Button>
-                </div>
-              </div>
-            </div>
-
-            {/* Event 2 */}
-            <div className="bg-white rounded-lg shadow-md overflow-hidden">
-              <div className="md:flex">
-                <div className="bg-eecfin-navy text-white md:w-48 flex-shrink-0 flex flex-col justify-center items-center p-6 md:p-8">
-                  <span className="text-2xl font-bold">17</span>
-                  <span className="uppercase">January</span>
-                  <span>2024</span>
-                </div>
-                <div className="p-6">
-                  <h3 className="text-xl font-semibold mb-2">Midweek Bible Study</h3>
-                  <div className="flex items-center text-gray-600 mb-1">
-                    <Clock className="h-4 w-4 mr-2" />
-                    <span>6:30 PM - 8:00 PM</span>
-                  </div>
-                  <div className="flex items-center text-gray-600 mb-4">
-                    <MapPin className="h-4 w-4 mr-2" />
-                    <span>Community Room, Helsinki</span>
-                  </div>
-                  <p className="text-gray-600 mb-4">
-                    Deepen your understanding of Scripture in our midweek Bible study group.
-                  </p>
-                  <Button size="sm" className="bg-eecfin-navy hover:bg-eecfin-navy/80">
-                    Add to Calendar
-                  </Button>
-                </div>
-              </div>
-            </div>
-
-            {/* Event 3 */}
-            <div className="bg-white rounded-lg shadow-md overflow-hidden">
-              <div className="md:flex">
-                <div className="bg-eecfin-navy text-white md:w-48 flex-shrink-0 flex flex-col justify-center items-center p-6 md:p-8">
-                  <span className="text-2xl font-bold">20</span>
-                  <span className="uppercase">January</span>
-                  <span>2024</span>
-                </div>
-                <div className="p-6">
-                  <h3 className="text-xl font-semibold mb-2">Youth Fellowship</h3>
-                  <div className="flex items-center text-gray-600 mb-1">
-                    <Clock className="h-4 w-4 mr-2" />
-                    <span>3:00 PM - 5:00 PM</span>
-                  </div>
-                  <div className="flex items-center text-gray-600 mb-4">
-                    <MapPin className="h-4 w-4 mr-2" />
-                    <span>Youth Center, Helsinki</span>
-                  </div>
-                  <p className="text-gray-600 mb-4">
-                    Special gathering for teenagers and young adults with games, discussions, and fellowship.
-                  </p>
-                  <Button size="sm" className="bg-eecfin-navy hover:bg-eecfin-navy/80">
-                    Add to Calendar
-                  </Button>
-                </div>
-              </div>
-            </div>
-
-            {/* Event 4 */}
-            <div className="bg-white rounded-lg shadow-md overflow-hidden">
-              <div className="md:flex">
-                <div className="bg-eecfin-navy text-white md:w-48 flex-shrink-0 flex flex-col justify-center items-center p-6 md:p-8">
-                  <span className="text-2xl font-bold">27</span>
-                  <span className="uppercase">January</span>
-                  <span>2024</span>
-                </div>
-                <div className="p-6">
-                  <h3 className="text-xl font-semibold mb-2">Community Potluck</h3>
-                  <div className="flex items-center text-gray-600 mb-1">
-                    <Clock className="h-4 w-4 mr-2" />
-                    <span>1:00 PM - 3:00 PM</span>
-                  </div>
-                  <div className="flex items-center text-gray-600 mb-4">
-                    <MapPin className="h-4 w-4 mr-2" />
-                    <span>Fellowship Hall, Helsinki</span>
-                  </div>
-                  <p className="text-gray-600 mb-4">
-                    Join us for a community potluck lunch after the Sunday service. Bring a dish to share!
-                  </p>
-                  <Button size="sm" className="bg-eecfin-navy hover:bg-eecfin-navy/80">
-                    Add to Calendar
-                  </Button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Calendar Section */}
-      <section className="py-16 bg-white">
+      {/* Subscribe Section */}
+      <section className="py-12 bg-gray-50">
         <div className="container-custom text-center">
-          <h2 className="section-title mb-8">Stay Updated</h2>
-          <p className="text-lg mb-8 max-w-2xl mx-auto">
+          <h2 className="section-title mb-4">Stay Updated</h2>
+          <p className="text-lg mb-6 max-w-2xl mx-auto">
             Subscribe to our mailing list or follow us on social media to stay updated
             on upcoming events and services.
           </p>
