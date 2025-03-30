@@ -43,7 +43,7 @@ const ImageSlider = () => {
   ];
 
   return (
-    <div className="relative w-full max-h-[500px] overflow-hidden">
+    <div className="relative w-full max-h-[400px] overflow-hidden">
       <Carousel
         plugins={[plugin.current]}
         className="w-full"
