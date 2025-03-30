@@ -25,10 +25,10 @@ const Header = () => {
     { title: 'Get Involved', path: '/get-involved' },
   ];
 
-  // Top navigation items
+  // Top navigation items - Changed "Donate" to "Give"
   const topNavItems = [
     { title: 'Contact', path: '/contact', icon: <Mail size={16} /> },
-    { title: 'Donate', path: '/get-involved#donate', icon: <Heart size={16} /> },
+    { title: 'Give', path: '/give', icon: <Heart size={16} /> },
   ];
 
   // Social media icons
