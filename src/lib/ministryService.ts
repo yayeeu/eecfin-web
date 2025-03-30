@@ -1,7 +1,10 @@
 
 import { supabase, isSupabaseConfigured } from '@/lib/supabaseClient';
-import { Ministry } from '@/types/database.types';
+import { Ministry as DBMinistry } from '@/types/database.types';
 import { v4 as uuidv4 } from 'uuid';
+
+// Export the Ministry type so it can be imported in other files
+export type Ministry = DBMinistry;
 
 // Mock data for development mode
 const mockMinistries: Ministry[] = [

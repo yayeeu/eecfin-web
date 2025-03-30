@@ -2,7 +2,7 @@
 import React from 'react';
 import { Mail, Phone, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Ministry } from '@/lib/ministryService';
+import { Ministry } from '@/types/database.types';
 
 interface MinistryCardProps {
   ministry: Ministry;
