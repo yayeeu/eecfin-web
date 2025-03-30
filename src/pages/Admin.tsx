@@ -1,9 +1,8 @@
-
 import React, { useState } from 'react';
 import { SidebarProvider, Sidebar, SidebarContent, SidebarHeader, SidebarGroup, 
   SidebarGroupLabel, SidebarGroupContent, SidebarMenu, SidebarMenuItem, 
   SidebarMenuButton, SidebarFooter } from "@/components/ui/sidebar";
-import { Image, Settings, Home, LogOut, Users, UserCheck, User, BarChart } from 'lucide-react';
+import { Image, Settings, Home, LogOut, Users, User, BarChart } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Separator } from "@/components/ui/separator";
 import SliderManager from '@/components/SliderManager';
@@ -20,7 +19,6 @@ const Admin = () => {
     { id: 'dashboard', label: 'Dashboard', icon: BarChart },
     { id: 'slider', label: 'Slider Images', icon: Image },
     { id: 'ministries', label: 'Ministries', icon: Users },
-    { id: 'elders', label: 'Church Elders', icon: UserCheck },
     { id: 'members', label: 'All Members', icon: User },
     { id: 'settings', label: 'Settings', icon: Settings },
   ];
@@ -110,7 +108,6 @@ const Admin = () => {
                 {activeSection === 'dashboard' ? 'Church Dashboard' :
                  activeSection === 'slider' ? 'Manage Slider Images' : 
                  activeSection === 'ministries' ? 'Manage Ministries' :
-                 activeSection === 'elders' ? 'Manage Church Elders' :
                  activeSection === 'members' ? 'All Church Members' :
                  'Settings'}
               </h1>
@@ -121,8 +118,6 @@ const Admin = () => {
                   ? 'Add, edit, or delete slider images displayed on the homepage.' 
                   : activeSection === 'ministries'
                   ? 'Add, edit, or delete ministry information displayed on the Get Involved page.'
-                  : activeSection === 'elders'
-                  ? 'Add, edit, or delete church elders displayed on the Who We Are page.'
                   : activeSection === 'members'
                   ? 'View all church members and their assigned roles.'
                   : 'Configure website settings.'}
@@ -132,7 +127,6 @@ const Admin = () => {
             {activeSection === 'dashboard' && <Dashboard />}
             {activeSection === 'slider' && <SliderManager />}
             {activeSection === 'ministries' && <MinistryManager />}
-            {activeSection === 'elders' && <ElderManager />}
             {activeSection === 'members' && <MemberManager />}
             {activeSection === 'settings' && (
               <div className="bg-white p-6 rounded-lg shadow">
