@@ -2,6 +2,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
 const GOOGLE_API_KEY = Deno.env.get('GOOGLE_API_KEY');
+const YOUTUBE_CHANNEL_ID = Deno.env.get('YOUTUBE_CHANNEL_ID');
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -26,11 +27,13 @@ serve(async (req) => {
     );
   }
 
-  const { channelId, checkLive = true } = params;
+  // Use channel ID from params if provided, otherwise fall back to environment variable
+  const channelId = params.channelId || YOUTUBE_CHANNEL_ID;
+  const checkLive = params.checkLive !== undefined ? params.checkLive : true;
 
   if (!channelId) {
     return new Response(
-      JSON.stringify({ error: 'Channel ID is required' }),
+      JSON.stringify({ error: 'No YouTube channel ID configured', hasRealData: false }),
       { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   }

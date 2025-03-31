@@ -3,7 +3,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { YouTubeVideo } from '@/types/sermon.types';
 import { supabase } from '@/lib/supabaseClient';
 
-export const useSermons = (channelId: string) => {
+export const useSermons = (channelId?: string) => {
   const [videos, setVideos] = useState<YouTubeVideo[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -19,11 +19,12 @@ export const useSermons = (channelId: string) => {
       try {
         setLoading(true);
         
-        console.log('Fetching videos from edge function for channel:', channelId);
+        const requestBody = channelId ? { channelId } : {};
+        console.log('Fetching videos from edge function', requestBody);
         
         // Call Supabase edge function to fetch videos
         const { data, error } = await supabase.functions.invoke('fetch-youtube-videos', {
-          body: { channelId }
+          body: requestBody
         });
         
         if (error) {

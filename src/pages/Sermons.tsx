@@ -11,7 +11,6 @@ import { useToast } from '@/components/ui/use-toast';
 
 const Sermons = () => {
   const { toast } = useToast();
-  const channelId = 'UCk8k6RqXR5Ga-j1RH_pYsEQ'; // EECFIN YouTube channel ID
   
   const { 
     currentVideos, 
@@ -26,7 +25,7 @@ const Sermons = () => {
     isLive,
     liveVideoId,
     hasRealData
-  } = useSermons(channelId);
+  } = useSermons(); // No longer passing channel ID here
 
   useEffect(() => {
     if (isLive) {
@@ -38,8 +37,6 @@ const Sermons = () => {
       });
     }
   }, [isLive, toast]);
-
-  // Removed the notification for missing API key
 
   const openVideoOnYouTube = (videoId: string) => {
     window.open(`https://www.youtube.com/watch?v=${videoId}`, '_blank');
