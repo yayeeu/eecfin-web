@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { Link } from 'react-router-dom';
@@ -170,13 +169,9 @@ const WhoWeAre = () => {
         <section className="py-16 bg-white">
           <div className="container-custom">
             <div className="flex flex-col md:flex-row md:space-x-8">
-              {/* Main Content */}
+              {/* Main Content - Removed About EECFIN header and moved content up */}
               <div className="flex-1">
-                <h2 className="text-3xl font-bold text-eecfin-navy text-center mb-8">
-                  About EECFIN
-                </h2>
-                
-                {/* Tabs View */}
+                {/* Tabs View - Removed the heading that was here */}
                 <div className="bg-white rounded-lg shadow-md p-6">
                   <Tabs defaultValue="our-story">
                     <TabsList className="w-full flex justify-center mb-6">
@@ -209,11 +204,11 @@ const WhoWeAre = () => {
                 </div>
               </div>
               
-              {/* Right Side Navigation */}
+              {/* Right Side Navigation - Changed heading from "Additional Resources" to "About EECFIN" */}
               <div className="w-full md:w-64 mt-8 md:mt-0">
                 <div className="bg-white rounded-lg shadow-md p-6 sticky top-24">
                   <h3 className="text-lg font-semibold text-eecfin-navy mb-4 border-b pb-2">
-                    Additional Resources
+                    About EECFIN
                   </h3>
                   <nav className="flex flex-col space-y-3">
                     <Link 
