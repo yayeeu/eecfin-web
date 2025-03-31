@@ -2,7 +2,6 @@
 import React, { useState, useMemo } from 'react';
 import { List, CalendarDays, AlertCircle } from 'lucide-react';
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
-import { Button } from "@/components/ui/button";
 import { fetchEvents } from "@/lib/googleCalendar";
 import { useQuery } from '@tanstack/react-query';
 import EventListView from '@/components/events/EventListView';
@@ -157,19 +156,8 @@ const Events = () => {
           )}
         </div>
       </section>
-
-      <section className="py-12 bg-gray-50">
-        <div className="container-custom text-center">
-          <h2 className="section-title mb-4">Stay Updated</h2>
-          <p className="text-lg mb-6 max-w-2xl mx-auto">
-            Subscribe to our mailing list or follow us on social media to stay updated
-            on upcoming events and services.
-          </p>
-          <Button className="bg-eecfin-navy hover:bg-eecfin-navy/80">
-            Subscribe to Updates
-          </Button>
-        </div>
-      </section>
+      
+      {/* Removed "Stay Updated" section */}
     </div>
   );
 };
