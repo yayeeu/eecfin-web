@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Pencil, Trash2, Plus, Image, Loader2, X } from 'lucide-react';
+import { Pencil, Trash2, Plus, Image, Loader2, X, Info } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Card, CardContent } from "@/components/ui/card";
 import { toast } from "@/components/ui/use-toast";
@@ -217,6 +217,14 @@ const SliderManager = () => {
             <div className="space-y-4 py-4">
               <div className="space-y-2">
                 <Label htmlFor="imageUpload">Slide Image</Label>
+                <div className="bg-muted/50 p-3 rounded-md text-sm text-muted-foreground flex items-start mb-2">
+                  <Info className="h-4 w-4 mr-2 mt-0.5 flex-shrink-0" />
+                  <span>
+                    Recommended image size: <strong>1920×1080px</strong> (16:9 aspect ratio).
+                    Use high resolution images (at least 72 DPI) for best results.
+                    Maximum file size: 10MB.
+                  </span>
+                </div>
                 <div className="mt-1 flex items-center gap-4">
                   <div className="relative aspect-[16/9] w-full max-w-[300px] rounded-md overflow-hidden bg-gray-100 border">
                     {imagePreview ? (
