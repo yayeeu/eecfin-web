@@ -78,56 +78,6 @@ const EventCalendarView: React.FC<EventCalendarViewProps> = ({
           />
         </div>
       </div>
-      
-      {/* Selected Date Events */}
-      {selectedDate && (
-        <div className="mt-6">
-          <h3 className="text-xl font-semibold mb-4">
-            Events for {format(selectedDate, 'MMMM d, yyyy')}
-          </h3>
-          
-          {filteredEvents.length > 0 ? (
-            <div className="border-t border-gray-200">
-              {filteredEvents.map(event => (
-                <div key={event.id} className="border-b border-gray-200 py-4">
-                  <div className="flex items-start">
-                    <div 
-                      className="text-center mr-4 w-14 p-2 rounded"
-                      style={{ backgroundColor: getBackgroundColor(event.colorId) }}
-                    >
-                      <div className={`text-lg font-bold ${getTextColor(event.colorId)}`}>
-                        {event.day}
-                      </div>
-                      <div className={`text-xs ${getTextColor(event.colorId)} opacity-90`}>
-                        {format(new Date(event.startTime), 'MMM').toUpperCase()}
-                      </div>
-                    </div>
-                    
-                    <div className="flex-grow">
-                      <h4 className="font-medium text-eecfin-navy mb-1">{event.title}</h4>
-                      <div className="flex items-center text-eecfin-navy">
-                        <div className="h-2 w-2 bg-eecfin-navy rounded-full mr-2"></div>
-                        <span className="text-sm">
-                          {new Date(event.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false })} - 
-                          {new Date(event.endTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false })}
-                        </span>
-                      </div>
-                      
-                      {event.location && event.location !== 'Location not specified' && (
-                        <div className="text-gray-600 text-sm mt-1">
-                          {event.location}
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <EmptyState message="No events scheduled for this date." />
-          )}
-        </div>
-      )}
     </div>
   );
 };
