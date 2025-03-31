@@ -54,7 +54,9 @@ const ImageSlider = () => {
           <h2 className="text-2xl font-bold text-gray-500 mb-2">
             {error || "No slider images available"}
           </h2>
-          {!error && <p className="text-gray-400">Please add slides in the admin panel</p>}
+          {!error && slides.length === 0 && (
+            <p className="text-gray-400">Please add slides in the admin panel</p>
+          )}
         </div>
       </div>
     );

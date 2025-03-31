@@ -3,57 +3,31 @@ import { SlideImage } from '@/components/SliderManager';
 import { supabase, isSupabaseConfigured } from '@/lib/supabaseClient';
 import { v4 as uuidv4 } from 'uuid';
 
-// Mock data for initial development
-const mockSlides: SlideImage[] = [
-  {
-    id: '1',
-    src: "/lovable-uploads/54e6cd73-6658-4990-b0c6-d369f39e1cb9.png",
-    alt: "Ethiopian Evangelical Church worship service",
-    title: "Welcome",
-    subtitle: "to Ethiopian Evangelical Church in Finland",
-    order: 1
-  },
-  {
-    id: '2',
-    src: "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05",
-    alt: "Serene mountain landscape",
-    title: "Our Community",
-    subtitle: "Join us in worship and fellowship",
-    order: 2
-  },
-  {
-    id: '3',
-    src: "https://images.unsplash.com/photo-1500673922987-e212871fec22",
-    alt: "Warm lights in forest",
-    title: "Faith & Hope",
-    subtitle: "Growing together in Christ",
-    order: 3
-  }
-];
-
 /**
  * Fetch all slides from Supabase
  */
 export const fetchSlides = async (): Promise<SlideImage[]> => {
-  // If Supabase is not configured, return mock data
-  if (!isSupabaseConfigured()) {
-    console.log('Using mock data for slides');
-    return Promise.resolve([...mockSlides]);
-  }
-
   try {
+    if (!isSupabaseConfigured()) {
+      console.log('Supabase is not configured for slides');
+      return [];
+    }
+
     // Fetch slides from Supabase, ordered by the order field
     const { data, error } = await supabase!
       .from('slides')
       .select('*')
       .order('order', { ascending: true });
 
-    if (error) throw error;
+    if (error) {
+      console.error('Error fetching slides:', error);
+      throw error;
+    }
+    
     return data || [];
   } catch (error) {
     console.error('Error fetching slides:', error);
-    // Fallback to mock data in case of error
-    return [...mockSlides];
+    return [];
   }
 };
 
@@ -61,16 +35,12 @@ export const fetchSlides = async (): Promise<SlideImage[]> => {
  * Add a new slide to Supabase
  */
 export const addSlide = async (slide: SlideImage, imageFile: File | null): Promise<SlideImage> => {
-  // If Supabase is not configured or no image file, simulate with mock data
-  if (!isSupabaseConfigured() || !imageFile) {
-    console.log('Using mock data for adding slide');
-    const newSlide = {
-      ...slide,
-      id: uuidv4(),
-      src: slide.src || URL.createObjectURL(imageFile as Blob),
-    };
-    mockSlides.push(newSlide);
-    return Promise.resolve(newSlide);
+  if (!isSupabaseConfigured()) {
+    throw new Error('Supabase is not configured');
+  }
+
+  if (!imageFile) {
+    throw new Error('Image file is required');
   }
 
   try {
@@ -117,19 +87,8 @@ export const addSlide = async (slide: SlideImage, imageFile: File | null): Promi
  * Update an existing slide in Supabase
  */
 export const updateSlide = async (id: string, slide: SlideImage, imageFile: File | null): Promise<SlideImage> => {
-  // If Supabase is not configured, simulate with mock data
   if (!isSupabaseConfigured()) {
-    console.log('Using mock data for updating slide');
-    const index = mockSlides.findIndex(s => s.id === id);
-    if (index === -1) throw new Error('Slide not found');
-    
-    const updatedSlide = {
-      ...mockSlides[index],
-      ...slide,
-      src: imageFile ? URL.createObjectURL(imageFile) : slide.src
-    };
-    mockSlides[index] = updatedSlide;
-    return Promise.resolve(updatedSlide);
+    throw new Error('Supabase is not configured');
   }
 
   try {
@@ -180,13 +139,8 @@ export const updateSlide = async (id: string, slide: SlideImage, imageFile: File
  * Delete a slide from Supabase
  */
 export const deleteSlide = async (id: string): Promise<void> => {
-  // If Supabase is not configured, simulate with mock data
   if (!isSupabaseConfigured()) {
-    console.log('Using mock data for deleting slide');
-    const index = mockSlides.findIndex(s => s.id === id);
-    if (index === -1) throw new Error('Slide not found');
-    mockSlides.splice(index, 1);
-    return Promise.resolve();
+    throw new Error('Supabase is not configured');
   }
 
   try {
