@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Menu, X, Mail, Heart, Facebook, Instagram, Youtube, User, LogOut } from 'lucide-react';
@@ -28,7 +29,6 @@ const Header = () => {
     { title: 'Home', path: '/' },
     { title: 'Who We Are', path: '/who-we-are' },
     { title: 'Our Faith', path: '/our-faith' },
-    { title: 'Constitution', path: '/constitution' },
     { title: 'Events', path: '/events' },
     { title: 'Sermons', path: '/sermons' },
     { title: 'Get Involved', path: '/get-involved' },
