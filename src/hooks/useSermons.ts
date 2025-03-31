@@ -1,6 +1,7 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import { YouTubeVideo } from '@/types/sermon.types';
+import { supabase } from '@/lib/supabaseClient';
 
 export const useSermons = (channelId: string) => {
   const [videos, setVideos] = useState<YouTubeVideo[]>([]);
@@ -18,76 +19,55 @@ export const useSermons = (channelId: string) => {
       try {
         setLoading(true);
         
-        // Use only GOOGLE_API_KEY
-        const API_KEY = import.meta.env.GOOGLE_API_KEY;
+        console.log('Fetching videos from edge function for channel:', channelId);
         
-        if (!API_KEY) {
-          console.log('YouTube API not configured - using mock data');
+        // Call Supabase edge function to fetch videos
+        const { data, error } = await supabase.functions.invoke('fetch-youtube-videos', {
+          body: { channelId }
+        });
+        
+        if (error) {
+          console.error("Error calling edge function:", error);
+          setError("Failed to load videos. Please try again later.");
           setHasRealData(false);
           setLoading(false);
           return;
         }
         
-        console.log('Google API key for YouTube data found, continuing with fetch');
+        console.log('Edge function response:', data);
         
-        // Check for live streams first
-        const liveResponse = await fetch(
-          `https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=${channelId}&eventType=live&type=video&key=${API_KEY}`
-        );
-        
-        if (!liveResponse.ok) {
-          throw new Error(`YouTube API error (live check): ${liveResponse.status} ${liveResponse.statusText}`);
+        if (data.error) {
+          console.error("Edge function returned error:", data.error);
+          setError(data.error);
+          setHasRealData(false);
+          setLoading(false);
+          return;
         }
         
-        const liveData = await liveResponse.json();
+        // Set live status
+        setIsLive(data.isLive || false);
+        setLiveVideoId(data.liveVideoId || null);
         
-        if (liveData.items && liveData.items.length > 0) {
-          console.log('Live broadcast found');
-          setIsLive(true);
-          const liveVideo = liveData.items[0];
-          setLiveVideoId(liveVideo.id.videoId);
+        // Set hasRealData flag
+        setHasRealData(data.hasRealData || false);
+        
+        // Set videos
+        if (data.videos && data.videos.length > 0) {
+          console.log(`Received ${data.videos.length} videos from edge function`);
+          setVideos(data.videos);
+          
+          // Set the most recent video as the selected video if not live
+          if (!data.isLive) {
+            setSelectedVideo(data.videos[0].id);
+          } else if (data.liveVideoId) {
+            setSelectedVideo(data.liveVideoId);
+          }
         } else {
-          setIsLive(false);
-        }
-        
-        // Fetch videos from channel
-        const response = await fetch(
-          `https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=${channelId}&maxResults=50&order=date&type=video&key=${API_KEY}`
-        );
-        
-        if (!response.ok) {
-          throw new Error(`YouTube API error (video fetch): ${response.status} ${response.statusText}`);
-        }
-        
-        const data = await response.json();
-        
-        if (!data.items || data.items.length === 0) {
-          console.log('No videos found for this channel');
+          console.log('No videos returned from edge function');
           setVideos([]);
-          setHasRealData(false);
-          setLoading(false);
-          return;
-        }
-        
-        const fetchedVideos: YouTubeVideo[] = data.items.map((item: any) => ({
-          id: item.id.videoId,
-          title: item.snippet.title,
-          publishedAt: item.snippet.publishedAt,
-          thumbnailUrl: item.snippet.thumbnails.medium.url
-        }));
-        
-        console.log(`Fetched ${fetchedVideos.length} videos from YouTube`);
-        setVideos(fetchedVideos);
-        setHasRealData(true);
-        
-        // Set the most recent video as the selected video if not live
-        if (fetchedVideos.length > 0 && !isLive) {
-          setSelectedVideo(fetchedVideos[0].id);
-        } else if (isLive && liveVideoId) {
-          setSelectedVideo(liveVideoId);
         }
       } catch (err) {
-        console.error("Error fetching YouTube videos:", err);
+        console.error("Error in useSermons hook:", err);
         setError("Failed to load videos. Please try again later.");
         setHasRealData(false);
       } finally {
@@ -96,7 +76,7 @@ export const useSermons = (channelId: string) => {
     };
 
     fetchVideos();
-  }, [channelId, liveVideoId]);
+  }, [channelId]);
 
   // Calculate pagination
   const indexOfLastVideo = currentPage * videosPerPage;
