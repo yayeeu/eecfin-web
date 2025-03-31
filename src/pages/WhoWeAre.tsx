@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { Link } from 'react-router-dom';
@@ -144,7 +143,7 @@ const WhoWeAre = () => {
   return (
     <QueryClientProvider client={queryClient}>
       <div>
-        {/* Hero Section with Background Image and Vision */}
+        {/* Hero Section with Background Image - Updated to match Our Faith page */}
         <section className="relative bg-eecfin-navy overflow-hidden">
           <div className="absolute inset-0 z-0">
             <img 
@@ -157,26 +156,11 @@ const WhoWeAre = () => {
           <div className="container-custom text-center relative z-10 py-16">
             <h1 className="text-4xl md:text-5xl font-bold mb-6 text-white">Who We Are</h1>
             <p className="text-xl max-w-3xl mx-auto text-white/90 mb-4">
-              Learn about our church, our beliefs, and our journey serving the Ethiopian community in Finland.
+              EECFIN strives to be a vibrant, multicultural church where Ethiopian Christians and people from all backgrounds 
+              can worship together, grow in faith, and serve our community in Finland with the love of Christ.
             </p>
-            
-            {/* Vision Statement Overlay */}
-            <div className="max-w-3xl mx-auto mt-8">
-              <div className="relative">
-                <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-white/10 flex items-center justify-center text-eecfin-gold">
-                  <Heart size={28} />
-                </div>
-                <h2 className="text-2xl font-bold text-eecfin-gold mb-4">
-                  Our Vision
-                </h2>
-                <p className="text-lg text-white">
-                  EECFIN strives to be a vibrant, multicultural church where Ethiopian Christians and people from all backgrounds 
-                  can worship together, grow in faith, and serve our community in Finland with the love of Christ.
-                </p>
-                <div className="flex items-center justify-center mt-6">
-                  <Separator className="w-24 bg-eecfin-gold h-0.5" />
-                </div>
-              </div>
+            <div className="flex items-center justify-center mt-6">
+              <Separator className="w-24 bg-eecfin-gold h-0.5" />
             </div>
           </div>
         </section>
