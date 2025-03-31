@@ -33,14 +33,21 @@ serve(async (req) => {
   }
 
   try {
-    // Get current date and format for API request
-    const timeMin = new Date().toISOString();
-    console.log(`Fetching events starting from ${timeMin} for calendar ID: ${CALENDAR_ID}`);
+    // Get current date for API request
+    const now = new Date();
+    const timeMin = now.toISOString();
+    
+    // Calculate timeMax - 3 months from now
+    const threeMonthsLater = new Date(now);
+    threeMonthsLater.setMonth(threeMonthsLater.getMonth() + 3);
+    const timeMax = threeMonthsLater.toISOString();
+    
+    console.log(`Fetching events from ${timeMin} to ${timeMax} for calendar ID: ${CALENDAR_ID}`);
     
     // Build URL with proper encoding and parameters
     const url = `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(
       CALENDAR_ID
-    )}/events?key=${GOOGLE_API_KEY}&timeMin=${timeMin}&maxResults=10&singleEvents=true&orderBy=startTime`;
+    )}/events?key=${GOOGLE_API_KEY}&timeMin=${timeMin}&timeMax=${timeMax}&maxResults=100&singleEvents=true&orderBy=startTime`;
 
     console.log(`Calling Google Calendar API: ${url.replace(GOOGLE_API_KEY, "[REDACTED]")}`);
     
@@ -65,14 +72,24 @@ serve(async (req) => {
     const data = await response.json();
     console.log(`Events fetched successfully. Total events: ${data.items ? data.items.length : 0}`);
     
+    if (!data.items || data.items.length === 0) {
+      console.log("No events found in the calendar for the next 3 months");
+      return new Response(
+        JSON.stringify({
+          items: [],
+          status: "empty",
+          message: "No upcoming events found for the next 3 months"
+        }),
+        { headers: responseHeaders }
+      );
+    }
+    
     // Return success response with events data
     return new Response(
       JSON.stringify({
         ...data,
         status: "success",
-        message: data.items && data.items.length > 0 
-          ? `Successfully fetched ${data.items.length} events` 
-          : "No upcoming events found"
+        message: `Successfully fetched ${data.items.length} events`
       }),
       { headers: responseHeaders }
     );

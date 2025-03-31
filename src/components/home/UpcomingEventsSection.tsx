@@ -7,12 +7,18 @@ import { useQuery } from '@tanstack/react-query';
 import { fetchEvents } from '@/lib/googleCalendar';
 import EmptyState from '@/components/events/EmptyState';
 import { Skeleton } from "@/components/ui/skeleton";
+import { toast } from "sonner";
 
 const UpcomingEventsSection = () => {
   const { data, isLoading, error, isError } = useQuery({
     queryKey: ['events-preview'],
     queryFn: fetchEvents,
     staleTime: 5 * 60 * 1000, // 5 minutes
+    retry: 2,
+    onError: (err) => {
+      toast.error("Failed to load upcoming events");
+      console.error("Error loading events:", err);
+    }
   });
 
   const events = data?.events || [];
@@ -64,7 +70,7 @@ const UpcomingEventsSection = () => {
                 </div>
                 <div className="p-4">
                   <h3 className="text-xl font-semibold mb-2">{event.title}</h3>
-                  <p className="text-gray-600 mb-3">{event.description}</p>
+                  <p className="text-gray-600 mb-3 line-clamp-2">{event.description}</p>
                   <p className="text-sm text-gray-500">Location: {event.location}</p>
                 </div>
               </div>

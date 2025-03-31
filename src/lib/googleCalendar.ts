@@ -72,6 +72,51 @@ const saveEventsToCache = (events: Event[]) => {
   }
 };
 
+// Mock data for development or testing
+const getMockEvents = (): Event[] => {
+  const now = new Date();
+  const tomorrow = new Date(now);
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  const nextWeek = new Date(now);
+  nextWeek.setDate(nextWeek.getDate() + 7);
+  
+  return [
+    {
+      id: '1',
+      title: 'Sunday Service',
+      description: 'Weekly worship service',
+      location: 'Main Sanctuary',
+      startTime: new Date(now.setHours(10, 0, 0, 0)),
+      endTime: new Date(now.setHours(12, 0, 0, 0)),
+      day: now.getDate(),
+      month: format(now, 'MMMM'),
+      year: now.getFullYear()
+    },
+    {
+      id: '2',
+      title: 'Prayer Meeting',
+      description: 'Community prayer gathering',
+      location: 'Prayer Room',
+      startTime: new Date(tomorrow.setHours(18, 30, 0, 0)),
+      endTime: new Date(tomorrow.setHours(20, 0, 0, 0)),
+      day: tomorrow.getDate(),
+      month: format(tomorrow, 'MMMM'),
+      year: tomorrow.getFullYear()
+    },
+    {
+      id: '3',
+      title: 'Bible Study',
+      description: 'Weekly Bible study for all ages',
+      location: 'Fellowship Hall',
+      startTime: new Date(nextWeek.setHours(19, 0, 0, 0)),
+      endTime: new Date(nextWeek.setHours(20, 30, 0, 0)),
+      day: nextWeek.getDate(),
+      month: format(nextWeek, 'MMMM'),
+      year: nextWeek.getFullYear()
+    }
+  ];
+};
+
 /**
  * Fetches events from Google Calendar API via Supabase Edge Function
  * With a local cache layer for better performance
@@ -83,10 +128,7 @@ export async function fetchEvents(): Promise<{ events: Event[], error: string | 
     
     if (isDevelopment) {
       console.info('Using mock data for events in development environment');
-      
-      // In a real implementation, we would return mock data here
-      // For now, we'll return an empty array to simulate no events
-      return { events: [], error: null, status: 'development' };
+      return { events: getMockEvents(), error: null, status: 'success' };
     }
     
     // Try to get events from cache first
