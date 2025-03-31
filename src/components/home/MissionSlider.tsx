@@ -4,12 +4,8 @@ import {
   Carousel,
   CarouselContent,
   CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
 } from "@/components/ui/carousel";
-import { Slider } from "@/components/ui/slider";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, ChevronRight } from 'lucide-react';
 import Autoplay from "embla-carousel-autoplay";
 import { Link } from 'react-router-dom';
 
@@ -38,36 +34,12 @@ const missionSlides: MissionSlide[] = [
 ];
 
 const MissionSlider: React.FC = () => {
-  const [currentSlide, setCurrentSlide] = React.useState(0);
   const plugin = React.useRef(
     Autoplay({ delay: 10000, stopOnInteraction: true })
   );
-  const carouselRef = React.useRef<any>(null);
-
-  const handleSlideChange = (value: number[]) => {
-    if (carouselRef.current && carouselRef.current.scrollTo) {
-      carouselRef.current.scrollTo(value[0]);
-    }
-  };
-
-  const handleCarouselChange = () => {
-    if (carouselRef.current && carouselRef.current.selectedScrollSnap) {
-      setCurrentSlide(carouselRef.current.selectedScrollSnap());
-    }
-  };
-
-  React.useEffect(() => {
-    const carousel = carouselRef.current;
-    if (carousel) {
-      carousel.on('select', handleCarouselChange);
-      return () => {
-        carousel.off('select', handleCarouselChange);
-      };
-    }
-  }, []);
 
   return (
-    <div className="w-full h-full flex flex-col">
+    <div className="w-full h-full flex flex-col bg-gradient-to-r from-gray-50 to-gray-100 rounded-lg overflow-hidden">
       <Carousel
         plugins={[plugin.current]}
         className="w-full flex-grow"
@@ -75,17 +47,14 @@ const MissionSlider: React.FC = () => {
           align: "start",
           loop: true,
         }}
-        setApi={(api) => {
-          carouselRef.current = api;
-        }}
       >
         <CarouselContent className="h-full">
           {missionSlides.map((slide, index) => (
             <CarouselItem key={index} className="relative h-full">
-              <div className="bg-white p-6 rounded-lg shadow-md flex flex-col h-full">
+              <div className="bg-white/80 backdrop-blur-sm p-6 rounded-lg shadow-md flex flex-col h-full border border-gray-200">
                 <div className="flex justify-between items-center mb-4">
                   <h2 className="section-title mb-0">{slide.title}</h2>
-                  <span className="text-sm font-medium text-gray-500">{slide.language}</span>
+                  <span className="text-sm font-medium text-gray-500 px-2 py-1 bg-gray-100 rounded-full">{slide.language}</span>
                 </div>
                 <p className="text-lg mb-8 flex-grow">
                   {slide.content}
@@ -99,23 +68,7 @@ const MissionSlider: React.FC = () => {
             </CarouselItem>
           ))}
         </CarouselContent>
-        <div className="flex items-center justify-between mt-4">
-          <CarouselPrevious className="relative left-0 top-0 translate-y-0 bg-eecfin-navy/10 hover:bg-eecfin-navy/20 border-none text-eecfin-navy">
-            <ChevronLeft className="h-4 w-4" />
-          </CarouselPrevious>
-          
-          <Slider
-            value={[currentSlide]}
-            max={missionSlides.length - 1}
-            step={1}
-            className="w-[60%] mx-4"
-            onValueChange={handleSlideChange}
-          />
-          
-          <CarouselNext className="relative right-0 top-0 translate-y-0 bg-eecfin-navy/10 hover:bg-eecfin-navy/20 border-none text-eecfin-navy">
-            <ChevronRight className="h-4 w-4" />
-          </CarouselNext>
-        </div>
+        {/* Controls removed as requested */}
       </Carousel>
     </div>
   );
