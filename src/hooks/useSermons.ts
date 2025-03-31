@@ -18,7 +18,7 @@ export const useSermons = (channelId: string) => {
       try {
         setLoading(true);
         
-        // YouTube API Key - in a production app, this should be server-side
+        // Use the consolidated Google API Key that's already set for Google Calendar
         const API_KEY = import.meta.env.VITE_GOOGLE_API_KEY;
         
         if (!API_KEY) {
@@ -28,14 +28,21 @@ export const useSermons = (channelId: string) => {
           return;
         }
         
+        console.log('Using Google API key for YouTube data');
+        
         // Check for live streams first
         const liveResponse = await fetch(
           `https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=${channelId}&eventType=live&type=video&key=${API_KEY}`
         );
         
+        if (!liveResponse.ok) {
+          throw new Error(`YouTube API error: ${liveResponse.status} ${liveResponse.statusText}`);
+        }
+        
         const liveData = await liveResponse.json();
         
         if (liveData.items && liveData.items.length > 0) {
+          console.log('Live broadcast found');
           setIsLive(true);
           const liveVideo = liveData.items[0];
           setLiveVideoId(liveVideo.id.videoId);
@@ -49,12 +56,13 @@ export const useSermons = (channelId: string) => {
         );
         
         if (!response.ok) {
-          throw new Error('Failed to fetch videos from YouTube');
+          throw new Error(`YouTube API error: ${response.status} ${response.statusText}`);
         }
         
         const data = await response.json();
         
         if (!data.items || data.items.length === 0) {
+          console.log('No videos found for this channel');
           setVideos([]);
           setHasRealData(false);
           setLoading(false);
@@ -68,6 +76,7 @@ export const useSermons = (channelId: string) => {
           thumbnailUrl: item.snippet.thumbnails.medium.url
         }));
         
+        console.log(`Fetched ${fetchedVideos.length} videos from YouTube`);
         setVideos(fetchedVideos);
         setHasRealData(true);
         

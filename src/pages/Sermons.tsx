@@ -2,7 +2,6 @@
 import React, { useEffect } from 'react';
 import SermonHero from '@/components/sermons/SermonHero';
 import LatestSermon from '@/components/sermons/LatestSermon';
-import SubscribeSection from '@/components/sermons/SubscribeSection';
 import SermonLibrary from '@/components/sermons/SermonLibrary';
 import { useSermons } from '@/hooks/useSermons';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
