@@ -87,7 +87,7 @@ const YouTubeEmbed: React.FC<YouTubeEmbedProps> = ({
   // If we have a specific video ID, embed that video
   if (loadedVideoId) {
     // Append autoplay parameter for live videos
-    const embedParams = isLive ? '?autoplay=1' : '';
+    const embedParams = isLive ? '?autoplay=1&mute=1' : '';
     
     return (
       <div className={`relative ${className || 'w-full h-0 pb-[56.25%]'}`}>
