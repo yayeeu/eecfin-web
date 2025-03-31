@@ -1,8 +1,8 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { Button } from "@/components/ui/button";
 import { Link } from 'react-router-dom';
-import { BookOpen, Heart, Users, ChevronDown, Layout, Grid3X3 } from 'lucide-react';
+import { BookOpen, Heart, Users, Layout } from 'lucide-react';
 import { Card, CardContent } from "@/components/ui/card";
 import EldersList from '@/components/EldersList';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -13,11 +13,10 @@ import { Separator } from "@/components/ui/separator";
 const queryClient = new QueryClient();
 
 const WhoWeAre = () => {
-  const [activeView, setActiveView] = useState<'sections' | 'tabs' | 'cards'>('sections');
-
-  // Content sections for the different views
+  // Content sections for the different tabs
   const sections = [
     {
+      id: "our-story",
       title: "Our Story",
       icon: <BookOpen size={20} />,
       color: "blue",
@@ -41,6 +40,7 @@ const WhoWeAre = () => {
       )
     },
     {
+      id: "mission",
       title: "Mission",
       icon: <Heart size={20} />,
       color: "green",
@@ -64,6 +64,7 @@ const WhoWeAre = () => {
       )
     },
     {
+      id: "values",
       title: "Values",
       icon: <Users size={20} />,
       color: "amber",
@@ -92,6 +93,7 @@ const WhoWeAre = () => {
       )
     },
     {
+      id: "beliefs",
       title: "Beliefs",
       icon: <BookOpen size={20} />,
       color: "indigo",
@@ -115,13 +117,34 @@ const WhoWeAre = () => {
           </Button>
         </div>
       )
+    },
+    {
+      id: "leadership",
+      title: "Leadership",
+      icon: <Layout size={20} />,
+      color: "purple",
+      content: (
+        <div className="space-y-4">
+          <div className="mb-4">
+            <span className="px-3 py-1 text-sm font-medium bg-purple-100 text-purple-700 rounded-full">
+              Our Leadership Team
+            </span>
+          </div>
+          <p className="mb-6">
+            Our church is led by a dedicated team of elders who serve the congregation 
+            with wisdom, faith and compassion. These leaders work together to guide our 
+            spiritual growth and manage the various ministries of our church.
+          </p>
+          <EldersList />
+        </div>
+      )
     }
   ];
 
   return (
     <QueryClientProvider client={queryClient}>
       <div>
-        {/* Hero Section with Background Image */}
+        {/* Hero Section with Background Image and Vision */}
         <section className="relative bg-eecfin-navy overflow-hidden">
           <div className="absolute inset-0 z-0">
             <img 
@@ -133,34 +156,32 @@ const WhoWeAre = () => {
           </div>
           <div className="container-custom text-center relative z-10 py-16">
             <h1 className="text-4xl md:text-5xl font-bold mb-6 text-white">Who We Are</h1>
-            <p className="text-xl max-w-3xl mx-auto text-white/90">
+            <p className="text-xl max-w-3xl mx-auto text-white/90 mb-4">
               Learn about our church, our beliefs, and our journey serving the Ethiopian community in Finland.
             </p>
-          </div>
-        </section>
-
-        {/* Our Vision Section at the top */}
-        <section className="py-12 bg-gradient-to-r from-eecfin-navy/10 to-eecfin-navy/5">
-          <div className="container-custom text-center">
-            <div className="max-w-3xl mx-auto bg-white p-8 rounded-lg shadow-md">
-              <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-eecfin-navy/10 flex items-center justify-center text-eecfin-navy">
-                <Heart size={28} />
-              </div>
-              <h2 className="text-2xl font-bold text-eecfin-navy mb-4">
-                Our Vision
-              </h2>
-              <p className="text-lg text-gray-700 mb-6">
-                EECFIN strives to be a vibrant, multicultural church where Ethiopian Christians and people from all backgrounds 
-                can worship together, grow in faith, and serve our community in Finland with the love of Christ.
-              </p>
-              <div className="flex items-center justify-center">
-                <Separator className="w-24 bg-eecfin-accent h-0.5" />
+            
+            {/* Vision Statement Overlay */}
+            <div className="max-w-3xl mx-auto mt-8">
+              <div className="relative">
+                <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-white/10 flex items-center justify-center text-eecfin-gold">
+                  <Heart size={28} />
+                </div>
+                <h2 className="text-2xl font-bold text-eecfin-gold mb-4">
+                  Our Vision
+                </h2>
+                <p className="text-lg text-white">
+                  EECFIN strives to be a vibrant, multicultural church where Ethiopian Christians and people from all backgrounds 
+                  can worship together, grow in faith, and serve our community in Finland with the love of Christ.
+                </p>
+                <div className="flex items-center justify-center mt-6">
+                  <Separator className="w-24 bg-eecfin-gold h-0.5" />
+                </div>
               </div>
             </div>
           </div>
         </section>
 
-        {/* Content Section with View Toggle */}
+        {/* Content Section with Tabs View */}
         <section className="py-16 bg-white">
           <div className="container-custom">
             <div className="max-w-4xl mx-auto">
@@ -168,131 +189,38 @@ const WhoWeAre = () => {
                 About EECFIN
               </h2>
               
-              {/* View Toggle Buttons */}
-              <div className="flex justify-center mb-8 gap-2">
-                <button
-                  onClick={() => setActiveView('sections')}
-                  className={`px-4 py-2 rounded-md transition-colors ${
-                    activeView === 'sections' 
-                      ? 'bg-eecfin-navy text-white' 
-                      : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
-                  }`}
-                >
-                  <span className="flex items-center gap-2">
-                    <Layout size={16} />
-                    Section View
-                  </span>
-                </button>
-                <button
-                  onClick={() => setActiveView('tabs')}
-                  className={`px-4 py-2 rounded-md transition-colors ${
-                    activeView === 'tabs' 
-                      ? 'bg-eecfin-navy text-white' 
-                      : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
-                  }`}
-                >
-                  <span className="flex items-center gap-2">
-                    <ChevronDown size={16} />
-                    Tabs View
-                  </span>
-                </button>
-                <button
-                  onClick={() => setActiveView('cards')}
-                  className={`px-4 py-2 rounded-md transition-colors ${
-                    activeView === 'cards' 
-                      ? 'bg-eecfin-navy text-white' 
-                      : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
-                  }`}
-                >
-                  <span className="flex items-center gap-2">
-                    <Grid3X3 size={16} />
-                    Cards View
-                  </span>
-                </button>
-              </div>
-
-              {/* Sections View */}
-              {activeView === 'sections' && (
-                <div className="space-y-8">
-                  {sections.map((section, index) => (
-                    <Card key={index} className={`overflow-hidden shadow-lg transition-all duration-300 hover:shadow-xl border-l-8 border-l-${section.color}-500 bg-gradient-to-br from-${section.color}-50 to-white`}>
-                      <CardContent className="p-6">
-                        <div className="flex items-center space-x-2 mb-4">
+              {/* Tabs View */}
+              <div className="bg-white rounded-lg shadow-md p-6">
+                <Tabs defaultValue="our-story">
+                  <TabsList className="w-full flex justify-center mb-6">
+                    {sections.map((section) => (
+                      <TabsTrigger key={section.id} value={section.id} className="flex items-center gap-2">
+                        <span className={`w-6 h-6 rounded-full bg-${section.color}-100 flex items-center justify-center text-${section.color}-600`}>
+                          {section.icon}
+                        </span>
+                        {section.title}
+                      </TabsTrigger>
+                    ))}
+                  </TabsList>
+                  
+                  {sections.map((section) => (
+                    <TabsContent key={section.id} value={section.id} className="p-4 bg-gray-50 rounded-md">
+                      <div className="flex items-start">
+                        <div className="flex-shrink-0 mr-4">
                           <div className={`w-10 h-10 rounded-full bg-${section.color}-100 flex items-center justify-center text-${section.color}-600`}>
                             {section.icon}
                           </div>
-                          <h3 className={`text-2xl font-bold text-${section.color}-700`}>{section.title}</h3>
                         </div>
-                        {section.content}
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
-              )}
-
-              {/* Tabs View */}
-              {activeView === 'tabs' && (
-                <div className="bg-white rounded-lg shadow-md p-6">
-                  <Tabs defaultValue="0">
-                    <TabsList className="w-full flex justify-center mb-6">
-                      {sections.map((section, index) => (
-                        <TabsTrigger key={index} value={index.toString()} className="flex items-center gap-2">
-                          <span className={`w-6 h-6 rounded-full bg-${section.color}-100 flex items-center justify-center text-${section.color}-600`}>
-                            {section.icon}
-                          </span>
-                          {section.title}
-                        </TabsTrigger>
-                      ))}
-                    </TabsList>
-                    
-                    {sections.map((section, index) => (
-                      <TabsContent key={index} value={index.toString()} className="p-4 bg-gray-50 rounded-md">
-                        <div className="flex items-start">
-                          <div className="flex-shrink-0 mr-4">
-                            <div className={`w-10 h-10 rounded-full bg-${section.color}-100 flex items-center justify-center text-${section.color}-600`}>
-                              {section.icon}
-                            </div>
-                          </div>
-                          <div>
-                            <h3 className={`text-xl font-medium text-${section.color}-700 mb-2`}>{section.title}</h3>
-                            {section.content}
-                          </div>
-                        </div>
-                      </TabsContent>
-                    ))}
-                  </Tabs>
-                </div>
-              )}
-
-              {/* Cards View */}
-              {activeView === 'cards' && (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {sections.map((section, index) => (
-                    <Card key={index} className={`overflow-hidden shadow-md hover:shadow-lg transition-all border-t-4 border-t-${section.color}-500`}>
-                      <CardContent className="p-6">
-                        <div className="flex items-center mb-4">
-                          <div className={`w-8 h-8 rounded-full bg-${section.color}-100 flex items-center justify-center text-${section.color}-600 mr-2`}>
-                            {section.icon}
-                          </div>
-                          <h3 className={`font-medium text-${section.color}-700`}>{section.title}</h3>
-                        </div>
-                        <div className="text-sm text-gray-700">
+                        <div>
+                          <h3 className={`text-xl font-medium text-${section.color}-700 mb-2`}>{section.title}</h3>
                           {section.content}
                         </div>
-                      </CardContent>
-                    </Card>
+                      </div>
+                    </TabsContent>
                   ))}
-                </div>
-              )}
+                </Tabs>
+              </div>
             </div>
-          </div>
-        </section>
-
-        {/* Leadership Team - Updated to use EldersList component */}
-        <section className="py-16 bg-gray-50">
-          <div className="container-custom">
-            <h2 className="section-title text-center mb-12">Our Leadership</h2>
-            <EldersList />
           </div>
         </section>
 

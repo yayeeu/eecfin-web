@@ -4,6 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import { Member } from '@/types/database.types';
 import { getElderMembers } from '@/lib/memberService';
 import { Loader2 } from 'lucide-react';
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 
 const EldersList = () => {
   const { data: elders, isLoading, isError } = useQuery({
@@ -13,8 +14,8 @@ const EldersList = () => {
 
   if (isLoading) {
     return (
-      <div className="flex justify-center items-center p-8">
-        <Loader2 className="h-8 w-8 animate-spin text-eecfin-navy" />
+      <div className="flex justify-center items-center p-4">
+        <Loader2 className="h-6 w-6 animate-spin text-eecfin-navy" />
         <span className="ml-2">Loading elders...</span>
       </div>
     );
@@ -22,7 +23,7 @@ const EldersList = () => {
 
   if (isError) {
     return (
-      <div className="p-8 text-center">
+      <div className="p-4 text-center">
         <p className="text-gray-500">Error loading elders. Please try again later.</p>
       </div>
     );
@@ -33,36 +34,34 @@ const EldersList = () => {
 
   if (!activeElders || activeElders.length === 0) {
     return (
-      <div className="p-8 text-center">
+      <div className="p-4 text-center">
         <p className="text-gray-500">No elders found.</p>
       </div>
     );
   }
 
   return (
-    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
       {activeElders.map((elder) => (
         <div key={elder.id} className="text-center">
-          <div className="w-40 h-40 bg-gray-200 rounded-full mx-auto mb-4 flex items-center justify-center overflow-hidden">
+          <Avatar className="w-24 h-24 mx-auto mb-3">
             {elder.image ? (
-              <img 
-                src={elder.image} 
-                alt={elder.name} 
-                className="w-full h-full object-cover"
-                onError={(e) => {
-                  (e.target as HTMLImageElement).src = '/placeholder.svg';
-                  (e.target as HTMLImageElement).classList.add('p-4');
-                }} 
+              <AvatarImage
+                src={elder.image}
+                alt={elder.name}
+                className="object-cover"
               />
             ) : (
-              <span className="text-gray-400 text-5xl">👨‍⚖️</span>
+              <AvatarFallback className="bg-gray-200 text-gray-400 text-2xl">
+                👨‍⚖️
+              </AvatarFallback>
             )}
-          </div>
-          <h3 className="text-xl font-semibold">{elder.name}</h3>
-          <p className="text-eecfin-navy font-medium">Elder</p>
+          </Avatar>
+          <h3 className="text-base font-semibold">{elder.name}</h3>
+          <p className="text-sm text-eecfin-navy font-medium">Elder</p>
           
           {elder.phone && (
-            <p className="mt-2 text-gray-600">
+            <p className="mt-1 text-sm text-gray-600">
               <a href={`tel:${elder.phone.replace(/\s+/g, '')}`} className="hover:text-eecfin-gold transition-colors">
                 {elder.phone}
               </a>
@@ -70,7 +69,7 @@ const EldersList = () => {
           )}
           
           {elder.email && (
-            <p className="mt-1 text-gray-600">
+            <p className="mt-1 text-xs text-gray-600">
               <a href={`mailto:${elder.email}`} className="hover:text-eecfin-gold transition-colors">
                 {elder.email}
               </a>
@@ -78,11 +77,11 @@ const EldersList = () => {
           )}
           
           {elder.ministries && (
-            <p className="mt-1 text-gray-600 text-sm">
-              <span className="inline-block px-3 py-1 bg-eecfin-gold/10 text-eecfin-navy rounded-full">
+            <div className="mt-1">
+              <span className="inline-block px-2 py-1 text-xs bg-eecfin-gold/10 text-eecfin-navy rounded-full">
                 {elder.ministries.name}
               </span>
-            </p>
+            </div>
           )}
         </div>
       ))}
