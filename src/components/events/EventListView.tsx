@@ -1,18 +1,17 @@
 
 import React from 'react';
-import { Button } from "@/components/ui/button";
-import { Clock, MapPin, Calendar, RefreshCw } from 'lucide-react';
+import { Clock, MapPin, Calendar } from 'lucide-react';
 import { Event } from "@/lib/googleCalendar";
 import EmptyState from './EmptyState';
+import { Button } from "@/components/ui/button";
 
 interface EventListViewProps {
   events: Event[];
-  onRefresh?: () => void;
 }
 
-const EventListView: React.FC<EventListViewProps> = ({ events, onRefresh }) => {
+const EventListView: React.FC<EventListViewProps> = ({ events }) => {
   if (events.length === 0) {
-    return <EmptyState onRefresh={onRefresh} />;
+    return <EmptyState />;
   }
 
   // Group events by month and year
@@ -25,20 +24,12 @@ const EventListView: React.FC<EventListViewProps> = ({ events, onRefresh }) => {
     return acc;
   }, {} as Record<string, Event[]>);
 
+  const handleOpenImage = (imageUrl: string) => {
+    window.open(imageUrl, '_blank');
+  };
+
   return (
     <div>
-      <div className="flex justify-end mb-4">
-        <Button 
-          variant="outline" 
-          size="sm" 
-          onClick={onRefresh}
-          className="flex items-center"
-        >
-          <RefreshCw className="h-4 w-4 mr-2" />
-          Refresh Events
-        </Button>
-      </div>
-      
       {Object.entries(groupedEvents).map(([monthYear, monthEvents]) => (
         <div key={monthYear} className="mb-10">
           <h3 className="text-2xl font-bold mb-4 text-eecfin-navy flex items-center">
@@ -56,11 +47,11 @@ const EventListView: React.FC<EventListViewProps> = ({ events, onRefresh }) => {
                   </div>
                   <div className={`md:flex flex-grow ${!event.image ? 'w-full' : ''}`}>
                     {event.image ? (
-                      <div className="md:w-1/3 h-48 md:h-auto">
+                      <div className="md:w-1/3 h-48 md:h-auto cursor-pointer" onClick={() => handleOpenImage(event.image!)}>
                         <img 
                           src={event.image} 
                           alt={event.title} 
-                          className="h-full w-full object-cover"
+                          className="h-full w-full object-cover hover:opacity-90 transition-opacity"
                         />
                       </div>
                     ) : null}

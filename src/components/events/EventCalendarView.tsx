@@ -3,25 +3,22 @@ import React from 'react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Calendar } from "@/components/ui/calendar";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { Clock, MapPin, RefreshCw } from 'lucide-react';
+import { Clock, MapPin } from 'lucide-react';
 import { Event } from "@/lib/googleCalendar";
 import EmptyState from './EmptyState';
-import { Button } from "@/components/ui/button";
 
 interface EventCalendarViewProps {
   events: Event[];
   selectedDate: Date | undefined;
   setSelectedDate: (date: Date | undefined) => void;
   filteredEvents: Event[];
-  onRefresh?: () => void;
 }
 
 const EventCalendarView: React.FC<EventCalendarViewProps> = ({ 
   events, 
   selectedDate, 
   setSelectedDate,
-  filteredEvents,
-  onRefresh
+  filteredEvents
 }) => {
   const getEventFallbackImage = (eventTitle: string) => {
     const initials = eventTitle
@@ -39,21 +36,9 @@ const EventCalendarView: React.FC<EventCalendarViewProps> = ({
       <div>
         <Card className="w-full">
           <CardHeader>
-            <div className="flex justify-between items-center">
-              <div>
-                <CardTitle>Select Date</CardTitle>
-                <CardDescription>Click on a date to view events</CardDescription>
-              </div>
-              {onRefresh && (
-                <Button 
-                  variant="outline" 
-                  size="sm" 
-                  onClick={onRefresh}
-                >
-                  <RefreshCw className="h-4 w-4 mr-2" />
-                  Refresh
-                </Button>
-              )}
+            <div>
+              <CardTitle>Select Date</CardTitle>
+              <CardDescription>Click on a date to view events</CardDescription>
             </div>
           </CardHeader>
           <CardContent>
@@ -116,6 +101,17 @@ const EventCalendarView: React.FC<EventCalendarViewProps> = ({
                           <span>{event.location}</span>
                         </div>
                         <p className="text-sm text-gray-700">{event.description}</p>
+                        
+                        {event.image && (
+                          <div className="mt-3">
+                            <img 
+                              src={event.image} 
+                              alt={`${event.title} banner`} 
+                              className="w-full rounded-md cursor-pointer hover:opacity-90 transition-opacity"
+                              onClick={() => window.open(event.image, '_blank')}
+                            />
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>

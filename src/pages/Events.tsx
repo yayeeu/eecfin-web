@@ -1,6 +1,5 @@
 
 import React, { useState, useMemo } from 'react';
-import { Button } from "@/components/ui/button";
 import { List, CalendarDays, AlertCircle } from 'lucide-react';
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { fetchEvents } from "@/lib/googleCalendar";
@@ -17,21 +16,12 @@ const Events = () => {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
 
   // Optimized data fetching with proper caching strategy
-  const { data, isLoading, error, isError, refetch } = useQuery({
+  const { data, isLoading, error, isError } = useQuery({
     queryKey: ['events'],
     queryFn: fetchEvents,
     staleTime: 10 * 60 * 1000, // 10 minutes
     refetchOnWindowFocus: false
   });
-
-  // Handle refreshing events
-  const handleRefresh = () => {
-    toast.promise(refetch(), {
-      loading: 'Refreshing events...',
-      success: 'Events refreshed successfully',
-      error: 'Failed to refresh events'
-    });
-  };
 
   // Handle errors with useEffect
   React.useEffect(() => {
@@ -128,23 +118,19 @@ const Events = () => {
               <p className="text-sm text-gray-500 mb-4">
                 Make sure your Google Calendar API key and Calendar ID are properly set in Supabase secrets.
               </p>
-              <Button className="bg-eecfin-navy hover:bg-eecfin-navy/80" onClick={handleRefresh}>
-                Retry
-              </Button>
             </div>
           )}
 
           {/* Content */}
           {!isLoading && !isError && status !== 'error' && (
             <div>
-              {viewType === "list" && <EventListView events={events} onRefresh={handleRefresh} />}
+              {viewType === "list" && <EventListView events={events} />}
               {viewType === "calendar" && (
                 <EventCalendarView 
                   events={events}
                   selectedDate={selectedDate}
                   setSelectedDate={setSelectedDate}
                   filteredEvents={filteredEvents}
-                  onRefresh={handleRefresh}
                 />
               )}
             </div>

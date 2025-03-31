@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Button } from "@/components/ui/button";
-import { AlertCircle, RefreshCw } from 'lucide-react';
+import { AlertCircle } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { fetchEvents } from '@/lib/googleCalendar';
@@ -10,7 +10,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
 
 const UpcomingEventsSection = () => {
-  const { data, isLoading, error, isError, refetch } = useQuery({
+  const { data, isLoading, error, isError } = useQuery({
     queryKey: ['events-preview'],
     queryFn: fetchEvents,
     staleTime: 5 * 60 * 1000, // 5 minutes
@@ -22,15 +22,6 @@ const UpcomingEventsSection = () => {
       }
     }
   });
-
-  // Handle refreshing events
-  const handleRefresh = () => {
-    toast.promise(refetch(), {
-      loading: 'Refreshing events...',
-      success: 'Events refreshed successfully',
-      error: 'Failed to refresh events'
-    });
-  };
 
   // Execute side effect for error toast outside of the query config
   React.useEffect(() => {
@@ -59,20 +50,9 @@ const UpcomingEventsSection = () => {
       <div className="container-custom">
         <div className="flex justify-between items-center mb-8">
           <h2 className="section-title mb-0">Upcoming Events</h2>
-          <div className="flex items-center gap-2">
-            <Button 
-              variant="outline" 
-              size="sm" 
-              onClick={handleRefresh}
-              className="mr-2"
-            >
-              <RefreshCw className="h-4 w-4 mr-2" />
-              Refresh
-            </Button>
-            <Button asChild variant="outline" className="border-eecfin-navy text-eecfin-navy">
-              <Link to="/events">View All Events</Link>
-            </Button>
-          </div>
+          <Button asChild variant="outline" className="border-eecfin-navy text-eecfin-navy">
+            <Link to="/events">View All Events</Link>
+          </Button>
         </div>
         
         {isLoading ? (
@@ -93,14 +73,6 @@ const UpcomingEventsSection = () => {
             <AlertCircle className="h-8 w-8 text-red-500 mx-auto mb-2" />
             <p className="text-red-800 mb-2">Error loading events</p>
             <p className="text-gray-600 text-sm mb-4">{errorMessage || "Please check your Google Calendar configuration"}</p>
-            <Button 
-              size="sm" 
-              className="bg-eecfin-navy hover:bg-eecfin-navy/80"
-              onClick={handleRefresh}
-            >
-              <RefreshCw className="h-4 w-4 mr-2" />
-              Retry
-            </Button>
           </div>
         ) : upcomingEvents.length > 0 ? (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -117,13 +89,23 @@ const UpcomingEventsSection = () => {
                   <h3 className="text-xl font-semibold mb-2">{event.title}</h3>
                   <p className="text-gray-600 mb-3 line-clamp-2">{event.description}</p>
                   <p className="text-sm text-gray-500">Location: {event.location}</p>
+                  
+                  {event.image && (
+                    <div className="mt-3">
+                      <img 
+                        src={event.image} 
+                        alt={`${event.title}`}
+                        className="w-full h-32 object-cover rounded-md cursor-pointer hover:opacity-90 transition-opacity"
+                        onClick={() => window.open(event.image, '_blank')}
+                      />
+                    </div>
+                  )}
                 </div>
               </div>
             ))}
           </div>
         ) : (
           <EmptyState 
-            onRefresh={handleRefresh}
             message={status === 'empty' 
               ? "We don't have any events scheduled at the moment. Please check back soon for upcoming services and gatherings."
               : "There was an issue retrieving events. Please check back later."}
