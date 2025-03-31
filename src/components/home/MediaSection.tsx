@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Video } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import YouTubeEmbed from '../YouTubeEmbed';
+import MissionSlider from './MissionSlider';
 
 const MediaSection = () => {
   return (
@@ -40,20 +41,9 @@ const MediaSection = () => {
             </div>
           </div>
           
-          {/* Right column: Our Mission */}
-          <div className="w-full md:w-1/2 bg-white p-8 rounded-lg shadow-md flex flex-col justify-center">
-            <h2 className="section-title mb-6 text-center">Our Mission</h2>
-            <p className="text-lg mb-8">
-              We are a vibrant Ethiopian Christian community dedicated to spreading the Gospel, 
-              nurturing spiritual growth, and providing a place of belonging for Ethiopians 
-              and friends in Finland. Our church serves as a bridge between Ethiopian 
-              Christian heritage and life in Finland.
-            </p>
-            <div className="flex justify-center">
-              <Button asChild className="bg-eecfin-navy hover:bg-eecfin-navy/80">
-                <Link to="/who-we-are">About Our Church</Link>
-              </Button>
-            </div>
+          {/* Right column: Our Mission with language slider */}
+          <div className="w-full md:w-1/2">
+            <MissionSlider />
           </div>
         </div>
       </div>
