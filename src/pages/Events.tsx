@@ -15,7 +15,7 @@ const Events = () => {
   const [viewType, setViewType] = useState<ViewType>("list");
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
   const [currentPage, setCurrentPage] = useState(1);
-  const eventsPerPage = 10;
+  const eventsPerPage = 7; // Changed from 10 to 7
 
   // Optimized data fetching with proper caching strategy
   const { data, isLoading, error, isError } = useQuery({
