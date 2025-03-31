@@ -35,7 +35,7 @@ const EventCalendarView: React.FC<EventCalendarViewProps> = ({
   };
 
   return (
-    <div className="grid md:grid-cols-[1fr_1.5fr] gap-8">
+    <div className="grid md:grid-cols-[1.2fr_1fr] gap-8">
       <div>
         <Card className="w-full">
           <CardHeader>
@@ -65,12 +65,12 @@ const EventCalendarView: React.FC<EventCalendarViewProps> = ({
               classNames={{
                 month: "w-full",
                 table: "w-full border-collapse",
-                head_cell: "text-muted-foreground rounded-md w-12 font-normal text-[0.8rem] px-1",
-                cell: "h-12 w-12 text-center p-0 relative focus-within:relative focus-within:z-20",
-                day: "h-12 w-12 p-0 font-normal aria-selected:opacity-100 hover:bg-accent hover:text-accent-foreground",
+                head_cell: "text-muted-foreground rounded-md w-14 font-normal text-[0.9rem] px-1",
+                cell: "h-14 w-14 text-center p-0 relative focus-within:relative focus-within:z-20",
+                day: "h-14 w-14 p-0 font-normal aria-selected:opacity-100 hover:bg-accent hover:text-accent-foreground",
                 nav: "space-x-1 flex items-center justify-between w-full",
                 caption: "flex justify-center pt-1 relative items-center text-sm px-10",
-                caption_label: "text-sm font-medium"
+                caption_label: "text-lg font-medium"
               }}
             />
           </CardContent>

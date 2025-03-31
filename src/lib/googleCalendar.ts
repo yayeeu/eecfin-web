@@ -48,8 +48,8 @@ const sampleEvents: Event[] = [
     title: 'Sunday Worship Service',
     description: 'Weekly worship service with praise, prayer, and sermon.',
     location: 'Main Sanctuary',
-    startTime: new Date(new Date().setHours(10, 0, 0, 0)),
-    endTime: new Date(new Date().setHours(12, 0, 0, 0)),
+    startTime: new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), 10, 0, 0, 0),
+    endTime: new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), 12, 0, 0, 0),
     day: new Date().getDate(),
     month: format(new Date(), 'MMMM'),
     year: new Date().getFullYear(),
@@ -59,10 +59,10 @@ const sampleEvents: Event[] = [
     title: 'Bible Study Group',
     description: 'Weekly Bible study focusing on the book of Romans.',
     location: 'Fellowship Hall',
-    startTime: new Date(new Date().setDate(new Date().getDate() + 2).setHours(18, 30, 0, 0)),
-    endTime: new Date(new Date().setDate(new Date().getDate() + 2).setHours(20, 0, 0, 0)),
-    day: new Date(new Date().setDate(new Date().getDate() + 2)).getDate(),
-    month: format(new Date(new Date().setDate(new Date().getDate() + 2)), 'MMMM'),
+    startTime: createFutureDate(2, 18, 30),
+    endTime: createFutureDate(2, 20, 0),
+    day: new Date(createFutureDate(2, 0, 0).getTime()).getDate(),
+    month: format(createFutureDate(2, 0, 0), 'MMMM'),
     year: new Date().getFullYear(),
   },
   {
@@ -70,13 +70,21 @@ const sampleEvents: Event[] = [
     title: 'Youth Group Meeting',
     description: 'Weekly gathering for teenagers with games, discussion, and prayer.',
     location: 'Youth Center',
-    startTime: new Date(new Date().setDate(new Date().getDate() + 4).setHours(19, 0, 0, 0)),
-    endTime: new Date(new Date().setDate(new Date().getDate() + 4).setHours(21, 0, 0, 0)),
-    day: new Date(new Date().setDate(new Date().getDate() + 4)).getDate(),
-    month: format(new Date(new Date().setDate(new Date().getDate() + 4)), 'MMMM'),
+    startTime: createFutureDate(4, 19, 0),
+    endTime: createFutureDate(4, 21, 0),
+    day: new Date(createFutureDate(4, 0, 0).getTime()).getDate(),
+    month: format(createFutureDate(4, 0, 0), 'MMMM'),
     year: new Date().getFullYear(),
   }
 ];
+
+// Helper function to create future dates properly
+function createFutureDate(daysToAdd: number, hours: number, minutes: number): Date {
+  const date = new Date();
+  date.setDate(date.getDate() + daysToAdd);
+  date.setHours(hours, minutes, 0, 0);
+  return date;
+}
 
 // Add a local caching layer for the events
 const getEventsFromCache = (): { events: Event[], timestamp: number } | null => {
