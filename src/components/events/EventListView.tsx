@@ -36,16 +36,16 @@ const EventListView: React.FC<EventListViewProps> = ({
   }, {} as Record<string, Event[]>);
 
   return (
-    <div>
-      <p className="text-sm text-gray-500 mb-4">
+    <div className="space-y-4">
+      <div className="text-sm text-gray-500 mb-4">
         Showing {events.length} of {totalEvents} events
-      </p>
+      </div>
       
       {Object.entries(groupedEvents).map(([monthYear, monthEvents]) => (
         <div key={monthYear} className="mb-8">
           <MonthHeader monthYear={monthYear} />
           
-          <div className="space-y-4">
+          <div className="border-t border-gray-200">
             {monthEvents.map((event) => (
               <EventCard key={event.id} event={event} />
             ))}
