@@ -15,6 +15,7 @@ import RoleGuard from "@/components/auth/RoleGuard";
 // Lazy-loaded components for better initial loading performance
 const WhoWeAre = lazy(() => import("./pages/WhoWeAre"));
 const OurFaith = lazy(() => import("./pages/OurFaith"));
+const OurLeadership = lazy(() => import("./pages/OurLeadership"));
 const Events = lazy(() => import("./pages/Events"));
 const Contact = lazy(() => import("./pages/Contact"));
 const GetInvolved = lazy(() => import("./pages/GetInvolved"));
@@ -48,6 +49,7 @@ const publicRoutes = [
   { path: "/", element: <Index /> },
   { path: "/who-we-are", element: <WhoWeAre /> },
   { path: "/our-faith", element: <OurFaith /> },
+  { path: "/our-leadership", element: <OurLeadership /> },
   { path: "/events", element: <Events /> },
   { path: "/sermons", element: <Sermons /> },
   { path: "/contact", element: <Contact /> },

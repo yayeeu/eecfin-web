@@ -1,9 +1,9 @@
+
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { Link } from 'react-router-dom';
 import { BookOpen, Heart, Users, Layout, FileText } from 'lucide-react';
 import { Card, CardContent } from "@/components/ui/card";
-import EldersList from '@/components/EldersList';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
@@ -116,27 +116,6 @@ const WhoWeAre = () => {
           </Button>
         </div>
       )
-    },
-    {
-      id: "leadership",
-      title: "Leadership",
-      icon: <Layout size={20} />,
-      color: "purple",
-      content: (
-        <div className="space-y-4">
-          <div className="mb-4">
-            <span className="px-3 py-1 text-sm font-medium bg-purple-100 text-purple-700 rounded-full">
-              Our Leadership Team
-            </span>
-          </div>
-          <p className="mb-6">
-            Our church is led by a dedicated team of elders who serve the congregation 
-            with wisdom, faith and compassion. These leaders work together to guide our 
-            spiritual growth and manage the various ministries of our church.
-          </p>
-          <EldersList />
-        </div>
-      )
     }
   ];
 
@@ -224,6 +203,13 @@ const WhoWeAre = () => {
                     >
                       <FileText size={18} className="mr-2 text-eecfin-gold" />
                       Our Constitution
+                    </Link>
+                    <Link 
+                      to="/our-leadership" 
+                      className="flex items-center text-gray-700 hover:text-eecfin-navy transition-colors py-2"
+                    >
+                      <Users size={18} className="mr-2 text-eecfin-gold" />
+                      Our Leadership
                     </Link>
                   </nav>
                 </div>
