@@ -5,10 +5,10 @@ import { Link } from 'react-router-dom';
 
 const CtaSection = () => {
   return (
-    <section className="py-16 bg-eecfin-navy text-white text-center">
-      <div className="container-custom">
-        <h2 className="text-3xl font-bold mb-6">Join Our Community</h2>
-        <p className="text-xl mb-8 max-w-2xl mx-auto">
+    <section className="py-10 bg-eecfin-navy text-white rounded-lg">
+      <div className="px-8 py-2 text-center">
+        <h2 className="text-2xl font-bold mb-4">Join Our Community</h2>
+        <p className="text-lg mb-6 max-w-2xl mx-auto">
           We invite you to become part of our church family and grow with us in faith and fellowship.
         </p>
         <div className="flex flex-wrap justify-center gap-4">

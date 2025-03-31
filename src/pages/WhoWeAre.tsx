@@ -23,6 +23,11 @@ const WhoWeAre = () => {
               {/* Main Content */}
               <div className="flex-1">
                 <AboutContent />
+                
+                {/* CTA Section - Moved here from the bottom */}
+                <div className="mt-12">
+                  <CtaSection />
+                </div>
               </div>
               
               {/* Right Side Navigation */}
@@ -32,9 +37,6 @@ const WhoWeAre = () => {
             </div>
           </div>
         </section>
-
-        {/* CTA Section */}
-        <CtaSection />
       </div>
     </QueryClientProvider>
   );
