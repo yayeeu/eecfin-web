@@ -8,6 +8,7 @@ import { useQuery } from '@tanstack/react-query';
 import EventListView from '@/components/events/EventListView';
 import EventCalendarView from '@/components/events/EventCalendarView';
 import { Skeleton } from "@/components/ui/skeleton";
+import { toast } from "sonner";
 
 type ViewType = "list" | "calendar";
 
@@ -20,8 +21,16 @@ const Events = () => {
     queryKey: ['events'],
     queryFn: fetchEvents,
     staleTime: 10 * 60 * 1000, // 10 minutes
-    refetchOnWindowFocus: false,
+    refetchOnWindowFocus: false
   });
+
+  // Handle errors with useEffect
+  React.useEffect(() => {
+    if (error) {
+      toast.error("Failed to load events");
+      console.error("Error loading events:", error);
+    }
+  }, [error]);
 
   const events = data?.events || [];
   const errorMessage = data?.error || (error as Error)?.message;

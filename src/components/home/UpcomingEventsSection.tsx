@@ -15,11 +15,21 @@ const UpcomingEventsSection = () => {
     queryFn: fetchEvents,
     staleTime: 5 * 60 * 1000, // 5 minutes
     retry: 2,
-    onError: (err) => {
-      toast.error("Failed to load upcoming events");
-      console.error("Error loading events:", err);
+    meta: {
+      onError: (err: Error) => {
+        toast.error("Failed to load upcoming events");
+        console.error("Error loading events:", err);
+      }
     }
   });
+
+  // Execute side effect for error toast outside of the query config
+  React.useEffect(() => {
+    if (error) {
+      toast.error("Failed to load upcoming events");
+      console.error("Error loading events:", error);
+    }
+  }, [error]);
 
   const events = data?.events || [];
   const errorMessage = data?.error || (error as Error)?.message;
