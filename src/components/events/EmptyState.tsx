@@ -1,17 +1,19 @@
 
 import React from 'react';
 import { Button } from "@/components/ui/button";
-import { Calendar as CalendarLucide } from 'lucide-react';
+import { Calendar as CalendarLucide, RefreshCw } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 interface EmptyStateProps {
   message?: string;
   filteredView?: boolean;
+  onRefresh?: () => void;
 }
 
 const EmptyState: React.FC<EmptyStateProps> = ({ 
   message, 
-  filteredView = false 
+  filteredView = false,
+  onRefresh
 }) => (
   <div className="bg-gray-50 rounded-lg p-8 text-center">
     <CalendarLucide className="h-12 w-12 text-eecfin-navy mx-auto mb-4 opacity-60" />
@@ -28,7 +30,8 @@ const EmptyState: React.FC<EmptyStateProps> = ({
       <Button 
         variant="outline" 
         className="border-eecfin-navy text-eecfin-navy"
-        onClick={() => window.location.reload()}>
+        onClick={onRefresh || (() => window.location.reload())}>
+        <RefreshCw className="h-4 w-4 mr-2" />
         Refresh Events
       </Button>
     </div>

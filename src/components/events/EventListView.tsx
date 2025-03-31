@@ -1,17 +1,18 @@
 
 import React from 'react';
 import { Button } from "@/components/ui/button";
-import { Clock, MapPin, Calendar } from 'lucide-react';
+import { Clock, MapPin, Calendar, RefreshCw } from 'lucide-react';
 import { Event } from "@/lib/googleCalendar";
 import EmptyState from './EmptyState';
 
 interface EventListViewProps {
   events: Event[];
+  onRefresh?: () => void;
 }
 
-const EventListView: React.FC<EventListViewProps> = ({ events }) => {
+const EventListView: React.FC<EventListViewProps> = ({ events, onRefresh }) => {
   if (events.length === 0) {
-    return <EmptyState />;
+    return <EmptyState onRefresh={onRefresh} />;
   }
 
   // Group events by month and year
@@ -26,6 +27,18 @@ const EventListView: React.FC<EventListViewProps> = ({ events }) => {
 
   return (
     <div>
+      <div className="flex justify-end mb-4">
+        <Button 
+          variant="outline" 
+          size="sm" 
+          onClick={onRefresh}
+          className="flex items-center"
+        >
+          <RefreshCw className="h-4 w-4 mr-2" />
+          Refresh Events
+        </Button>
+      </div>
+      
       {Object.entries(groupedEvents).map(([monthYear, monthEvents]) => (
         <div key={monthYear} className="mb-10">
           <h3 className="text-2xl font-bold mb-4 text-eecfin-navy flex items-center">

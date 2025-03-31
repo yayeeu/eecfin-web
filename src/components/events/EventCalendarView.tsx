@@ -3,22 +3,25 @@ import React from 'react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Calendar } from "@/components/ui/calendar";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { Clock, MapPin } from 'lucide-react';
+import { Clock, MapPin, RefreshCw } from 'lucide-react';
 import { Event } from "@/lib/googleCalendar";
 import EmptyState from './EmptyState';
+import { Button } from "@/components/ui/button";
 
 interface EventCalendarViewProps {
   events: Event[];
   selectedDate: Date | undefined;
   setSelectedDate: (date: Date | undefined) => void;
   filteredEvents: Event[];
+  onRefresh?: () => void;
 }
 
 const EventCalendarView: React.FC<EventCalendarViewProps> = ({ 
   events, 
   selectedDate, 
   setSelectedDate,
-  filteredEvents
+  filteredEvents,
+  onRefresh
 }) => {
   const getEventFallbackImage = (eventTitle: string) => {
     const initials = eventTitle
@@ -32,26 +35,42 @@ const EventCalendarView: React.FC<EventCalendarViewProps> = ({
   };
 
   return (
-    <div className="grid md:grid-cols-[400px_1fr] gap-8">
+    <div className="grid md:grid-cols-[1fr_1.5fr] gap-8">
       <div>
         <Card className="w-full">
           <CardHeader>
-            <CardTitle>Select Date</CardTitle>
-            <CardDescription>Click on a date to view events</CardDescription>
+            <div className="flex justify-between items-center">
+              <div>
+                <CardTitle>Select Date</CardTitle>
+                <CardDescription>Click on a date to view events</CardDescription>
+              </div>
+              {onRefresh && (
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={onRefresh}
+                >
+                  <RefreshCw className="h-4 w-4 mr-2" />
+                  Refresh
+                </Button>
+              )}
+            </div>
           </CardHeader>
           <CardContent>
             <Calendar
               mode="single"
               selected={selectedDate}
               onSelect={setSelectedDate}
-              className="border rounded-md p-4 w-full"
+              className="border rounded-md p-6 w-full"
               classNames={{
                 month: "w-full",
-                table: "w-full",
-                cell: "h-10 w-10 text-center p-0",
-                day: "h-10 w-10",
-                head_cell: "text-muted-foreground rounded-md w-10 font-normal text-[0.8rem]",
+                table: "w-full border-collapse",
+                head_cell: "text-muted-foreground rounded-md w-12 font-normal text-[0.8rem] px-1",
+                cell: "h-12 w-12 text-center p-0 relative focus-within:relative focus-within:z-20",
+                day: "h-12 w-12 p-0 font-normal aria-selected:opacity-100 hover:bg-accent hover:text-accent-foreground",
                 nav: "space-x-1 flex items-center justify-between w-full",
+                caption: "flex justify-center pt-1 relative items-center text-sm px-10",
+                caption_label: "text-sm font-medium"
               }}
             />
           </CardContent>
