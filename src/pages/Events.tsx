@@ -36,6 +36,12 @@ const Events = () => {
   const errorMessage = data?.error || (error as Error)?.message;
   const status = data?.status;
   
+  console.log("Events page - data:", { 
+    eventsCount: events.length,
+    status,
+    error: errorMessage
+  });
+  
   // Memoize filtered events to prevent unnecessary calculations on re-renders
   const filteredEvents = useMemo(() => {
     if (!selectedDate) return events;

@@ -15,6 +15,8 @@ serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
+  console.log("Calendar fetch function called", new Date().toISOString());
+
   // Add CORS headers to all responses
   const responseHeaders = { ...corsHeaders, "Content-Type": "application/json" };
 

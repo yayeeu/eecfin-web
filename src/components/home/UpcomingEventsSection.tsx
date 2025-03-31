@@ -38,6 +38,13 @@ const UpcomingEventsSection = () => {
   // Get only the next 3 upcoming events
   const upcomingEvents = events.slice(0, 3);
 
+  console.log("Upcoming events section - data:", { 
+    eventsCount: events.length,
+    upcomingCount: upcomingEvents.length,
+    status,
+    error: errorMessage
+  });
+
   return (
     <section className="py-16 bg-white">
       <div className="container-custom">
