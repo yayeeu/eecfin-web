@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,7 +7,13 @@ import { Pencil, Trash2, Plus, Image, Loader2, X } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Card, CardContent } from "@/components/ui/card";
 import { toast } from "@/components/ui/use-toast";
-import { fetchSlides, addSlide, updateSlide, deleteSlide } from '@/lib/sliderService';
+import { 
+  fetchSlides, 
+  addSlide, 
+  updateSlide, 
+  deleteSlide,
+  SlideImage 
+} from '@/lib/sliderService';
 
 export interface SlideImage {
   id: string;
