@@ -37,6 +37,7 @@ serve(async (req) => {
     const timeMin = new Date().toISOString();
     console.log(`Fetching events starting from ${timeMin} for calendar ID: ${CALENDAR_ID}`);
     
+    // Build URL with proper encoding and parameters
     const url = `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(
       CALENDAR_ID
     )}/events?key=${GOOGLE_API_KEY}&timeMin=${timeMin}&maxResults=10&singleEvents=true&orderBy=startTime`;
