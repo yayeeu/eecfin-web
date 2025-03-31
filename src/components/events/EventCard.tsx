@@ -4,24 +4,6 @@ import { MapPin, ExternalLink } from 'lucide-react';
 import { Event } from "@/lib/googleCalendar";
 import { Button } from "@/components/ui/button";
 
-// Google Calendar color mapping
-// These are the default colors used by Google Calendar
-const colorMap: Record<string, string> = {
-  "1": "bg-blue-100 text-blue-800", // Lavender
-  "2": "bg-green-100 text-green-800", // Sage
-  "3": "bg-purple-100 text-purple-800", // Grape
-  "4": "bg-amber-100 text-amber-800", // Flamingo
-  "5": "bg-yellow-100 text-yellow-800", // Banana
-  "6": "bg-orange-100 text-orange-800", // Tangerine
-  "7": "bg-red-100 text-red-800", // Tomato
-  "8": "bg-cyan-100 text-cyan-800", // Peacock
-  "9": "bg-indigo-100 text-indigo-800", // Blueberry
-  "10": "bg-gray-100 text-gray-800", // Basil
-  "11": "bg-lime-100 text-lime-800", // Avocado
-  // Default
-  "default": "bg-eecfin-navy/10 text-eecfin-navy"
-};
-
 interface EventCardProps {
   event: Event;
 }
@@ -37,12 +19,6 @@ const EventCard: React.FC<EventCardProps> = ({ event }) => {
     const month = date.toLocaleString('en', { month: 'short' }).toUpperCase();
     const day = date.toLocaleString('en', { weekday: 'short' }).toUpperCase();
     return `${month}, ${day}`;
-  };
-
-  // Get the color class based on the colorId
-  const getColorClass = () => {
-    if (!event.colorId) return colorMap.default;
-    return colorMap[event.colorId] || colorMap.default;
   };
 
   return (
@@ -63,9 +39,7 @@ const EventCard: React.FC<EventCardProps> = ({ event }) => {
       </div>
       
       <div className="flex-grow ml-0 sm:ml-6">
-        <h3 className={`font-medium mb-1 px-2 py-1 inline-block rounded ${getColorClass()}`}>
-          {event.title}
-        </h3>
+        <h3 className="font-medium mb-1 text-eecfin-navy">{event.title}</h3>
         
         {event.location && event.location !== 'Location not specified' && (
           <div className="flex items-start text-gray-600 mb-2">

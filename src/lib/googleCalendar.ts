@@ -8,7 +8,6 @@ interface GoogleCalendarEvent {
   summary: string;
   description?: string;
   location?: string;
-  colorId?: string;
   start: {
     dateTime: string;
     timeZone: string;
@@ -35,7 +34,6 @@ export interface Event {
   day: number;
   month: string;
   year: number;
-  colorId?: string;
   image?: string; // Optional image property for event
 }
 
@@ -188,7 +186,6 @@ function formatEvents(googleEvents: GoogleCalendarEvent[]): Event[] {
       day: startTime.getDate(),
       month: format(startTime, 'MMMM'),
       year: startTime.getFullYear(),
-      colorId: event.colorId,
       image: eventImage
     };
   });
