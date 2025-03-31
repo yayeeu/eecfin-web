@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { LogOut, Home, Settings, BarChart, Image, Users, User, Lock } from 'lucide-react';
+import { LogOut, Home, Settings, BarChart, Image, Users, User, Lock, UserCheck } from 'lucide-react';
 import { Separator } from "@/components/ui/separator";
 import { UserRole } from '@/types/auth.types';
 import {
@@ -29,6 +29,7 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({
     slider: ['admin', 'it', 'volunteer'],
     ministries: ['admin'],
     members: ['admin', 'elder'],
+    elders: ['admin', 'elder'],
     settings: ['admin'],
     auth: ['admin', 'member', 'elder', 'it', 'volunteer'],
     register: ['admin'], // Only admin can access member registration
@@ -40,6 +41,7 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({
     { id: 'slider', label: 'Slider Images', icon: Image, roles: ['admin', 'it', 'volunteer'] },
     { id: 'ministries', label: 'Ministries', icon: Users, roles: ['admin'] },
     { id: 'members', label: 'All Members', icon: User, roles: ['admin', 'elder'] },
+    { id: 'elders', label: 'Elders', icon: UserCheck, roles: ['admin', 'elder'] },
     { id: 'settings', label: 'Settings', icon: Settings, roles: ['admin'] },
     { id: 'register', label: 'Add Member', icon: Lock, roles: ['admin'] }, // Only for admin
   ].filter(item => {

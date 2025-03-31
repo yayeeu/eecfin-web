@@ -7,6 +7,7 @@ import Dashboard from '@/components/Dashboard';
 import SliderManager from '@/components/slider/SliderManager';
 import MinistryManager from '@/components/MinistryManager';
 import MemberManager from '@/components/MemberManager';
+import ElderManager from '@/components/ElderManager';
 import { UserRole } from '@/types/auth.types';
 
 interface AdminContentProps {
@@ -21,6 +22,7 @@ const AdminContent: React.FC<AdminContentProps> = ({ activeSection, signUp }) =>
       case 'slider': return 'Manage Slider Images';
       case 'ministries': return 'Manage Ministries';
       case 'members': return 'All Church Members';
+      case 'elders': return 'Church Elders';
       case 'settings': return 'Settings';
       default: return '';
     }
@@ -36,6 +38,8 @@ const AdminContent: React.FC<AdminContentProps> = ({ activeSection, signUp }) =>
         return 'Add, edit, or delete ministry information displayed on the Get Involved page.';
       case 'members': 
         return 'View all church members and their assigned roles.';
+      case 'elders': 
+        return 'View and manage church elders.';
       case 'settings': 
         return 'Configure website settings.';
       default: 
@@ -74,6 +78,11 @@ const AdminContent: React.FC<AdminContentProps> = ({ activeSection, signUp }) =>
       {activeSection === 'members' && (
         <RoleGuard allowedRoles={['admin', 'elder']}>
           <MemberManager />
+        </RoleGuard>
+      )}
+      {activeSection === 'elders' && (
+        <RoleGuard allowedRoles={['admin', 'elder']}>
+          <ElderManager />
         </RoleGuard>
       )}
       {activeSection === 'settings' && (
