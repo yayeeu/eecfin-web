@@ -83,6 +83,9 @@ export async function fetchEvents(): Promise<{ events: Event[], error: string | 
     
     if (isDevelopment) {
       console.info('Using mock data for events in development environment');
+      
+      // In a real implementation, we would return mock data here
+      // For now, we'll return an empty array to simulate no events
       return { events: [], error: null, status: 'development' };
     }
     
