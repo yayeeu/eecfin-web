@@ -19,7 +19,7 @@ const MediaSection = () => {
             </div>
             
             {/* YouTube Embed */}
-            <div className="mb-6">
+            <div className="flex-grow">
               <YouTubeEmbed 
                 channelId="eecfin" 
                 className="aspect-video w-full rounded-lg shadow-md overflow-hidden"
@@ -27,7 +27,7 @@ const MediaSection = () => {
             </div>
             
             {/* EECFIN Media Box (moved below video) */}
-            <div className="bg-white p-6 rounded-lg shadow-md mt-auto">
+            <div className="bg-white p-6 rounded-lg shadow-md mt-4">
               <h3 className="text-xl font-semibold mb-4 text-eecfin-navy">EECFIN Media</h3>
               <p className="text-gray-700 mb-4">
                 Stay connected with our church through our broadcasts, sermons, and special events. 
@@ -42,8 +42,15 @@ const MediaSection = () => {
           </div>
           
           {/* Right column: Our Mission with language slider */}
-          <div className="w-full md:w-1/2">
-            <MissionSlider />
+          <div className="w-full md:w-1/2 flex flex-col">
+            <div className="h-full flex flex-col">
+              <div className="flex items-center mb-4">
+                <h2 className="section-title mb-0">Our Mission</h2>
+              </div>
+              <div className="flex-grow">
+                <MissionSlider />
+              </div>
+            </div>
           </div>
         </div>
       </div>

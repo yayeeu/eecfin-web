@@ -67,10 +67,10 @@ const MissionSlider: React.FC = () => {
   }, []);
 
   return (
-    <div className="w-full">
+    <div className="w-full h-full flex flex-col">
       <Carousel
         plugins={[plugin.current]}
-        className="w-full"
+        className="w-full flex-grow"
         opts={{
           align: "start",
           loop: true,
@@ -79,15 +79,15 @@ const MissionSlider: React.FC = () => {
           carouselRef.current = api;
         }}
       >
-        <CarouselContent>
+        <CarouselContent className="h-full">
           {missionSlides.map((slide, index) => (
-            <CarouselItem key={index} className="relative">
-              <div className="bg-white p-6 rounded-lg shadow-md flex flex-col">
+            <CarouselItem key={index} className="relative h-full">
+              <div className="bg-white p-6 rounded-lg shadow-md flex flex-col h-full">
                 <div className="flex justify-between items-center mb-4">
                   <h2 className="section-title mb-0">{slide.title}</h2>
                   <span className="text-sm font-medium text-gray-500">{slide.language}</span>
                 </div>
-                <p className="text-lg mb-8">
+                <p className="text-lg mb-8 flex-grow">
                   {slide.content}
                 </p>
                 <div className="mt-auto flex justify-center">
