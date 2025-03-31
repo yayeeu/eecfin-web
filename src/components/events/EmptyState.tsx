@@ -21,9 +21,17 @@ const EmptyState: React.FC<EmptyStateProps> = ({
     <p className="text-gray-600 mb-6">
       {message || "We don't have any events scheduled at the moment. Please check back soon for upcoming services and gatherings."}
     </p>
-    <Button asChild className="bg-eecfin-navy hover:bg-eecfin-navy/80">
-      <Link to="/contact">Contact Us</Link>
-    </Button>
+    <div className="space-x-4">
+      <Button asChild className="bg-eecfin-navy hover:bg-eecfin-navy/80">
+        <Link to="/contact">Contact Us</Link>
+      </Button>
+      <Button 
+        variant="outline" 
+        className="border-eecfin-navy text-eecfin-navy"
+        onClick={() => window.location.reload()}>
+        Refresh Events
+      </Button>
+    </div>
   </div>
 );
 

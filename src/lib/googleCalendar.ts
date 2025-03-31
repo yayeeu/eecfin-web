@@ -72,69 +72,18 @@ const saveEventsToCache = (events: Event[]) => {
   }
 };
 
-// Mock data for development or testing
-const getMockEvents = (): Event[] => {
-  const now = new Date();
-  const tomorrow = new Date(now);
-  tomorrow.setDate(tomorrow.getDate() + 1);
-  const nextWeek = new Date(now);
-  nextWeek.setDate(nextWeek.getDate() + 7);
-  
-  return [
-    {
-      id: '1',
-      title: 'Sunday Service',
-      description: 'Weekly worship service',
-      location: 'Main Sanctuary',
-      startTime: new Date(now.setHours(10, 0, 0, 0)),
-      endTime: new Date(now.setHours(12, 0, 0, 0)),
-      day: now.getDate(),
-      month: format(now, 'MMMM'),
-      year: now.getFullYear()
-    },
-    {
-      id: '2',
-      title: 'Prayer Meeting',
-      description: 'Community prayer gathering',
-      location: 'Prayer Room',
-      startTime: new Date(tomorrow.setHours(18, 30, 0, 0)),
-      endTime: new Date(tomorrow.setHours(20, 0, 0, 0)),
-      day: tomorrow.getDate(),
-      month: format(tomorrow, 'MMMM'),
-      year: tomorrow.getFullYear()
-    },
-    {
-      id: '3',
-      title: 'Bible Study',
-      description: 'Weekly Bible study for all ages',
-      location: 'Fellowship Hall',
-      startTime: new Date(nextWeek.setHours(19, 0, 0, 0)),
-      endTime: new Date(nextWeek.setHours(20, 30, 0, 0)),
-      day: nextWeek.getDate(),
-      month: format(nextWeek, 'MMMM'),
-      year: nextWeek.getFullYear()
-    }
-  ];
-};
-
 /**
  * Fetches events from Google Calendar API via Supabase Edge Function
  * With a local cache layer for better performance
  */
 export async function fetchEvents(): Promise<{ events: Event[], error: string | null, status: string }> {
   try {
-    console.log('fetchEvents called - Attempting to fetch calendar events');
-    
-    // Check if we're in development mode without Supabase configuration
-    if (import.meta.env.DEV && !import.meta.env.VITE_SUPABASE_URL) {
-      console.info('Using mock data for events in development environment');
-      return { events: getMockEvents(), error: null, status: 'success' };
-    }
+    console.log('fetchEvents called - Attempting to fetch calendar events from edge function');
     
     // Try to get events from cache first
     const cachedEvents = getEventsFromCache();
     if (cachedEvents) {
-      console.log('Returning events from cache');
+      console.log('Returning events from cache, count:', cachedEvents.events.length);
       return { 
         events: cachedEvents.events, 
         error: null, 
@@ -142,9 +91,9 @@ export async function fetchEvents(): Promise<{ events: Event[], error: string | 
       };
     }
     
-    console.log('Fetching events from Supabase Edge Function');
+    console.log('Cache miss - Fetching events from Supabase Edge Function');
     
-    // Force clear the cache to ensure a fresh call
+    // Clear the cache to ensure a fresh call
     localStorage.removeItem(CACHE_KEY);
     
     // Call the Supabase Edge Function to get calendar events
@@ -152,35 +101,33 @@ export async function fetchEvents(): Promise<{ events: Event[], error: string | 
       method: 'GET'
     });
     
-    console.log('Edge function response:', data, error);
+    console.log('Edge function response received:', data, error);
     
     if (error) {
       console.error('Error invoking Supabase Edge Function:', error);
-      // Fallback to mock data if there's an error
       return { 
-        events: getMockEvents(), 
+        events: [], 
         error: `Failed to connect to calendar service: ${error.message}`, 
-        status: 'success' // Use success so UI shows mock data
+        status: 'error'
       };
     }
     
     if (data.error) {
       console.error('Error from Google Calendar API:', data.error, data.errorDetails || '');
-      // Fallback to mock data
       return { 
-        events: getMockEvents(), 
+        events: [], 
         error: data.message || data.error, 
-        status: 'success' // Use success so UI shows mock data
+        status: 'error'
       };
     }
     
     // No errors, but check if we have any events
     if (!data.items || data.items.length === 0) {
-      console.log('No events found in calendar, showing mock data');
+      console.log('No events found in calendar');
       return { 
-        events: getMockEvents(), 
+        events: [], 
         error: null, 
-        status: 'success' // Show mock data instead of empty
+        status: 'empty'
       };
     }
     
@@ -190,6 +137,8 @@ export async function fetchEvents(): Promise<{ events: Event[], error: string | 
     // Save the events to the cache
     saveEventsToCache(formattedEvents);
     
+    console.log(`Successfully fetched ${formattedEvents.length} events from Google Calendar`);
+    
     return { 
       events: formattedEvents, 
       error: null, 
@@ -197,11 +146,10 @@ export async function fetchEvents(): Promise<{ events: Event[], error: string | 
     };
   } catch (error) {
     console.error('Unexpected error fetching events:', error);
-    // Fallback to mock data on any unexpected error
     return { 
-      events: getMockEvents(), 
+      events: [], 
       error: `Unexpected error: ${error.message}`, 
-      status: 'success' // Use success so UI shows mock data
+      status: 'error'
     };
   }
 }

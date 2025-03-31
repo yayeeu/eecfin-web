@@ -32,9 +32,9 @@ const EventCalendarView: React.FC<EventCalendarViewProps> = ({
   };
 
   return (
-    <div className="grid md:grid-cols-[300px_1fr] gap-8">
+    <div className="grid md:grid-cols-[400px_1fr] gap-8">
       <div>
-        <Card>
+        <Card className="w-full">
           <CardHeader>
             <CardTitle>Select Date</CardTitle>
             <CardDescription>Click on a date to view events</CardDescription>
@@ -44,7 +44,15 @@ const EventCalendarView: React.FC<EventCalendarViewProps> = ({
               mode="single"
               selected={selectedDate}
               onSelect={setSelectedDate}
-              className="border rounded-md"
+              className="border rounded-md p-4 w-full"
+              classNames={{
+                month: "w-full",
+                table: "w-full",
+                cell: "h-10 w-10 text-center p-0",
+                day: "h-10 w-10",
+                head_cell: "text-muted-foreground rounded-md w-10 font-normal text-[0.8rem]",
+                nav: "space-x-1 flex items-center justify-between w-full",
+              }}
             />
           </CardContent>
         </Card>
