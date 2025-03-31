@@ -42,7 +42,7 @@ const MissionSlider: React.FC = () => {
     <div className="w-full h-full flex flex-col bg-gradient-to-r from-gray-50 to-gray-100 rounded-lg overflow-hidden">
       <Carousel
         plugins={[plugin.current]}
-        className="w-full flex-grow aspect-video"
+        className="w-full h-full"
         opts={{
           align: "start",
           loop: true,
