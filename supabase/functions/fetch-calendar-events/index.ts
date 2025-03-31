@@ -46,10 +46,10 @@ serve(async (req) => {
     
     console.log(`Fetching events from ${timeMin} to ${timeMax} for calendar ID: ${CALENDAR_ID}`);
     
-    // Build URL with proper encoding and parameters
+    // Build URL with proper encoding and parameters - added colorRgbFormat to get colors
     const url = `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(
       CALENDAR_ID
-    )}/events?key=${GOOGLE_API_KEY}&timeMin=${timeMin}&timeMax=${timeMax}&maxResults=100&singleEvents=true&orderBy=startTime`;
+    )}/events?key=${GOOGLE_API_KEY}&timeMin=${timeMin}&timeMax=${timeMax}&maxResults=100&singleEvents=true&orderBy=startTime&colorRgbFormat=true`;
 
     console.log(`Calling Google Calendar API: ${url.replace(GOOGLE_API_KEY, "[REDACTED]")}`);
     

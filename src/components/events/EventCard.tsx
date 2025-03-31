@@ -8,6 +8,24 @@ interface EventCardProps {
   event: Event;
 }
 
+// Google Calendar color mapping (default palette)
+// These colors are based on Google Calendar's standard colors
+const colorMap: Record<string, string> = {
+  "1": "#7986cb", // Lavender
+  "2": "#33b679", // Sage
+  "3": "#8e24aa", // Grape
+  "4": "#e67c73", // Flamingo
+  "5": "#f6c026", // Banana
+  "6": "#f5511d", // Tangerine
+  "7": "#039be5", // Peacock
+  "8": "#616161", // Graphite
+  "9": "#3f51b5", // Blueberry
+  "10": "#0b8043", // Basil
+  "11": "#d60000", // Tomato
+  // Default theme color
+  "default": "#FEFCCA" // Theme color if no color is specified
+};
+
 const EventCard: React.FC<EventCardProps> = ({ event }) => {
   const openGoogleMaps = (location: string) => {
     window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(location)}`, '_blank');
@@ -21,12 +39,41 @@ const EventCard: React.FC<EventCardProps> = ({ event }) => {
     return `${month}, ${day}`;
   };
 
+  // Get the background color based on the event's colorId
+  const getBackgroundColor = () => {
+    if (!event.colorId) return colorMap.default;
+    return colorMap[event.colorId] || colorMap.default;
+  };
+
+  // Determine if we need to use dark or light text based on background color brightness
+  const getTextColor = () => {
+    const bgColor = getBackgroundColor();
+    
+    // Skip the calculation for default color, always use navy
+    if (bgColor === colorMap.default) return 'text-eecfin-navy';
+    
+    // Convert hex to RGB
+    const hex = bgColor.replace('#', '');
+    const r = parseInt(hex.substring(0, 2), 16);
+    const g = parseInt(hex.substring(2, 4), 16);
+    const b = parseInt(hex.substring(4, 6), 16);
+    
+    // Calculate brightness
+    const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+    
+    // Use dark text for bright backgrounds, light text for dark backgrounds
+    return brightness > 125 ? 'text-eecfin-navy' : 'text-white';
+  };
+
   return (
     <div className="border-b border-gray-200 py-4 flex flex-col sm:flex-row">
       <div className="flex items-start mb-3 sm:mb-0">
-        <div className="text-center mr-6 w-16">
-          <div className="text-lg font-bold text-eecfin-navy">{event.day}</div>
-          <div className="text-xs text-eecfin-navy/70">{formatDateLabel()}</div>
+        <div 
+          className="text-center mr-6 w-16 p-2 rounded"
+          style={{ backgroundColor: getBackgroundColor() }}
+        >
+          <div className={`text-lg font-bold ${getTextColor()}`}>{event.day}</div>
+          <div className={`text-xs ${getTextColor()} opacity-90`}>{formatDateLabel()}</div>
         </div>
         
         <div className="flex items-center text-eecfin-navy">

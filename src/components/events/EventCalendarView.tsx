@@ -2,6 +2,9 @@
 import React from 'react';
 import { Card } from "@/components/ui/card";
 import { Event } from "@/lib/googleCalendar";
+import EventCard from './EventCard';
+import { format } from 'date-fns';
+import EmptyState from './EmptyState';
 
 interface EventCalendarViewProps {
   events: Event[];
@@ -33,7 +36,24 @@ const EventCalendarView: React.FC<EventCalendarViewProps> = ({
         </div>
       </div>
       
-      {/* Removed all event detail sections */}
+      {/* Selected Date Events */}
+      {selectedDate && (
+        <div className="mt-6">
+          <h3 className="text-xl font-semibold mb-4">
+            Events for {format(selectedDate, 'MMMM d, yyyy')}
+          </h3>
+          
+          {filteredEvents.length > 0 ? (
+            <div className="border-t border-gray-200">
+              {filteredEvents.map(event => (
+                <EventCard key={event.id} event={event} />
+              ))}
+            </div>
+          ) : (
+            <EmptyState message="No events scheduled for this date." />
+          )}
+        </div>
+      )}
     </div>
   );
 };

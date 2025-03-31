@@ -21,6 +21,7 @@ interface GoogleCalendarEvent {
     title: string;
     mimeType: string;
   }[];
+  colorId?: string;
 }
 
 // Type for our formatted event
@@ -35,6 +36,7 @@ export interface Event {
   month: string;
   year: number;
   image?: string; // Optional image property for event
+  colorId?: string; // Optional color ID from Google Calendar
 }
 
 // Cache management for events 
@@ -186,7 +188,8 @@ function formatEvents(googleEvents: GoogleCalendarEvent[]): Event[] {
       day: startTime.getDate(),
       month: format(startTime, 'MMMM'),
       year: startTime.getFullYear(),
-      image: eventImage
+      image: eventImage,
+      colorId: event.colorId // Store the colorId from Google
     };
   });
 }
