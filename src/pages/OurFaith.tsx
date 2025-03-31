@@ -1,7 +1,6 @@
 
-import React, { useState } from 'react';
-import { Book, BookOpen, Check, ChevronDown, ChevronUp } from "lucide-react";
-import { Card, CardContent } from "@/components/ui/card";
+import React from 'react';
+import { BookOpen, ChevronDown } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { 
   Accordion,
@@ -9,17 +8,8 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { 
-  Tabs, 
-  TabsContent, 
-  TabsList, 
-  TabsTrigger 
-} from "@/components/ui/tabs";
-import { ScrollArea } from "@/components/ui/scroll-area";
 
 const OurFaith = () => {
-  const [activeView, setActiveView] = useState<'accordion' | 'tabs' | 'cards'>('accordion');
-  
   const faithStatements = [
     {
       title: "The Holy Scriptures",
@@ -93,163 +83,45 @@ const OurFaith = () => {
         </div>
         <div className="container-custom text-center relative z-10 py-16">
           <h1 className="text-4xl md:text-5xl font-bold mb-6 text-white">
-            EECFIN
+            Statement of Faith
           </h1>
-          <h2 className="text-3xl md:text-4xl font-semibold text-white mb-4">
-            STATEMENT OF FAITH
-          </h2>
-        </div>
-      </section>
-
-      {/* Scripture Foundation Section - Moved to Top */}
-      <section className="py-12 bg-gradient-to-r from-eecfin-navy/10 to-eecfin-navy/5">
-        <div className="container-custom text-center">
-          <div className="max-w-3xl mx-auto bg-white p-8 rounded-lg shadow-md">
-            <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-eecfin-navy/10 flex items-center justify-center text-eecfin-navy">
-              <BookOpen size={28} />
-            </div>
-            <h2 className="text-2xl font-bold text-eecfin-navy mb-4">
-              Founded on Scripture
-            </h2>
-            <p className="text-lg text-gray-700 mb-6">
-              Our statement of faith is rooted in the Holy Scriptures, the infallible and inspired Word of God.
-              We hold these truths as foundational to our Christian walk and practice.
-            </p>
-            <div className="flex items-center justify-center">
-              <Separator className="w-24 bg-eecfin-accent h-0.5" />
-            </div>
+          <p className="text-xl max-w-3xl mx-auto text-white/90 mb-4">
+            Our statement of faith is rooted in the Holy Scriptures, the infallible and inspired Word of God. 
+            We hold these truths as foundational to our Christian walk and practice.
+          </p>
+          <div className="flex items-center justify-center mt-6">
+            <Separator className="w-24 bg-eecfin-gold h-0.5" />
           </div>
         </div>
       </section>
 
-      {/* View Toggle Buttons */}
-      <section className="py-8 bg-white">
+      {/* Faith Statements - Accordion View */}
+      <section className="py-12 bg-white">
         <div className="container-custom">
           <div className="max-w-4xl mx-auto">
             <h2 className="text-3xl font-bold text-eecfin-navy text-center mb-8">
               Our Beliefs
             </h2>
             
-            <div className="flex justify-center mb-8 gap-2">
-              <button
-                onClick={() => setActiveView('accordion')}
-                className={`px-4 py-2 rounded-md transition-colors ${
-                  activeView === 'accordion' 
-                    ? 'bg-eecfin-navy text-white' 
-                    : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
-                }`}
-              >
-                <span className="flex items-center gap-2">
-                  <ChevronDown size={16} />
-                  Accordion View
-                </span>
-              </button>
-              <button
-                onClick={() => setActiveView('tabs')}
-                className={`px-4 py-2 rounded-md transition-colors ${
-                  activeView === 'tabs' 
-                    ? 'bg-eecfin-navy text-white' 
-                    : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
-                }`}
-              >
-                <span className="flex items-center gap-2">
-                  <Book size={16} />
-                  Tabs View
-                </span>
-              </button>
-              <button
-                onClick={() => setActiveView('cards')}
-                className={`px-4 py-2 rounded-md transition-colors ${
-                  activeView === 'cards' 
-                    ? 'bg-eecfin-navy text-white' 
-                    : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
-                }`}
-              >
-                <span className="flex items-center gap-2">
-                  <Check size={16} />
-                  Cards View
-                </span>
-              </button>
-            </div>
-
-            {/* Faith Statements - Accordion View */}
-            {activeView === 'accordion' && (
-              <div className="bg-white rounded-lg shadow-md p-6">
-                <Accordion type="single" collapsible className="w-full">
-                  {faithStatements.map((statement, index) => (
-                    <AccordionItem key={index} value={`item-${index}`}>
-                      <AccordionTrigger className="text-left font-medium text-eecfin-navy hover:text-eecfin-accent transition-colors py-4">
-                        <div className="flex items-center">
-                          <div className="w-8 h-8 mr-3 rounded-full bg-eecfin-navy/10 flex items-center justify-center text-eecfin-navy flex-shrink-0">
-                            {index % 3 === 0 ? <Book size={16} /> : index % 3 === 1 ? <BookOpen size={16} /> : <Check size={16} />}
-                          </div>
-                          {statement.title}
-                        </div>
-                      </AccordionTrigger>
-                      <AccordionContent className="text-gray-700 leading-relaxed pl-11">
-                        {statement.content}
-                      </AccordionContent>
-                    </AccordionItem>
-                  ))}
-                </Accordion>
-              </div>
-            )}
-
-            {/* Faith Statements - Tabs View */}
-            {activeView === 'tabs' && (
-              <div className="bg-white rounded-lg shadow-md p-6">
-                <Tabs defaultValue="item-0">
-                  <ScrollArea className="w-full mb-6">
-                    <TabsList className="w-full flex-wrap justify-start h-auto p-1 overflow-x-auto mb-4">
-                      {faithStatements.map((statement, index) => (
-                        <TabsTrigger key={index} value={`item-${index}`} className="my-1">
-                          {statement.title}
-                        </TabsTrigger>
-                      ))}
-                    </TabsList>
-                  </ScrollArea>
-                  
-                  {faithStatements.map((statement, index) => (
-                    <TabsContent key={index} value={`item-${index}`} className="p-4 bg-gray-50 rounded-md">
-                      <div className="flex">
-                        <div className="flex-shrink-0 mr-4">
-                          <div className="w-10 h-10 rounded-full bg-eecfin-navy/10 flex items-center justify-center text-eecfin-navy">
-                            {index % 3 === 0 ? <Book size={18} /> : index % 3 === 1 ? <BookOpen size={18} /> : <Check size={18} />}
-                          </div>
-                        </div>
-                        <div>
-                          <h3 className="text-xl font-medium text-eecfin-navy mb-2">{statement.title}</h3>
-                          <p className="text-gray-700 leading-relaxed">
-                            {statement.content}
-                          </p>
-                        </div>
-                      </div>
-                    </TabsContent>
-                  ))}
-                </Tabs>
-              </div>
-            )}
-
-            {/* Faith Statements - Cards View */}
-            {activeView === 'cards' && (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="bg-white rounded-lg shadow-md p-6">
+              <Accordion type="single" collapsible className="w-full">
                 {faithStatements.map((statement, index) => (
-                  <Card key={index} className="overflow-hidden border-l-4 border-eecfin-navy shadow-md hover:shadow-lg transition-all">
-                    <CardContent className="p-6">
-                      <div className="flex items-center mb-3">
-                        <div className="w-8 h-8 rounded-full bg-eecfin-navy/10 flex items-center justify-center text-eecfin-navy mr-3">
-                          {index % 3 === 0 ? <Book size={16} /> : index % 3 === 1 ? <BookOpen size={16} /> : <Check size={16} />}
+                  <AccordionItem key={index} value={`item-${index}`}>
+                    <AccordionTrigger className="text-left font-medium text-eecfin-navy hover:text-eecfin-accent transition-colors py-4">
+                      <div className="flex items-center">
+                        <div className="w-8 h-8 mr-3 rounded-full bg-eecfin-navy/10 flex items-center justify-center text-eecfin-navy flex-shrink-0">
+                          <BookOpen size={16} />
                         </div>
-                        <h3 className="font-medium text-eecfin-navy">{statement.title}</h3>
+                        {statement.title}
                       </div>
-                      <p className="text-gray-700 leading-relaxed pl-11">
-                        {statement.content}
-                      </p>
-                    </CardContent>
-                  </Card>
+                    </AccordionTrigger>
+                    <AccordionContent className="text-gray-700 leading-relaxed pl-11">
+                      {statement.content}
+                    </AccordionContent>
+                  </AccordionItem>
                 ))}
-              </div>
-            )}
+              </Accordion>
+            </div>
           </div>
         </div>
       </section>
