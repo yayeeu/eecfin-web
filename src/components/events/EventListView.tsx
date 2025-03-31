@@ -111,7 +111,7 @@ const EventListView: React.FC<EventListViewProps> = ({
       // Geocode location
       if (geocoder.current) {
         geocoder.current.geocode({ address: event.location }, (results, status) => {
-          if (status === google.maps.GeocoderStatus.OK && results && results.length > 0) {
+          if (status === 'OK' && results && results.length > 0) {
             const location = results[0].geometry.location;
             map.setCenter(location);
             marker.setPosition(location);

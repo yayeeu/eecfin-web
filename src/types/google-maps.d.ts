@@ -36,6 +36,12 @@ declare namespace google {
       remove(): void;
     }
 
+    // Add a namespace for event-related properties
+    namespace event {
+      function addListener(instance: any, eventName: string, handler: Function): MapsEventListener;
+      function removeListener(listener: MapsEventListener): void;
+    }
+
     interface MapOptions {
       center?: LatLng | LatLngLiteral;
       zoom?: number;
@@ -108,6 +114,19 @@ declare namespace google {
     }
 
     type GeocoderLocationType = "APPROXIMATE" | "GEOMETRIC_CENTER" | "RANGE_INTERPOLATED" | "ROOFTOP";
+    
+    // Define GeocoderStatus as a string enum-like type
+    const GeocoderStatus: {
+      ERROR: "ERROR";
+      INVALID_REQUEST: "INVALID_REQUEST";
+      OK: "OK";
+      OVER_DAILY_LIMIT: "OVER_DAILY_LIMIT";
+      OVER_QUERY_LIMIT: "OVER_QUERY_LIMIT";
+      REQUEST_DENIED: "REQUEST_DENIED";
+      UNKNOWN_ERROR: "UNKNOWN_ERROR";
+      ZERO_RESULTS: "ZERO_RESULTS";
+    };
+    
     type GeocoderStatus = "ERROR" | "INVALID_REQUEST" | "OK" | "OVER_DAILY_LIMIT" | "OVER_QUERY_LIMIT" | "REQUEST_DENIED" | "UNKNOWN_ERROR" | "ZERO_RESULTS";
     enum Animation { DROP, BOUNCE }
   }
@@ -117,3 +136,4 @@ interface Window {
   initMap?: () => void;
   google?: typeof google;
 }
+

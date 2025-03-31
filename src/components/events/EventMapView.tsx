@@ -102,7 +102,7 @@ const EventMapView: React.FC<EventMapViewProps> = ({ events }) => {
         try {
           const result = await new Promise<google.maps.GeocoderResult[]>((resolve, reject) => {
             geocoder.geocode({ address: event.location }, (results, status) => {
-              if (status === google.maps.GeocoderStatus.OK && results && results.length > 0) {
+              if (status === 'OK' && results && results.length > 0) {
                 resolve(results);
               } else {
                 reject(new Error(`Geocode failed for ${event.location}: ${status}`));
