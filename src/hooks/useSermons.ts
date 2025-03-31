@@ -18,11 +18,11 @@ export const useSermons = (channelId: string) => {
       try {
         setLoading(true);
         
-        // Use the consolidated Google API Key that's already set for Google Calendar
-        const API_KEY = import.meta.env.VITE_GOOGLE_API_KEY;
+        // Check for both API key variables, prioritizing GOOGLE_API_KEY
+        const API_KEY = import.meta.env.GOOGLE_API_KEY || import.meta.env.VITE_GOOGLE_API_KEY;
         
         if (!API_KEY) {
-          console.error('No Google API key found in environment variables (VITE_GOOGLE_API_KEY)');
+          console.error('No Google API key found in environment variables (GOOGLE_API_KEY or VITE_GOOGLE_API_KEY)');
           setHasRealData(false);
           setLoading(false);
           return;

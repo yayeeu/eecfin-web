@@ -41,7 +41,8 @@ const Sermons = () => {
 
   // Notify if no API key is found
   useEffect(() => {
-    if (!hasRealData && !loading && !import.meta.env.VITE_GOOGLE_API_KEY) {
+    const apiKeyExists = Boolean(import.meta.env.GOOGLE_API_KEY || import.meta.env.VITE_GOOGLE_API_KEY);
+    if (!hasRealData && !loading && !apiKeyExists) {
       toast({
         title: "Configuration Required",
         description: "YouTube videos cannot be loaded - Missing Google API key.",
