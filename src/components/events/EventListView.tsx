@@ -1,15 +1,33 @@
 
 import React from 'react';
-import { Clock, MapPin, Calendar } from 'lucide-react';
+import { Clock, MapPin, Calendar, ChevronRight, ChevronLeft } from 'lucide-react';
 import { Event } from "@/lib/googleCalendar";
 import EmptyState from './EmptyState';
 import { Button } from "@/components/ui/button";
+import { 
+  Pagination, 
+  PaginationContent, 
+  PaginationItem, 
+  PaginationLink, 
+  PaginationNext, 
+  PaginationPrevious 
+} from "@/components/ui/pagination";
 
 interface EventListViewProps {
   events: Event[];
+  currentPage: number;
+  totalPages: number;
+  onPageChange: (page: number) => void;
+  totalEvents: number;
 }
 
-const EventListView: React.FC<EventListViewProps> = ({ events }) => {
+const EventListView: React.FC<EventListViewProps> = ({ 
+  events, 
+  currentPage, 
+  totalPages, 
+  onPageChange, 
+  totalEvents 
+}) => {
   if (events.length === 0) {
     return <EmptyState />;
   }
@@ -24,51 +42,76 @@ const EventListView: React.FC<EventListViewProps> = ({ events }) => {
     return acc;
   }, {} as Record<string, Event[]>);
 
+  const handlePreviousPage = () => {
+    if (currentPage > 1) {
+      onPageChange(currentPage - 1);
+    }
+  };
+
+  const handleNextPage = () => {
+    if (currentPage < totalPages) {
+      onPageChange(currentPage + 1);
+    }
+  };
+
   const handleOpenImage = (imageUrl: string) => {
     window.open(imageUrl, '_blank');
   };
 
   return (
     <div>
+      <p className="text-sm text-gray-500 mb-4">
+        Showing {events.length} of {totalEvents} events
+      </p>
+      
       {Object.entries(groupedEvents).map(([monthYear, monthEvents]) => (
-        <div key={monthYear} className="mb-10">
-          <h3 className="text-2xl font-bold mb-4 text-eecfin-navy flex items-center">
+        <div key={monthYear} className="mb-8">
+          <h3 className="text-xl font-bold mb-3 text-eecfin-navy flex items-center">
             <Calendar className="mr-2 h-5 w-5" /> {monthYear}
           </h3>
           
-          <div className="space-y-6">
+          <div className="space-y-4">
             {monthEvents.map((event) => (
-              <div key={event.id} className="bg-white rounded-lg shadow-md overflow-hidden">
-                <div className="md:flex">
-                  <div className="bg-eecfin-navy text-white md:w-48 flex-shrink-0 flex flex-col justify-center items-center p-6 md:p-8">
-                    <span className="text-2xl font-bold">{event.day}</span>
-                    <span className="uppercase">{event.month}</span>
-                    <span>{event.year}</span>
+              <div key={event.id} className="bg-white rounded-lg shadow-sm border overflow-hidden hover:shadow-md transition-shadow">
+                <div className="flex flex-col md:flex-row">
+                  <div className="bg-eecfin-navy text-white p-4 md:w-32 flex flex-row md:flex-col justify-between md:justify-center items-center">
+                    <div className="text-center">
+                      <span className="text-2xl font-bold">{event.day}</span>
+                      <div className="text-sm uppercase">{event.month.substring(0, 3)}</div>
+                    </div>
+                    <div className="md:mt-2 text-sm">{new Date(event.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
                   </div>
-                  <div className={`md:flex flex-grow ${!event.image ? 'w-full' : ''}`}>
-                    {event.image ? (
-                      <div className="md:w-1/3 h-48 md:h-auto cursor-pointer" onClick={() => handleOpenImage(event.image!)}>
-                        <img 
-                          src={event.image} 
-                          alt={event.title} 
-                          className="h-full w-full object-cover hover:opacity-90 transition-opacity"
-                        />
+                  
+                  <div className="flex-grow p-4">
+                    <div className="flex flex-col md:flex-row gap-4">
+                      {event.image && (
+                        <div 
+                          className="w-full md:w-1/5 h-32 cursor-pointer rounded overflow-hidden" 
+                          onClick={() => handleOpenImage(event.image!)}
+                        >
+                          <img 
+                            src={event.image} 
+                            alt={event.title} 
+                            className="h-full w-full object-cover hover:opacity-90 transition-opacity"
+                          />
+                        </div>
+                      )}
+                      
+                      <div className={`${event.image ? 'md:w-4/5' : 'w-full'}`}>
+                        <h3 className="text-lg font-semibold mb-1">{event.title}</h3>
+                        <div className="flex items-center text-gray-600 text-sm mb-1">
+                          <Clock className="h-3.5 w-3.5 mr-1.5" />
+                          <span>{new Date(event.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - {new Date(event.endTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                        </div>
+                        <div className="flex items-center text-gray-600 text-sm mb-2">
+                          <MapPin className="h-3.5 w-3.5 mr-1.5" />
+                          <span>{event.location}</span>
+                        </div>
+                        <p className="text-gray-600 text-sm line-clamp-2 mb-3">{event.description}</p>
+                        <Button size="sm" className="bg-eecfin-navy hover:bg-eecfin-navy/80">
+                          Add to Calendar
+                        </Button>
                       </div>
-                    ) : null}
-                    <div className={`p-6 ${event.image ? 'md:w-2/3' : 'w-full'}`}>
-                      <h3 className="text-xl font-semibold mb-2">{event.title}</h3>
-                      <div className="flex items-center text-gray-600 mb-1">
-                        <Clock className="h-4 w-4 mr-2" />
-                        <span>{new Date(event.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - {new Date(event.endTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
-                      </div>
-                      <div className="flex items-center text-gray-600 mb-4">
-                        <MapPin className="h-4 w-4 mr-2" />
-                        <span>{event.location}</span>
-                      </div>
-                      <p className="text-gray-600 mb-4">{event.description}</p>
-                      <Button size="sm" className="bg-eecfin-navy hover:bg-eecfin-navy/80">
-                        Add to Calendar
-                      </Button>
                     </div>
                   </div>
                 </div>
@@ -77,6 +120,39 @@ const EventListView: React.FC<EventListViewProps> = ({ events }) => {
           </div>
         </div>
       ))}
+
+      {totalPages > 1 && (
+        <div className="mt-8">
+          <Pagination>
+            <PaginationContent>
+              <PaginationItem>
+                <PaginationPrevious 
+                  onClick={handlePreviousPage} 
+                  className={currentPage === 1 ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
+                />
+              </PaginationItem>
+              
+              {[...Array(totalPages)].map((_, i) => (
+                <PaginationItem key={i}>
+                  <PaginationLink 
+                    isActive={currentPage === i + 1}
+                    onClick={() => onPageChange(i + 1)}
+                  >
+                    {i + 1}
+                  </PaginationLink>
+                </PaginationItem>
+              ))}
+              
+              <PaginationItem>
+                <PaginationNext 
+                  onClick={handleNextPage} 
+                  className={currentPage === totalPages ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
+                />
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
+        </div>
+      )}
     </div>
   );
 };

@@ -1,19 +1,23 @@
+
 import React, { useState, useMemo } from 'react';
-import { List, CalendarDays, AlertCircle } from 'lucide-react';
+import { List, CalendarDays, AlertCircle, Map } from 'lucide-react';
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { Button } from "@/components/ui/button";
 import { fetchEvents } from "@/lib/googleCalendar";
 import { useQuery } from '@tanstack/react-query';
 import EventListView from '@/components/events/EventListView';
 import EventCalendarView from '@/components/events/EventCalendarView';
+import EventMapView from '@/components/events/EventMapView';
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
 
-type ViewType = "list" | "calendar";
+type ViewType = "list" | "calendar" | "map";
 
 const Events = () => {
   const [viewType, setViewType] = useState<ViewType>("list");
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
+  const [currentPage, setCurrentPage] = useState(1);
+  const eventsPerPage = 10;
 
   // Optimized data fetching with proper caching strategy
   const { data, isLoading, error, isError } = useQuery({
@@ -51,6 +55,15 @@ const Events = () => {
     });
   }, [events, selectedDate]);
 
+  // Calculate pagination for list view
+  const paginatedEvents = useMemo(() => {
+    const startIndex = (currentPage - 1) * eventsPerPage;
+    return events.slice(startIndex, startIndex + eventsPerPage);
+  }, [events, currentPage, eventsPerPage]);
+
+  // Calculate total pages
+  const totalPages = Math.ceil(events.length / eventsPerPage);
+
   return (
     <div>
       <section className="relative bg-eecfin-navy overflow-hidden">
@@ -83,6 +96,10 @@ const Events = () => {
               <ToggleGroupItem value="calendar" aria-label="Toggle calendar view">
                 <CalendarDays className="h-4 w-4 mr-2" />
                 Calendar
+              </ToggleGroupItem>
+              <ToggleGroupItem value="map" aria-label="Toggle map view">
+                <Map className="h-4 w-4 mr-2" />
+                Map
               </ToggleGroupItem>
             </ToggleGroup>
           </div>
@@ -124,7 +141,15 @@ const Events = () => {
           {/* Content */}
           {!isLoading && !isError && status !== 'error' && (
             <div>
-              {viewType === "list" && <EventListView events={events} />}
+              {viewType === "list" && (
+                <EventListView 
+                  events={paginatedEvents} 
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  onPageChange={setCurrentPage}
+                  totalEvents={events.length}
+                />
+              )}
               {viewType === "calendar" && (
                 <EventCalendarView 
                   events={events}
@@ -132,6 +157,9 @@ const Events = () => {
                   setSelectedDate={setSelectedDate}
                   filteredEvents={filteredEvents}
                 />
+              )}
+              {viewType === "map" && (
+                <EventMapView events={events} />
               )}
             </div>
           )}
