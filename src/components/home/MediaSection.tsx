@@ -1,14 +1,14 @@
 
 import React from 'react';
 import { Button } from "@/components/ui/button";
-import { Video } from 'lucide-react';
+import { Video, Calendar } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import YouTubeEmbed from '../YouTubeEmbed';
 import MissionSlider from './MissionSlider';
 
 const MediaSection = () => {
   return (
-    <section className="py-10 bg-gray-50">
+    <section className="py-10 bg-gradient-to-b from-white to-gray-50">
       <div className="container-custom">
         <div className="flex flex-col md:flex-row gap-8">
           {/* Left column: YouTube video and Media box */}

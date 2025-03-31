@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Button } from "@/components/ui/button";
-import { AlertCircle } from 'lucide-react';
+import { AlertCircle, Calendar as CalendarIcon } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { fetchEvents } from '@/lib/googleCalendar';
@@ -49,7 +49,10 @@ const UpcomingEventsSection = () => {
     <section className="py-16 bg-white">
       <div className="container-custom">
         <div className="flex justify-between items-center mb-8">
-          <h2 className="section-title mb-0">Upcoming Events</h2>
+          <div className="flex items-center">
+            <CalendarIcon className="h-7 w-7 mr-3 text-eecfin-navy" />
+            <h2 className="section-title mb-0">Upcoming Events</h2>
+          </div>
           <Button asChild variant="outline" className="border-eecfin-navy text-eecfin-navy">
             <Link to="/events">View All Events</Link>
           </Button>
@@ -77,8 +80,9 @@ const UpcomingEventsSection = () => {
         ) : upcomingEvents.length > 0 ? (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {upcomingEvents.map(event => (
-              <div key={event.id} className="border border-gray-200 rounded-lg overflow-hidden">
-                <div className="bg-eecfin-navy text-white p-3 text-center">
+              <div key={event.id} className="border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-300 group">
+                <div className="bg-eecfin-navy text-white p-3 text-center relative">
+                  <div className="absolute left-0 top-0 h-full w-2 bg-eecfin-gold"></div>
                   <p className="text-sm">{`${event.month} ${event.day}, ${event.year}`}</p>
                   <p className="text-lg font-semibold">
                     {new Date(event.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - 
@@ -86,7 +90,7 @@ const UpcomingEventsSection = () => {
                   </p>
                 </div>
                 <div className="p-4">
-                  <h3 className="text-xl font-semibold mb-2">{event.title}</h3>
+                  <h3 className="text-xl font-semibold mb-2 group-hover:text-eecfin-navy transition-colors">{event.title}</h3>
                   <p className="text-gray-600 mb-3 line-clamp-2">{event.description}</p>
                   <p className="text-sm text-gray-500">Location: {event.location}</p>
                   

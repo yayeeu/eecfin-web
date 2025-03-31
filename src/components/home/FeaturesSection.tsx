@@ -6,11 +6,15 @@ import { Link } from 'react-router-dom';
 
 const FeaturesSection = () => {
   return (
-    <section className="py-16 bg-gray-50">
-      <div className="container-custom">
+    <section className="py-16 bg-gray-50 relative overflow-hidden">
+      {/* Background decorative elements */}
+      <div className="absolute top-0 left-0 w-40 h-40 bg-eecfin-gold/10 rounded-full -translate-x-1/2 -translate-y-1/2"></div>
+      <div className="absolute bottom-0 right-0 w-60 h-60 bg-eecfin-navy/5 rounded-full translate-x-1/3 translate-y-1/3"></div>
+      
+      <div className="container-custom relative z-10">
         <h2 className="section-title text-center mb-12">Join Our Community</h2>
         <div className="grid md:grid-cols-3 gap-8">
-          <div className="bg-white p-6 rounded-lg shadow-md text-center">
+          <div className="bg-white p-6 rounded-lg shadow-md text-center hover:shadow-lg transition-shadow duration-300 transform hover:-translate-y-1 transition-transform">
             <div className="flex justify-center mb-4">
               <div className="p-3 bg-eecfin-navy/10 rounded-full">
                 <Calendar className="h-8 w-8 text-eecfin-navy" />
@@ -26,7 +30,7 @@ const FeaturesSection = () => {
             </Button>
           </div>
 
-          <div className="bg-white p-6 rounded-lg shadow-md text-center">
+          <div className="bg-white p-6 rounded-lg shadow-md text-center hover:shadow-lg transition-shadow duration-300 transform hover:-translate-y-1 transition-transform">
             <div className="flex justify-center mb-4">
               <div className="p-3 bg-eecfin-navy/10 rounded-full">
                 <Users className="h-8 w-8 text-eecfin-navy" />
@@ -42,7 +46,7 @@ const FeaturesSection = () => {
             </Button>
           </div>
 
-          <div className="bg-white p-6 rounded-lg shadow-md text-center">
+          <div className="bg-white p-6 rounded-lg shadow-md text-center hover:shadow-lg transition-shadow duration-300 transform hover:-translate-y-1 transition-transform">
             <div className="flex justify-center mb-4">
               <div className="p-3 bg-eecfin-navy/10 rounded-full">
                 <Heart className="h-8 w-8 text-eecfin-navy" />
