@@ -10,6 +10,10 @@ interface LatestSermonProps {
 }
 
 const LatestSermon: React.FC<LatestSermonProps> = ({ videoId, isLive = false }) => {
+  if (!videoId) {
+    return null;
+  }
+  
   return (
     <section className="w-full">
       <div className="flex items-center mb-4">
@@ -24,11 +28,9 @@ const LatestSermon: React.FC<LatestSermonProps> = ({ videoId, isLive = false }) 
         )}
       </div>
       
-      {videoId && (
-        <div className="w-full aspect-video max-w-lg mx-auto">
-          <YouTubeEmbed videoId={videoId} className="w-full h-full" />
-        </div>
-      )}
+      <div className="w-full aspect-video max-w-lg mx-auto">
+        <YouTubeEmbed videoId={videoId} className="w-full h-full" isLive={isLive} />
+      </div>
     </section>
   );
 };

@@ -10,6 +10,7 @@ export const useSermons = (channelId: string) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [isLive, setIsLive] = useState(false);
   const [liveVideoId, setLiveVideoId] = useState<string | null>(null);
+  const [hasRealData, setHasRealData] = useState(false);
   const videosPerPage = 8;
 
   useEffect(() => {
@@ -21,22 +22,8 @@ export const useSermons = (channelId: string) => {
         const API_KEY = import.meta.env.VITE_YOUTUBE_API_KEY;
         
         if (!API_KEY) {
-          // Fallback to simulated data if no API key
-          console.warn('No YouTube API key found, using mock data');
-          const mockVideos: YouTubeVideo[] = Array.from({ length: 20 }, (_, i) => ({
-            id: `video-${i + 1}`,
-            title: `Sunday Sermon ${i + 1}: The Power of Faith and Hope in Christ`,
-            publishedAt: new Date(2023, 11 - (i % 12), 10 - (i % 7)).toISOString(),
-            thumbnailUrl: `https://img.youtube.com/vi/video-${i + 1}/mqdefault.jpg`
-          }));
-
-          setVideos(mockVideos);
-          
-          // Set the most recent video as the selected video
-          if (mockVideos.length > 0) {
-            setSelectedVideo(mockVideos[0].id);
-          }
-          
+          console.warn('No YouTube API key found, sermon library will be hidden');
+          setHasRealData(false);
           setLoading(false);
           return;
         }
@@ -69,6 +56,7 @@ export const useSermons = (channelId: string) => {
         
         if (!data.items || data.items.length === 0) {
           setVideos([]);
+          setHasRealData(false);
           setLoading(false);
           return;
         }
@@ -81,6 +69,7 @@ export const useSermons = (channelId: string) => {
         }));
         
         setVideos(fetchedVideos);
+        setHasRealData(true);
         
         // Set the most recent video as the selected video if not live
         if (fetchedVideos.length > 0 && !isLive) {
@@ -91,20 +80,7 @@ export const useSermons = (channelId: string) => {
       } catch (err) {
         console.error("Error fetching YouTube videos:", err);
         setError("Failed to load videos. Please try again later.");
-        
-        // Fallback to mock data
-        const mockVideos: YouTubeVideo[] = Array.from({ length: 20 }, (_, i) => ({
-          id: `video-${i + 1}`,
-          title: `Sunday Sermon ${i + 1}: The Power of Faith and Hope in Christ`,
-          publishedAt: new Date(2023, 11 - (i % 12), 10 - (i % 7)).toISOString(),
-          thumbnailUrl: `https://img.youtube.com/vi/video-${i + 1}/mqdefault.jpg`
-        }));
-        
-        setVideos(mockVideos);
-        
-        if (mockVideos.length > 0) {
-          setSelectedVideo(mockVideos[0].id);
-        }
+        setHasRealData(false);
       } finally {
         setLoading(false);
       }
@@ -151,6 +127,7 @@ export const useSermons = (channelId: string) => {
     totalPages,
     handlePageChange,
     isLive,
-    liveVideoId
+    liveVideoId,
+    hasRealData
   };
 };

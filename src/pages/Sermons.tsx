@@ -25,7 +25,8 @@ const Sermons = () => {
     totalPages, 
     handlePageChange,
     isLive,
-    liveVideoId
+    liveVideoId,
+    hasRealData
   } = useSermons(channelId);
 
   useEffect(() => {
@@ -57,7 +58,7 @@ const Sermons = () => {
     );
   }
 
-  if (error) {
+  if (error && !hasRealData) {
     return (
       <div className="container-custom py-12">
         <div className="flex items-center justify-center h-64 bg-gray-100 rounded-lg">
@@ -77,7 +78,9 @@ const Sermons = () => {
         <div className="flex flex-col md:flex-row gap-8 mb-12">
           {/* Featured Video - Using a smaller size */}
           <div className="md:w-1/2">
-            <LatestSermon videoId={selectedVideo} isLive={isLive} />
+            {selectedVideo && (
+              <LatestSermon videoId={selectedVideo} isLive={isLive} />
+            )}
           </div>
 
           {/* EECFIN Media Section - Moved from home page */}
@@ -105,31 +108,35 @@ const Sermons = () => {
                     <Youtube className="mr-2 h-5 w-5" />
                     Visit Our YouTube Channel
                   </Button>
-                  <Button 
-                    variant="outline" 
-                    className="flex-1 border-gray-400 text-white hover:bg-white/10"
-                    onClick={() => window.scrollTo({ top: document.getElementById('sermon-library')?.offsetTop || 0, behavior: 'smooth' })}
-                  >
-                    Browse All Sermons
-                  </Button>
+                  {hasRealData && (
+                    <Button 
+                      variant="outline" 
+                      className="flex-1 border-gray-400 text-white hover:bg-white/10"
+                      onClick={() => window.scrollTo({ top: document.getElementById('sermon-library')?.offsetTop || 0, behavior: 'smooth' })}
+                    >
+                      Browse All Sermons
+                    </Button>
+                  )}
                 </div>
               </CardContent>
             </Card>
           </div>
         </div>
 
-        {/* Video Library */}
-        <div id="sermon-library">
-          <SermonLibrary 
-            videos={[]} // Not used in component but keeping for type consistency
-            currentVideos={currentVideos}
-            videosByDate={videosByDate}
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onPageChange={handlePageChange}
-            onVideoClick={openVideoOnYouTube}
-          />
-        </div>
+        {/* Video Library - Only show if we have real data */}
+        {hasRealData && (
+          <div id="sermon-library">
+            <SermonLibrary 
+              videos={[]} // Not used in component but keeping for type consistency
+              currentVideos={currentVideos}
+              videosByDate={videosByDate}
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={handlePageChange}
+              onVideoClick={openVideoOnYouTube}
+            />
+          </div>
+        )}
       </div>
     </div>
   );
