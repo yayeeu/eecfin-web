@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import SermonHero from '@/components/sermons/SermonHero';
 import LatestSermon from '@/components/sermons/LatestSermon';
 import SubscribeSection from '@/components/sermons/SubscribeSection';
@@ -8,9 +8,11 @@ import { useSermons } from '@/hooks/useSermons';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { MessageSquareText, Youtube } from 'lucide-react';
+import { useToast } from '@/components/ui/use-toast';
 
 const Sermons = () => {
-  const channelId = 'eecfin'; // EECFIN YouTube channel ID
+  const { toast } = useToast();
+  const channelId = 'UCk8k6RqXR5Ga-j1RH_pYsEQ'; // EECFIN YouTube channel ID
   
   const { 
     currentVideos, 
@@ -21,8 +23,21 @@ const Sermons = () => {
     setSelectedVideo,
     currentPage, 
     totalPages, 
-    handlePageChange 
+    handlePageChange,
+    isLive,
+    liveVideoId
   } = useSermons(channelId);
+
+  useEffect(() => {
+    if (isLive) {
+      toast({
+        title: "Live Broadcast",
+        description: "EECFIN is currently streaming live. Join us now!",
+        variant: "default",
+        duration: 5000
+      });
+    }
+  }, [isLive, toast]);
 
   const openVideoOnYouTube = (videoId: string) => {
     window.open(`https://www.youtube.com/watch?v=${videoId}`, '_blank');
@@ -62,7 +77,7 @@ const Sermons = () => {
         <div className="flex flex-col md:flex-row gap-8 mb-12">
           {/* Featured Video - Using a smaller size */}
           <div className="md:w-1/2">
-            <LatestSermon videoId={selectedVideo} />
+            <LatestSermon videoId={selectedVideo} isLive={isLive} />
           </div>
 
           {/* EECFIN Media Section - Moved from home page */}
