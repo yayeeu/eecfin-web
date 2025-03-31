@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { getElders } from '@/lib/elderService';
+import { getElderMembers } from '@/lib/memberService';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from "@/components/ui/badge";
@@ -16,7 +16,7 @@ const ElderManager = () => {
   
   const { data: elders, isLoading, error, refetch } = useQuery({
     queryKey: ['elders'],
-    queryFn: getElders,
+    queryFn: getElderMembers,
   });
 
   const handleRefresh = () => {
@@ -69,13 +69,13 @@ const ElderManager = () => {
 
       {viewMode === 'grid' ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {elders.map((elder) => (
+          {elders?.map((elder) => (
             <Card key={elder.id} className="overflow-hidden">
               <div className="p-6">
                 <div className="flex items-center space-x-4">
                   <Avatar className="h-16 w-16">
                     {elder.image ? (
-                      <AvatarImage src={elder.image} alt={elder.name} />
+                      <AvatarImage src={elder.image} alt={elder.name || ''} />
                     ) : (
                       <AvatarFallback className="bg-eecfin-navy text-white text-xl">
                         {elder.name?.charAt(0)}
@@ -146,13 +146,13 @@ const ElderManager = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {elders.map((elder) => (
+                  {elders?.map((elder) => (
                     <tr key={elder.id} className="border-b hover:bg-gray-50">
                       <td className="py-3 px-4">
                         <div className="flex items-center gap-3">
                           <Avatar className="h-8 w-8">
                             {elder.image ? (
-                              <AvatarImage src={elder.image} alt={elder.name} />
+                              <AvatarImage src={elder.image} alt={elder.name || ''} />
                             ) : (
                               <AvatarFallback className="bg-eecfin-navy text-white text-sm">
                                 {elder.name?.charAt(0)}
