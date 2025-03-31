@@ -19,10 +19,10 @@ export const useSermons = (channelId: string) => {
         setLoading(true);
         
         // YouTube API Key - in a production app, this should be server-side
-        const API_KEY = import.meta.env.VITE_YOUTUBE_API_KEY;
+        const API_KEY = import.meta.env.VITE_GOOGLE_API_KEY;
         
         if (!API_KEY) {
-          console.warn('No YouTube API key found, sermon library will be hidden');
+          console.warn('No Google API key found, sermon library will be hidden');
           setHasRealData(false);
           setLoading(false);
           return;
