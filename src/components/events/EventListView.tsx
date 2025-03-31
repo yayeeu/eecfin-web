@@ -1,5 +1,5 @@
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useState } from 'react';
 import { Clock, MapPin, Calendar, ExternalLink } from 'lucide-react';
 import { Event } from "@/lib/googleCalendar";
 import EmptyState from './EmptyState';
@@ -21,14 +21,6 @@ interface EventListViewProps {
   totalEvents: number;
 }
 
-interface GoogleMapRefs {
-  [key: string]: {
-    mapRef: React.RefObject<HTMLDivElement>;
-    map: google.maps.Map | null;
-    marker: google.maps.Marker | null;
-  };
-}
-
 const EventListView: React.FC<EventListViewProps> = ({ 
   events, 
   currentPage, 
@@ -36,91 +28,6 @@ const EventListView: React.FC<EventListViewProps> = ({
   onPageChange, 
   totalEvents 
 }) => {
-  const mapRefs = useRef<GoogleMapRefs>({});
-  const geocoder = useRef<google.maps.Geocoder | null>(null);
-  const [mapsLoaded, setMapsLoaded] = useState(false);
-  
-  // Load Google Maps API
-  useEffect(() => {
-    // Check if Google Maps API is already loaded
-    if (window.google && window.google.maps) {
-      setMapsLoaded(true);
-      geocoder.current = new google.maps.Geocoder();
-      return;
-    }
-
-    // Create script tag and load API
-    const googleMapScript = document.createElement('script');
-    googleMapScript.src = `https://maps.googleapis.com/maps/api/js?key=&libraries=places`;
-    googleMapScript.async = true;
-    googleMapScript.defer = true;
-    googleMapScript.onload = () => {
-      setMapsLoaded(true);
-      geocoder.current = new google.maps.Geocoder();
-    };
-    
-    document.head.appendChild(googleMapScript);
-    
-    return () => {
-      const scriptTag = document.querySelector(`script[src^="https://maps.googleapis.com/maps/api/js"]`);
-      if (scriptTag) {
-        scriptTag.remove();
-      }
-    };
-  }, []);
-  
-  // Initialize maps once Google Maps is loaded
-  useEffect(() => {
-    if (!mapsLoaded || !events.length) return;
-    
-    // Initialize maps for each event
-    events.forEach(event => {
-      if (!event.location || event.location === 'Location not specified') return;
-      
-      const eventId = event.id;
-      
-      // Skip if map is already initialized
-      if (mapRefs.current[eventId]?.map) return;
-      
-      const mapElement = mapRefs.current[eventId]?.mapRef.current;
-      if (!mapElement) return;
-      
-      // Create map
-      const map = new google.maps.Map(mapElement, {
-        zoom: 15,
-        center: { lat: 0, lng: 0 }, // Default center, will be updated by geocoding
-        mapTypeControl: false,
-        fullscreenControl: false,
-        streetViewControl: false,
-        zoomControl: true,
-      });
-      
-      // Create marker
-      const marker = new google.maps.Marker({
-        map: map,
-        position: { lat: 0, lng: 0 }, // Will be updated by geocoding
-      });
-      
-      // Store references
-      mapRefs.current[eventId] = {
-        ...mapRefs.current[eventId],
-        map,
-        marker,
-      };
-      
-      // Geocode location
-      if (geocoder.current) {
-        geocoder.current.geocode({ address: event.location }, (results, status) => {
-          if (status === 'OK' && results && results.length > 0) {
-            const location = results[0].geometry.location;
-            map.setCenter(location);
-            marker.setPosition(location);
-          }
-        });
-      }
-    });
-  }, [mapsLoaded, events]);
-
   if (events.length === 0) {
     return <EmptyState />;
   }
@@ -155,17 +62,6 @@ const EventListView: React.FC<EventListViewProps> = ({
     window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(location)}`, '_blank');
   };
 
-  // Create map references for new events
-  events.forEach(event => {
-    if (!mapRefs.current[event.id]) {
-      mapRefs.current[event.id] = {
-        mapRef: React.createRef<HTMLDivElement>(),
-        map: null,
-        marker: null,
-      };
-    }
-  });
-
   return (
     <div>
       <p className="text-sm text-gray-500 mb-4">
@@ -192,7 +88,7 @@ const EventListView: React.FC<EventListViewProps> = ({
                   
                   <div className="flex-grow p-4">
                     <div className="flex flex-col md:flex-row gap-4">
-                      <div className="w-full md:w-2/3">
+                      <div className="w-full md:w-3/4">
                         <h3 className="text-lg font-semibold mb-1">{event.title}</h3>
                         <div className="flex items-center text-gray-600 text-sm mb-1">
                           <Clock className="h-3.5 w-3.5 mr-1.5" />
@@ -220,7 +116,7 @@ const EventListView: React.FC<EventListViewProps> = ({
                         </div>
                       </div>
                       
-                      <div className="w-full md:w-1/3 flex flex-col gap-2">
+                      <div className="w-full md:w-1/4">
                         {event.image && (
                           <div 
                             className="h-32 cursor-pointer rounded overflow-hidden" 
@@ -232,13 +128,6 @@ const EventListView: React.FC<EventListViewProps> = ({
                               className="h-full w-full object-cover hover:opacity-90 transition-opacity"
                             />
                           </div>
-                        )}
-                        
-                        {event.location && event.location !== 'Location not specified' && (
-                          <div 
-                            className="h-32 rounded overflow-hidden border" 
-                            ref={mapRefs.current[event.id]?.mapRef}
-                          />
                         )}
                       </div>
                     </div>
