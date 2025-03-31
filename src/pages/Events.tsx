@@ -75,7 +75,7 @@ const Events = () => {
           <div className="absolute inset-0 bg-eecfin-navy/60"></div>
         </div>
         <div className="container-custom text-center relative z-10 py-12">
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">Events & Services</h1>
+          <h1 className="text-4xl md:text-5xl font-bold mb-4 text-white">Events & Services</h1>
           <p className="text-xl max-w-3xl mx-auto text-white/90">
             Join us for worship services, prayer meetings, and community events.
           </p>
