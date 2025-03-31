@@ -22,13 +22,13 @@ export const useSermons = (channelId: string) => {
         const API_KEY = import.meta.env.VITE_GOOGLE_API_KEY;
         
         if (!API_KEY) {
-          console.warn('No Google API key found, sermon library will be hidden');
+          console.error('No Google API key found in environment variables (VITE_GOOGLE_API_KEY)');
           setHasRealData(false);
           setLoading(false);
           return;
         }
         
-        console.log('Using Google API key for YouTube data:', API_KEY ? 'Key found' : 'No key found');
+        console.log('Google API key for YouTube data found, continuing with fetch');
         
         // Check for live streams first
         const liveResponse = await fetch(

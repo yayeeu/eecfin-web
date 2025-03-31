@@ -6,7 +6,7 @@ import SermonLibrary from '@/components/sermons/SermonLibrary';
 import { useSermons } from '@/hooks/useSermons';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { MessageSquareText, Youtube } from 'lucide-react';
+import { MessageSquareText, Youtube, AlertTriangle } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 
 const Sermons = () => {
@@ -39,6 +39,18 @@ const Sermons = () => {
     }
   }, [isLive, toast]);
 
+  // Notify if no API key is found
+  useEffect(() => {
+    if (!hasRealData && !loading && !import.meta.env.VITE_GOOGLE_API_KEY) {
+      toast({
+        title: "Configuration Required",
+        description: "YouTube videos cannot be loaded - Missing Google API key.",
+        variant: "destructive",
+        duration: 8000
+      });
+    }
+  }, [hasRealData, loading, toast]);
+
   const openVideoOnYouTube = (videoId: string) => {
     window.open(`https://www.youtube.com/watch?v=${videoId}`, '_blank');
   };
@@ -57,16 +69,6 @@ const Sermons = () => {
     );
   }
 
-  if (error && !hasRealData) {
-    return (
-      <div className="container-custom py-12">
-        <div className="flex items-center justify-center h-64 bg-gray-100 rounded-lg">
-          <div className="text-red-500 text-xl">{error}</div>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div>
       <SermonHero />
@@ -79,6 +81,14 @@ const Sermons = () => {
           <div className="md:w-1/2">
             {selectedVideo && (
               <LatestSermon videoId={selectedVideo} isLive={isLive} />
+            )}
+            {!selectedVideo && !hasRealData && (
+              <div className="flex flex-col items-center justify-center h-64 bg-gray-100 rounded-lg p-6">
+                <AlertTriangle className="h-12 w-12 text-amber-500 mb-4" />
+                <p className="text-center text-gray-600">
+                  {error || "YouTube videos are not available at the moment. Please try again later."}
+                </p>
+              </div>
             )}
           </div>
 
