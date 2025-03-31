@@ -5,6 +5,9 @@ import LatestSermon from '@/components/sermons/LatestSermon';
 import SubscribeSection from '@/components/sermons/SubscribeSection';
 import SermonLibrary from '@/components/sermons/SermonLibrary';
 import { useSermons } from '@/hooks/useSermons';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { MessageSquareText, Youtube } from 'lucide-react';
 
 const Sermons = () => {
   const channelId = 'eecfin'; // EECFIN YouTube channel ID
@@ -62,22 +65,56 @@ const Sermons = () => {
             <LatestSermon videoId={selectedVideo} />
           </div>
 
-          {/* Subscribe Section */}
+          {/* EECFIN Media Section - Moved from home page */}
           <div className="md:w-1/2">
-            <SubscribeSection onSubscribe={openSubscribePage} />
+            <Card className="h-full bg-gradient-to-br from-eecfin-navy/95 to-eecfin-navy shadow-lg border-0">
+              <CardHeader className="pb-2">
+                <div className="flex items-center">
+                  <MessageSquareText className="h-6 w-6 text-eecfin-gold mr-2" />
+                  <CardTitle className="text-xl text-white">EECFIN Media</CardTitle>
+                </div>
+                <CardDescription className="text-gray-200">
+                  Access our complete sermon library
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="flex flex-col h-full">
+                <p className="text-gray-100 mb-6 flex-grow">
+                  Stay connected with our church through our broadcasts, sermons, and special events. 
+                  Watch our services live or catch up on past messages.
+                </p>
+                <div className="flex flex-col sm:flex-row gap-3 mt-auto">
+                  <Button 
+                    className="flex-1 bg-eecfin-gold hover:bg-eecfin-gold/80 text-eecfin-navy"
+                    onClick={openSubscribePage}
+                  >
+                    <Youtube className="mr-2 h-5 w-5" />
+                    Visit Our YouTube Channel
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    className="flex-1 border-gray-400 text-white hover:bg-white/10"
+                    onClick={() => window.scrollTo({ top: document.getElementById('sermon-library')?.offsetTop || 0, behavior: 'smooth' })}
+                  >
+                    Browse All Sermons
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
           </div>
         </div>
 
         {/* Video Library */}
-        <SermonLibrary 
-          videos={[]} // Not used in component but keeping for type consistency
-          currentVideos={currentVideos}
-          videosByDate={videosByDate}
-          currentPage={currentPage}
-          totalPages={totalPages}
-          onPageChange={handlePageChange}
-          onVideoClick={openVideoOnYouTube}
-        />
+        <div id="sermon-library">
+          <SermonLibrary 
+            videos={[]} // Not used in component but keeping for type consistency
+            currentVideos={currentVideos}
+            videosByDate={videosByDate}
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={handlePageChange}
+            onVideoClick={openVideoOnYouTube}
+          />
+        </div>
       </div>
     </div>
   );
