@@ -192,7 +192,6 @@ export type Database = {
           phone: string | null
           postal_code: string | null
           previous_church: string | null
-          role: string | null
           role_id: string | null
           role_in_previous_church: string | null
           spouse_name: string | null
@@ -219,7 +218,6 @@ export type Database = {
           phone?: string | null
           postal_code?: string | null
           previous_church?: string | null
-          role?: string | null
           role_id?: string | null
           role_in_previous_church?: string | null
           spouse_name?: string | null
@@ -246,7 +244,6 @@ export type Database = {
           phone?: string | null
           postal_code?: string | null
           previous_church?: string | null
-          role?: string | null
           role_id?: string | null
           role_in_previous_church?: string | null
           spouse_name?: string | null
