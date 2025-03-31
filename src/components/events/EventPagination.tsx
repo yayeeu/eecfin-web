@@ -39,7 +39,7 @@ const EventPagination: React.FC<EventPaginationProps> = ({
           <PaginationItem>
             <PaginationPrevious 
               onClick={handlePreviousPage} 
-              className={currentPage === 1 ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
+              className={`${currentPage === 1 ? 'pointer-events-none opacity-50' : 'cursor-pointer'} text-eecfin-navy hover:text-eecfin-navy/80 hover:bg-eecfin-gold/20`}
             />
           </PaginationItem>
           
@@ -48,6 +48,7 @@ const EventPagination: React.FC<EventPaginationProps> = ({
               <PaginationLink 
                 isActive={currentPage === i + 1}
                 onClick={() => onPageChange(i + 1)}
+                className={currentPage === i + 1 ? 'bg-eecfin-navy text-white hover:bg-eecfin-navy/90' : 'text-eecfin-navy hover:text-eecfin-navy/80 hover:bg-eecfin-gold/20'}
               >
                 {i + 1}
               </PaginationLink>
@@ -57,7 +58,7 @@ const EventPagination: React.FC<EventPaginationProps> = ({
           <PaginationItem>
             <PaginationNext 
               onClick={handleNextPage} 
-              className={currentPage === totalPages ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
+              className={`${currentPage === totalPages ? 'pointer-events-none opacity-50' : 'cursor-pointer'} text-eecfin-navy hover:text-eecfin-navy/80 hover:bg-eecfin-gold/20`}
             />
           </PaginationItem>
         </PaginationContent>

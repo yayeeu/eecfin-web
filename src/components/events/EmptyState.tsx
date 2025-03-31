@@ -15,7 +15,7 @@ const EmptyState: React.FC<EmptyStateProps> = ({
 }) => (
   <div className="bg-gray-50 rounded-lg p-8 text-center">
     <CalendarLucide className="h-12 w-12 text-eecfin-navy mx-auto mb-4 opacity-60" />
-    <h3 className="text-xl font-medium mb-2">
+    <h3 className="text-xl font-medium mb-2 text-eecfin-navy">
       {filteredView ? "No events on selected date" : "No upcoming events"}
     </h3>
     <p className="text-gray-600 mb-6">
