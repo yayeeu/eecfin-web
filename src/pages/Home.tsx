@@ -9,10 +9,8 @@ import WelcomeEventBanner from '../components/home/WelcomeEventBanner';
 const Home = () => {
   return (
     <div>
-      {/* Image Slider Banner - Reduced height */}
-      <div className="h-[30vh]">
-        <ImageSlider />
-      </div>
+      {/* Image Slider Banner */}
+      <ImageSlider />
       
       {/* Welcome Banner with Next Event */}
       <WelcomeEventBanner />
