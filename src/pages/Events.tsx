@@ -1,7 +1,7 @@
-
 import React, { useState, useMemo } from 'react';
 import { List, CalendarDays, AlertCircle } from 'lucide-react';
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { Button } from "@/components/ui/button";
 import { fetchEvents } from "@/lib/googleCalendar";
 import { useQuery } from '@tanstack/react-query';
 import EventListView from '@/components/events/EventListView';
