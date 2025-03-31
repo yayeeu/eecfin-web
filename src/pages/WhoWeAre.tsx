@@ -1,7 +1,8 @@
+
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { Link } from 'react-router-dom';
-import { BookOpen, Heart, Users, Layout } from 'lucide-react';
+import { BookOpen, Heart, Users, Layout, FileText } from 'lucide-react';
 import { Card, CardContent } from "@/components/ui/card";
 import EldersList from '@/components/EldersList';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -165,44 +166,72 @@ const WhoWeAre = () => {
           </div>
         </section>
 
-        {/* Content Section with Tabs View */}
+        {/* Content Section with Tabs View and Side Navigation */}
         <section className="py-16 bg-white">
           <div className="container-custom">
-            <div className="max-w-4xl mx-auto">
-              <h2 className="text-3xl font-bold text-eecfin-navy text-center mb-8">
-                About EECFIN
-              </h2>
-              
-              {/* Tabs View */}
-              <div className="bg-white rounded-lg shadow-md p-6">
-                <Tabs defaultValue="our-story">
-                  <TabsList className="w-full flex justify-center mb-6">
-                    {sections.map((section) => (
-                      <TabsTrigger key={section.id} value={section.id} className="flex items-center gap-2">
-                        <span className={`w-6 h-6 rounded-full bg-${section.color}-100 flex items-center justify-center text-${section.color}-600`}>
-                          {section.icon}
-                        </span>
-                        {section.title}
-                      </TabsTrigger>
-                    ))}
-                  </TabsList>
-                  
-                  {sections.map((section) => (
-                    <TabsContent key={section.id} value={section.id} className="p-4 bg-gray-50 rounded-md">
-                      <div className="flex items-start">
-                        <div className="flex-shrink-0 mr-4">
-                          <div className={`w-10 h-10 rounded-full bg-${section.color}-100 flex items-center justify-center text-${section.color}-600`}>
+            <div className="flex flex-col md:flex-row md:space-x-8">
+              {/* Main Content */}
+              <div className="flex-1">
+                <h2 className="text-3xl font-bold text-eecfin-navy text-center mb-8">
+                  About EECFIN
+                </h2>
+                
+                {/* Tabs View */}
+                <div className="bg-white rounded-lg shadow-md p-6">
+                  <Tabs defaultValue="our-story">
+                    <TabsList className="w-full flex justify-center mb-6">
+                      {sections.map((section) => (
+                        <TabsTrigger key={section.id} value={section.id} className="flex items-center gap-2">
+                          <span className={`w-6 h-6 rounded-full bg-${section.color}-100 flex items-center justify-center text-${section.color}-600`}>
                             {section.icon}
+                          </span>
+                          {section.title}
+                        </TabsTrigger>
+                      ))}
+                    </TabsList>
+                    
+                    {sections.map((section) => (
+                      <TabsContent key={section.id} value={section.id} className="p-4 bg-gray-50 rounded-md">
+                        <div className="flex items-start">
+                          <div className="flex-shrink-0 mr-4">
+                            <div className={`w-10 h-10 rounded-full bg-${section.color}-100 flex items-center justify-center text-${section.color}-600`}>
+                              {section.icon}
+                            </div>
+                          </div>
+                          <div>
+                            <h3 className={`text-xl font-medium text-${section.color}-700 mb-2`}>{section.title}</h3>
+                            {section.content}
                           </div>
                         </div>
-                        <div>
-                          <h3 className={`text-xl font-medium text-${section.color}-700 mb-2`}>{section.title}</h3>
-                          {section.content}
-                        </div>
-                      </div>
-                    </TabsContent>
-                  ))}
-                </Tabs>
+                      </TabsContent>
+                    ))}
+                  </Tabs>
+                </div>
+              </div>
+              
+              {/* Right Side Navigation */}
+              <div className="w-full md:w-64 mt-8 md:mt-0">
+                <div className="bg-white rounded-lg shadow-md p-6 sticky top-24">
+                  <h3 className="text-lg font-semibold text-eecfin-navy mb-4 border-b pb-2">
+                    Additional Resources
+                  </h3>
+                  <nav className="flex flex-col space-y-3">
+                    <Link 
+                      to="/our-faith" 
+                      className="flex items-center text-gray-700 hover:text-eecfin-navy transition-colors py-2"
+                    >
+                      <BookOpen size={18} className="mr-2 text-eecfin-gold" />
+                      Our Statement of Faith
+                    </Link>
+                    <Link 
+                      to="/constitution" 
+                      className="flex items-center text-gray-700 hover:text-eecfin-navy transition-colors py-2"
+                    >
+                      <FileText size={18} className="mr-2 text-eecfin-gold" />
+                      Our Constitution
+                    </Link>
+                  </nav>
+                </div>
               </div>
             </div>
           </div>
