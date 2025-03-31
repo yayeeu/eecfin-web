@@ -12,17 +12,8 @@ import {
   addSlide, 
   updateSlide, 
   deleteSlide,
-  SlideImage 
+  type SlideImage 
 } from '@/lib/sliderService';
-
-export interface SlideImage {
-  id: string;
-  src: string;
-  alt: string;
-  title?: string;
-  subtitle?: string;
-  order?: number;
-}
 
 const SliderManager = () => {
   const [slides, setSlides] = useState<SlideImage[]>([]);
@@ -116,14 +107,12 @@ const SliderManager = () => {
     setIsLoading(true);
     try {
       if (currentSlide.id) {
-        // Update existing slide
         await updateSlide(currentSlide.id, currentSlide, imageFile);
         toast({
           title: "Slide updated",
           description: "The slide has been updated successfully."
         });
       } else {
-        // Add new slide
         if (!imageFile && !currentSlide.src) {
           throw new Error("An image is required");
         }

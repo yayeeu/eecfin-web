@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/carousel";
 import Autoplay from "embla-carousel-autoplay";
 import { fetchSlides } from '@/lib/sliderService';
-import { SlideImage } from '@/lib/sliderService';
+import type { SlideImage } from '@/lib/sliderService';
 import { Loader2 } from 'lucide-react';
 
 const ImageSlider = () => {

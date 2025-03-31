@@ -15,7 +15,7 @@ const isDevelopment = import.meta.env.DEV && (!supabaseUrl || !supabaseAnonKey);
 let supabase;
 
 if (!supabaseUrl || !supabaseAnonKey) {
-  console.warn('Missing Supabase URL or Anon Key. Using integrated Supabase client.');
+  console.log('Using integrated Supabase client because env variables are missing');
   supabase = integrationsSupabase;
 } else {
   // Use the environment variables if available
@@ -27,5 +27,9 @@ export { supabase };
 
 // Helper function to check if Supabase is configured
 export const isSupabaseConfigured = () => {
-  return supabaseUrl && supabaseAnonKey;
+  const isConfigured = supabase && (supabaseUrl || integrationsSupabase);
+  if (!isConfigured) {
+    console.error('Supabase is not configured. Either set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY env variables or ensure the integrated client is available.');
+  }
+  return !!isConfigured;
 };

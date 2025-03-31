@@ -8,7 +8,7 @@ import { v4 as uuidv4 } from 'uuid';
  */
 export const updateSlide = async (id: string, slide: SlideImage, imageFile: File | null): Promise<SlideImage> => {
   if (!isSupabaseConfigured()) {
-    throw new Error('Supabase is not configured');
+    throw new Error('Supabase is not configured. Please check your environment variables or Supabase integration.');
   }
 
   try {
@@ -21,6 +21,28 @@ export const updateSlide = async (id: string, slide: SlideImage, imageFile: File
 
     // If there's a new image, upload it and update the src
     if (imageFile) {
+      // Check if the bucket exists first
+      const { data: buckets, error: bucketsError } = await supabase!.storage.listBuckets();
+      
+      if (bucketsError) {
+        console.error('Error checking buckets:', bucketsError);
+        throw bucketsError;
+      }
+      
+      const bucketExists = buckets.some(bucket => bucket.name === 'sliderImages');
+      
+      if (!bucketExists) {
+        const { error: createError } = await supabase!.storage.createBucket('sliderImages', {
+          public: true,
+          fileSizeLimit: 10485760, // 10MB
+        });
+        
+        if (createError) {
+          console.error('Error creating bucket:', createError);
+          throw createError;
+        }
+      }
+
       const fileExt = imageFile.name.split('.').pop();
       const fileName = `${uuidv4()}.${fileExt}`;
       const filePath = `${fileName}`;
@@ -29,7 +51,10 @@ export const updateSlide = async (id: string, slide: SlideImage, imageFile: File
         .from('sliderImages')
         .upload(filePath, imageFile);
 
-      if (uploadError) throw uploadError;
+      if (uploadError) {
+        console.error('Error uploading image:', uploadError);
+        throw uploadError;
+      }
 
       // Get the public URL for the uploaded image
       const { data: { publicUrl } } = supabase!.storage
@@ -47,7 +72,11 @@ export const updateSlide = async (id: string, slide: SlideImage, imageFile: File
       .select()
       .single();
 
-    if (error) throw error;
+    if (error) {
+      console.error('Error updating slide data:', error);
+      throw error;
+    }
+    
     return data;
   } catch (error) {
     console.error('Error updating slide:', error);
