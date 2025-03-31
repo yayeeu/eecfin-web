@@ -7,7 +7,6 @@ const CTASection: React.FC = () => {
   return (
     <section className="py-16 bg-eecfin-navy text-white text-center">
       <div className="container-custom">
-        <h2 className="text-3xl font-bold mb-6">Ready to Get Involved?</h2>
         <p className="text-xl mb-8 max-w-2xl mx-auto">
           We'd love to help you find the right place to serve and connect in our church community.
         </p>
