@@ -39,18 +39,7 @@ const Sermons = () => {
     }
   }, [isLive, toast]);
 
-  // Notify if no API key is found
-  useEffect(() => {
-    const apiKeyExists = Boolean(import.meta.env.GOOGLE_API_KEY || import.meta.env.VITE_GOOGLE_API_KEY);
-    if (!hasRealData && !loading && !apiKeyExists) {
-      toast({
-        title: "Configuration Required",
-        description: "YouTube videos cannot be loaded - Missing Google API key.",
-        variant: "destructive",
-        duration: 8000
-      });
-    }
-  }, [hasRealData, loading, toast]);
+  // Removed the notification for missing API key
 
   const openVideoOnYouTube = (videoId: string) => {
     window.open(`https://www.youtube.com/watch?v=${videoId}`, '_blank');
