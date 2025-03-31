@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import RoleGuard from '@/components/auth/RoleGuard';
 import SignupForm from '@/components/auth/SignupForm';
 import Dashboard from '@/components/Dashboard';
-import SliderManager from '@/components/SliderManager';
+import SliderManager from '@/components/slider/SliderManager';
 import MinistryManager from '@/components/MinistryManager';
 import MemberManager from '@/components/MemberManager';
 import { UserRole } from '@/types/auth.types';
