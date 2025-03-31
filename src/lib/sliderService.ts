@@ -61,7 +61,7 @@ export const fetchSlides = async (): Promise<SlideImage[]> => {
  * Add a new slide to Supabase
  */
 export const addSlide = async (slide: SlideImage, imageFile: File | null): Promise<SlideImage> => {
-  // If Supabase is not configured, simulate with mock data
+  // If Supabase is not configured or no image file, simulate with mock data
   if (!isSupabaseConfigured() || !imageFile) {
     console.log('Using mock data for adding slide');
     const newSlide = {
@@ -77,17 +77,17 @@ export const addSlide = async (slide: SlideImage, imageFile: File | null): Promi
     // Upload image to Supabase Storage
     const fileExt = imageFile.name.split('.').pop();
     const fileName = `${uuidv4()}.${fileExt}`;
-    const filePath = `slides/${fileName}`;
+    const filePath = `${fileName}`;
 
     const { error: uploadError } = await supabase!.storage
-      .from('images')
+      .from('sliderImages')
       .upload(filePath, imageFile);
 
     if (uploadError) throw uploadError;
 
     // Get the public URL for the uploaded image
     const { data: { publicUrl } } = supabase!.storage
-      .from('images')
+      .from('sliderImages')
       .getPublicUrl(filePath);
 
     // Insert new slide record in Supabase
@@ -144,17 +144,17 @@ export const updateSlide = async (id: string, slide: SlideImage, imageFile: File
     if (imageFile) {
       const fileExt = imageFile.name.split('.').pop();
       const fileName = `${uuidv4()}.${fileExt}`;
-      const filePath = `slides/${fileName}`;
+      const filePath = `${fileName}`;
 
       const { error: uploadError } = await supabase!.storage
-        .from('images')
+        .from('sliderImages')
         .upload(filePath, imageFile);
 
       if (uploadError) throw uploadError;
 
       // Get the public URL for the uploaded image
       const { data: { publicUrl } } = supabase!.storage
-        .from('images')
+        .from('sliderImages')
         .getPublicUrl(filePath);
 
       slideData.src = publicUrl;
@@ -209,12 +209,14 @@ export const deleteSlide = async (id: string): Promise<void> => {
 
     // If there's an image in storage, delete it too
     if (slide && slide.src) {
-      // Extract the path from the URL
-      const imagePath = slide.src.split('/').pop();
-      if (imagePath) {
+      // Extract the filename from the URL
+      const urlParts = slide.src.split('/');
+      const fileName = urlParts[urlParts.length - 1];
+      
+      if (fileName) {
         const { error: storageError } = await supabase!.storage
-          .from('images')
-          .remove([`slides/${imagePath}`]);
+          .from('sliderImages')
+          .remove([fileName]);
 
         if (storageError) console.error('Error deleting image file:', storageError);
       }
