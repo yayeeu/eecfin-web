@@ -67,18 +67,18 @@ const WelcomeEventBanner = ({ overlayStyle = false }: WelcomeEventBannerProps) =
   
   if (overlayStyle) {
     return (
-      <div className="bg-white/90 backdrop-blur-sm rounded-lg shadow-lg p-4">
-        <div className="flex items-center text-eecfin-gold mb-1">
+      <div className="bg-white/95 backdrop-blur-sm rounded-lg shadow-lg p-4">
+        <div className="flex items-center text-eecfin-navy mb-1">
           <Calendar className="h-4 w-4 mr-1" />
-          <span className="font-medium text-sm">Next Event</span>
+          <span className="font-semibold text-sm">Next Event</span>
         </div>
         <h3 className="text-lg font-bold text-eecfin-navy mb-2 line-clamp-1">{nextEvent.title}</h3>
         <div className="space-y-1 mb-3">
-          <div className="flex items-center text-gray-600 text-xs">
+          <div className="flex items-center text-gray-700 text-xs">
             <Clock className="h-3 w-3 mr-1 flex-shrink-0" />
             <span className="truncate">{formattedDate} at {startTime}</span>
           </div>
-          <div className="flex items-center text-gray-600 text-xs">
+          <div className="flex items-center text-gray-700 text-xs">
             <MapPin className="h-3 w-3 mr-1 flex-shrink-0" />
             <span className="truncate">{nextEvent.location}</span>
           </div>

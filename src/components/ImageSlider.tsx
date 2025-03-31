@@ -41,7 +41,7 @@ const ImageSlider = () => {
 
   if (loading) {
     return (
-      <div className="relative w-full h-[400px] bg-gray-100 flex items-center justify-center">
+      <div className="relative w-full h-[360px] bg-gray-100 flex items-center justify-center">
         <Loader2 className="h-10 w-10 text-eecfin-navy animate-spin" />
       </div>
     );
@@ -49,7 +49,7 @@ const ImageSlider = () => {
 
   if (error || slides.length === 0) {
     return (
-      <div className="relative w-full h-[400px] bg-gray-200 flex items-center justify-center">
+      <div className="relative w-full h-[360px] bg-gray-200 flex items-center justify-center">
         <div className="text-center">
           <h2 className="text-2xl font-bold text-gray-500 mb-2">
             {error || "No slider images available"}
@@ -61,7 +61,7 @@ const ImageSlider = () => {
   }
 
   return (
-    <div className="relative w-full max-h-[400px] overflow-hidden">
+    <div className="relative w-full max-h-[360px] overflow-hidden">
       <Carousel
         plugins={[plugin.current]}
         className="w-full"
