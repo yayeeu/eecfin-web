@@ -6,7 +6,11 @@ import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { fetchEvents } from '@/lib/googleCalendar';
 
-const WelcomeEventBanner = () => {
+interface WelcomeEventBannerProps {
+  overlayStyle?: boolean;
+}
+
+const WelcomeEventBanner = ({ overlayStyle = false }: WelcomeEventBannerProps) => {
   const { data, isLoading } = useQuery({
     queryKey: ['next-event'],
     queryFn: fetchEvents,
@@ -18,32 +22,32 @@ const WelcomeEventBanner = () => {
   
   if (isLoading) {
     return (
-      <section className="py-8 bg-eecfin-navy bg-[url('/lovable-uploads/54e6cd73-6658-4990-b0c6-d369f39e1cb9.png')] bg-cover bg-center bg-blend-overlay">
-        <div className="container-custom">
+      <div className={overlayStyle ? "bg-white/90 rounded-lg shadow-lg p-4" : "py-8 bg-eecfin-navy bg-[url('/lovable-uploads/54e6cd73-6658-4990-b0c6-d369f39e1cb9.png')] bg-cover bg-center bg-blend-overlay"}>
+        <div className={overlayStyle ? "" : "container-custom"}>
           <div className="animate-pulse flex flex-col items-center">
             <div className="h-8 bg-white/20 rounded w-3/4 mb-4"></div>
             <div className="h-5 bg-white/20 rounded w-1/2 mb-6"></div>
             <div className="h-10 bg-white/20 rounded w-36"></div>
           </div>
         </div>
-      </section>
+      </div>
     );
   }
 
   // If no event is available
   if (!nextEvent) {
     return (
-      <section className="py-8 bg-eecfin-navy bg-[url('/lovable-uploads/54e6cd73-6658-4990-b0c6-d369f39e1cb9.png')] bg-cover bg-center bg-blend-overlay">
-        <div className="container-custom">
-          <div className="text-center text-white">
-            <h2 className="text-3xl font-bold mb-4">Welcome to Ethiopian Evangelical Church in Finland</h2>
-            <p className="text-xl mb-6 max-w-2xl mx-auto">Join our vibrant community for worship, fellowship, and spiritual growth.</p>
-            <Button asChild className="bg-eecfin-gold hover:bg-eecfin-gold/90 text-eecfin-navy font-semibold">
-              <Link to="/events">View Our Calendar</Link>
+      <div className={overlayStyle ? "bg-white/90 rounded-lg shadow-lg p-4" : "py-8 bg-eecfin-navy bg-[url('/lovable-uploads/54e6cd73-6658-4990-b0c6-d369f39e1cb9.png')] bg-cover bg-center bg-blend-overlay"}>
+        <div className={overlayStyle ? "" : "container-custom"}>
+          <div className="text-center text-eecfin-navy">
+            <h2 className="text-lg md:text-xl font-bold mb-2">Join Our Next Service</h2>
+            <p className="text-sm mb-3">Join our vibrant community for worship and fellowship.</p>
+            <Button asChild size="sm" className="bg-eecfin-gold hover:bg-eecfin-gold/90 text-eecfin-navy font-semibold">
+              <Link to="/events">View Calendar</Link>
             </Button>
           </div>
         </div>
-      </section>
+      </div>
     );
   }
 
@@ -60,6 +64,34 @@ const WelcomeEventBanner = () => {
     hour: '2-digit', 
     minute: '2-digit'
   });
+  
+  if (overlayStyle) {
+    return (
+      <div className="bg-white/90 backdrop-blur-sm rounded-lg shadow-lg p-4">
+        <div className="flex items-center text-eecfin-gold mb-1">
+          <Calendar className="h-4 w-4 mr-1" />
+          <span className="font-medium text-sm">Next Event</span>
+        </div>
+        <h3 className="text-lg font-bold text-eecfin-navy mb-2 line-clamp-1">{nextEvent.title}</h3>
+        <div className="space-y-1 mb-3">
+          <div className="flex items-center text-gray-600 text-xs">
+            <Clock className="h-3 w-3 mr-1 flex-shrink-0" />
+            <span className="truncate">{formattedDate} at {startTime}</span>
+          </div>
+          <div className="flex items-center text-gray-600 text-xs">
+            <MapPin className="h-3 w-3 mr-1 flex-shrink-0" />
+            <span className="truncate">{nextEvent.location}</span>
+          </div>
+        </div>
+        <Button asChild size="sm" className="w-full bg-eecfin-navy hover:bg-eecfin-navy/80 group">
+          <Link to="/events" className="flex items-center justify-center text-xs">
+            Join Us 
+            <ArrowRight className="ml-1 h-3 w-3 group-hover:translate-x-1 transition-transform" />
+          </Link>
+        </Button>
+      </div>
+    );
+  }
   
   return (
     <section className="bg-eecfin-navy relative bg-[url('/lovable-uploads/54e6cd73-6658-4990-b0c6-d369f39e1cb9.png')] bg-cover bg-center bg-blend-overlay">
