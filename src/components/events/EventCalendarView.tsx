@@ -1,13 +1,11 @@
 
 import React, { useState } from 'react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
-import { Calendar } from "@/components/ui/calendar";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { Clock, MapPin, ChevronLeft, ChevronRight, Calendar as CalendarIcon } from 'lucide-react';
+import { Clock, MapPin, Calendar as CalendarIcon } from 'lucide-react';
 import { Event } from "@/lib/googleCalendar";
 import EmptyState from './EmptyState';
-import { format, addMonths, subMonths } from "date-fns";
-import { Button } from "@/components/ui/button";
+import { format } from "date-fns";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface EventCalendarViewProps {
@@ -23,7 +21,6 @@ const EventCalendarView: React.FC<EventCalendarViewProps> = ({
   setSelectedDate,
   filteredEvents
 }) => {
-  const [currentMonth, setCurrentMonth] = useState(new Date());
   const [activeView, setActiveView] = useState<'calendar' | 'details'>('calendar');
   
   const getEventFallbackImage = (eventTitle: string) => {
@@ -35,50 +32,6 @@ const EventCalendarView: React.FC<EventCalendarViewProps> = ({
       .substring(0, 2);
     
     return initials;
-  };
-
-  // Group events by date for calendar tooltips
-  const eventsByDate = events.reduce((acc, event) => {
-    const dateKey = format(new Date(event.startTime), 'yyyy-MM-dd');
-    if (!acc[dateKey]) {
-      acc[dateKey] = [];
-    }
-    acc[dateKey].push(event);
-    return acc;
-  }, {} as Record<string, Event[]>);
-
-  const navigateMonth = (direction: 'next' | 'prev') => {
-    if (direction === 'next') {
-      setCurrentMonth(addMonths(currentMonth, 1));
-    } else {
-      setCurrentMonth(subMonths(currentMonth, 1));
-    }
-  };
-
-  // Function to render date cell content
-  const renderDay = (date: Date) => {
-    const dateKey = format(date, 'yyyy-MM-dd');
-    const dayEvents = eventsByDate[dateKey] || [];
-    
-    return (
-      <div className="relative w-full h-full flex flex-col">
-        <span className={`mx-auto ${dayEvents.length > 0 ? 'font-bold' : ''}`}>
-          {date.getDate()}
-        </span>
-        {dayEvents.length > 0 && (
-          <div className="mt-1 flex flex-col items-center">
-            <span className="h-1.5 w-1.5 bg-eecfin-navy rounded-full mb-1"></span>
-            <div className="text-xs text-center line-clamp-2 max-w-[80px] mx-auto">
-              {dayEvents.map((event, idx) => (
-                <div key={idx} className="truncate hover:text-eecfin-navy cursor-pointer">
-                  {event.title}
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-      </div>
-    );
   };
 
   return (
@@ -98,54 +51,23 @@ const EventCalendarView: React.FC<EventCalendarViewProps> = ({
             className="flex-1"
             onClick={() => setActiveView('details')}
           >
-            <ChevronRight className="w-4 h-4 mr-2" />
             Event Details
           </TabsTrigger>
         </TabsList>
 
         <TabsContent value="calendar" className="mt-6">
-          <div className="bg-white p-4 rounded-lg shadow">
-            <div className="flex justify-between items-center mb-6">
-              <Button variant="outline" size="sm" onClick={() => navigateMonth('prev')}>
-                <ChevronLeft className="h-4 w-4" />
-                <span className="ml-1">Previous</span>
-              </Button>
-              
-              <h3 className="text-xl font-semibold">
-                {format(currentMonth, 'MMMM yyyy')}
-              </h3>
-              
-              <Button variant="outline" size="sm" onClick={() => navigateMonth('next')}>
-                <span className="mr-1">Next</span>
-                <ChevronRight className="h-4 w-4" />
-              </Button>
+          <div className="bg-white p-4 rounded-lg shadow w-full overflow-hidden">
+            <div className="w-full aspect-video relative overflow-hidden">
+              <iframe 
+                src="https://calendar.google.com/calendar/embed?src=c_3634df7d40b0663553a6f59b958bfc6f9cdfef2bd1781356c59c7ab21686e3e3%40group.calendar.google.com&ctz=Europe%2FHelsinki&showTabs=0&showCalendars=0&showTz=0&showPrint=0&showNav=1&showTitle=0" 
+                style={{ border: 0 }} 
+                width="100%" 
+                height="100%" 
+                frameBorder="0" 
+                scrolling="no"
+                className="absolute inset-0 w-full h-full"
+              />
             </div>
-            
-            <Calendar
-              mode="single"
-              selected={selectedDate}
-              onSelect={setSelectedDate}
-              month={currentMonth}
-              onMonthChange={setCurrentMonth}
-              className="w-full"
-              classNames={{
-                month: "w-full",
-                table: "w-full border-collapse",
-                head_cell: "text-muted-foreground rounded-md font-normal text-[0.9rem] px-1 py-2",
-                cell: "h-24 p-0 relative focus-within:relative focus-within:z-20 border border-gray-100",
-                day: "h-24 w-full p-1 font-normal aria-selected:opacity-100",
-                day_selected: "bg-blue-50 text-primary-foreground",
-                day_today: "bg-accent text-accent-foreground",
-                day_outside: "text-muted-foreground opacity-50",
-                day_disabled: "text-muted-foreground opacity-50",
-                day_hidden: "invisible",
-                caption: "flex justify-center pt-1 relative items-center text-sm px-10",
-                caption_label: "text-lg font-medium"
-              }}
-              components={{
-                Day: ({ date }) => renderDay(date)
-              }}
-            />
           </div>
         </TabsContent>
 
