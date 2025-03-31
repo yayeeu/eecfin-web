@@ -19,10 +19,10 @@ const MediaSection = () => {
             </div>
             
             {/* YouTube Embed */}
-            <div className="flex-grow">
+            <div className="h-full bg-white rounded-lg shadow-md overflow-hidden aspect-video">
               <YouTubeEmbed 
                 channelId="eecfin" 
-                className="aspect-video w-full rounded-lg shadow-md overflow-hidden"
+                className="w-full h-full"
               />
             </div>
             
@@ -47,7 +47,7 @@ const MediaSection = () => {
               <div className="flex items-center mb-4">
                 <h2 className="section-title mb-0">Our Mission</h2>
               </div>
-              <div className="flex-grow">
+              <div className="h-full aspect-video">
                 <MissionSlider />
               </div>
             </div>
