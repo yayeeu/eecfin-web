@@ -1,6 +1,6 @@
 
 import { SlideImage } from './types';
-import { supabase, isSupabaseConfigured } from '@/lib/supabaseClient';
+import { supabase, isSupabaseConfigured, ensureStorageBucket } from '@/lib/supabaseClient';
 import { v4 as uuidv4 } from 'uuid';
 
 /**
@@ -21,27 +21,8 @@ export const updateSlide = async (id: string, slide: SlideImage, imageFile: File
 
     // If there's a new image, upload it and update the src
     if (imageFile) {
-      // Check if the bucket exists first
-      const { data: buckets, error: bucketsError } = await supabase!.storage.listBuckets();
-      
-      if (bucketsError) {
-        console.error('Error checking buckets:', bucketsError);
-        throw bucketsError;
-      }
-      
-      const bucketExists = buckets.some(bucket => bucket.name === 'sliderImages');
-      
-      if (!bucketExists) {
-        const { error: createError } = await supabase!.storage.createBucket('sliderImages', {
-          public: true,
-          fileSizeLimit: 10485760, // 10MB
-        });
-        
-        if (createError) {
-          console.error('Error creating bucket:', createError);
-          throw createError;
-        }
-      }
+      // Ensure the storage bucket exists
+      await ensureStorageBucket('sliderImages');
 
       const fileExt = imageFile.name.split('.').pop();
       const fileName = `${uuidv4()}.${fileExt}`;

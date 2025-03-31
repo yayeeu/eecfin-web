@@ -1,42 +1,7 @@
 
 import { SlideImage } from './types';
-import { supabase, isSupabaseConfigured } from '@/lib/supabaseClient';
+import { supabase, isSupabaseConfigured, ensureStorageBucket } from '@/lib/supabaseClient';
 import { v4 as uuidv4 } from 'uuid';
-
-/**
- * Ensure the sliderImages bucket exists
- */
-const ensureStorageBucket = async () => {
-  try {
-    // Check if the bucket exists
-    const { data: buckets, error } = await supabase!.storage.listBuckets();
-    
-    if (error) {
-      console.error('Error checking buckets:', error);
-      throw error;
-    }
-
-    const bucketExists = buckets.some(bucket => bucket.name === 'sliderImages');
-    
-    if (!bucketExists) {
-      // Create the bucket if it doesn't exist
-      const { error: createError } = await supabase!.storage.createBucket('sliderImages', {
-        public: true,
-        fileSizeLimit: 10485760, // 10MB
-      });
-      
-      if (createError) {
-        console.error('Error creating bucket:', createError);
-        throw createError;
-      }
-      
-      console.log('Created sliderImages bucket');
-    }
-  } catch (error) {
-    console.error('Error ensuring bucket exists:', error);
-    throw error;
-  }
-};
 
 /**
  * Add a new slide to Supabase
@@ -52,7 +17,7 @@ export const addSlide = async (slide: SlideImage, imageFile: File | null): Promi
 
   try {
     // Ensure the storage bucket exists
-    await ensureStorageBucket();
+    await ensureStorageBucket('sliderImages');
     
     // Upload image to Supabase Storage
     const fileExt = imageFile.name.split('.').pop();
