@@ -28,7 +28,7 @@ export const useSermons = (channelId: string) => {
           return;
         }
         
-        console.log('Using Google API key for YouTube data');
+        console.log('Using Google API key for YouTube data:', API_KEY ? 'Key found' : 'No key found');
         
         // Check for live streams first
         const liveResponse = await fetch(
@@ -36,7 +36,7 @@ export const useSermons = (channelId: string) => {
         );
         
         if (!liveResponse.ok) {
-          throw new Error(`YouTube API error: ${liveResponse.status} ${liveResponse.statusText}`);
+          throw new Error(`YouTube API error (live check): ${liveResponse.status} ${liveResponse.statusText}`);
         }
         
         const liveData = await liveResponse.json();
@@ -56,7 +56,7 @@ export const useSermons = (channelId: string) => {
         );
         
         if (!response.ok) {
-          throw new Error(`YouTube API error: ${response.status} ${response.statusText}`);
+          throw new Error(`YouTube API error (video fetch): ${response.status} ${response.statusText}`);
         }
         
         const data = await response.json();
