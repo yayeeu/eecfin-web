@@ -1,17 +1,16 @@
 
 import React, { useState, useMemo } from 'react';
-import { List, CalendarDays, AlertCircle, Map } from 'lucide-react';
+import { List, CalendarDays, AlertCircle } from 'lucide-react';
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { Button } from "@/components/ui/button";
 import { fetchEvents } from "@/lib/googleCalendar";
 import { useQuery } from '@tanstack/react-query';
 import EventListView from '@/components/events/EventListView';
 import EventCalendarView from '@/components/events/EventCalendarView';
-import EventMapView from '@/components/events/EventMapView';
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
 
-type ViewType = "list" | "calendar" | "map";
+type ViewType = "list" | "calendar";
 
 const Events = () => {
   const [viewType, setViewType] = useState<ViewType>("list");
@@ -97,10 +96,6 @@ const Events = () => {
                 <CalendarDays className="h-4 w-4 mr-2" />
                 Calendar
               </ToggleGroupItem>
-              <ToggleGroupItem value="map" aria-label="Toggle map view">
-                <Map className="h-4 w-4 mr-2" />
-                Map
-              </ToggleGroupItem>
             </ToggleGroup>
           </div>
 
@@ -157,9 +152,6 @@ const Events = () => {
                   setSelectedDate={setSelectedDate}
                   filteredEvents={filteredEvents}
                 />
-              )}
-              {viewType === "map" && (
-                <EventMapView events={events} />
               )}
             </div>
           )}
