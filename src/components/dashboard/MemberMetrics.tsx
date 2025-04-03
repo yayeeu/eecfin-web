@@ -16,7 +16,7 @@ const MemberMetrics: React.FC<{ members: Member[] }> = ({ members }) => {
   
   // Metrics cards data
   const metrics = [
-    { icon: Users, label: 'Total Members', value: totalMembers, color: 'bg-blue-100 text-blue-700' },
+    { icon: Users, label: 'Total Members', value: totalMembers, color: 'bg-red-100 text-red-700' },
     { icon: UserCheck, label: 'Active', value: activeMembers, color: 'bg-green-100 text-green-700' },
     { icon: User, label: 'Inactive', value: inactiveMembers, color: 'bg-gray-100 text-gray-700' },
     { icon: Baby, label: 'Children', value: totalChildren, color: 'bg-purple-100 text-purple-700' },
