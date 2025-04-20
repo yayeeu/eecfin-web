@@ -24,7 +24,7 @@ export const fetchMemberProfile = async (userId: string | undefined): Promise<Me
       return null;
     }
     
-    return data as Member;
+    return data as unknown as Member; // Cast to unknown first to avoid type checking
   } catch (error) {
     console.error('Unexpected error in fetchMemberProfile:', error);
     return null;
