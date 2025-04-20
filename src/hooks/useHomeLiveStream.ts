@@ -17,9 +17,12 @@ export const useHomeLiveStream = () => {
         setLoading(true);
         console.log('⚡ Home Live Stream: Fetching YouTube videos from edge function...');
         
+        // Explicitly pass the channel ID from environment
+        const channelId = import.meta.env.VITE_YOUTUBE_CHANNEL_ID;
+        
         // Call Supabase edge function to fetch videos
         const { data, error } = await supabase.functions.invoke('fetch-youtube-videos', {
-          body: {}  // Using default channel from environment
+          body: { channelId }
         });
         
         console.log('⚡ Home Live Stream: Full edge function response:', { data, error });
