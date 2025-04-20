@@ -16,7 +16,7 @@ const Home = () => {
         </div>
       </div>
       
-      {/* YouTube Section with Mission Statement */}
+      {/* Media Section with YouTube and Mission Statement */}
       <MediaSection />
 
       {/* Features Section */}
