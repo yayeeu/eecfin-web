@@ -7,7 +7,8 @@ import { fetchPlaylistItems } from './fetchPlaylistItems.ts';
 
 const GOOGLE_API_KEY = Deno.env.get('GOOGLE_API_KEY');
 const YOUTUBE_CHANNEL_ID = Deno.env.get('YOUTUBE_CHANNEL_ID');
-const SERMONS_PLAYLIST_ID = 'PLbVHz4urQBZlOM69HDFOaH0oR-Ql_7SpQ';
+// Updated to use the actual EECFIN sermons playlist ID
+const SERMONS_PLAYLIST_ID = 'PLI8Nt_ZL1WmJ5w7YGYAUtSyB7Vz1pIHnV';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -15,6 +16,8 @@ const corsHeaders = {
 };
 
 serve(async (req) => {
+  console.log("Edge function called: fetch-youtube-videos");
+  
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
@@ -62,11 +65,24 @@ serve(async (req) => {
   }
 
   try {
+    console.log(`Fetching videos for channel: ${channelId}`);
+    console.log(`Using sermons playlist ID: ${SERMONS_PLAYLIST_ID}`);
+    
     // Fetch both live streams, regular videos and sermon playlist items
-    const [channelContent, sermonPlaylistItems] = await Promise.all([
-      fetchLiveAndUploads(channelId, GOOGLE_API_KEY),
-      fetchPlaylistItems(SERMONS_PLAYLIST_ID, GOOGLE_API_KEY)
-    ]);
+    let channelContent, sermonPlaylistItems;
+    
+    try {
+      [channelContent, sermonPlaylistItems] = await Promise.all([
+        fetchLiveAndUploads(channelId, GOOGLE_API_KEY),
+        fetchPlaylistItems(SERMONS_PLAYLIST_ID, GOOGLE_API_KEY)
+      ]);
+      
+      console.log(`Successfully fetched ${sermonPlaylistItems.length} sermon playlist items`);
+      console.log(`Successfully fetched ${channelContent.videos.length} regular videos`);
+    } catch (error) {
+      console.error("Error fetching videos or playlist items:", error);
+      throw error;
+    }
 
     const { liveStream, videos } = channelContent;
     const isLive = !!liveStream;
@@ -90,6 +106,12 @@ serve(async (req) => {
       type: 'sermon'
     }));
 
+    console.log(`Returning ${formattedVideos.length} broadcasts and ${formattedSermons.length} sermons`);
+    
+    if (isLive) {
+      console.log(`Live stream detected: ${liveVideoId}`);
+    }
+
     return new Response(
       JSON.stringify({ 
         videos: formattedVideos,
@@ -106,6 +128,7 @@ serve(async (req) => {
     return new Response(
       JSON.stringify({ 
         error: "Unable to fetch videos from YouTube",
+        errorDetails: error.message,
         hasRealData: false,
         videos: getMockVideoData(),
         sermons: [],

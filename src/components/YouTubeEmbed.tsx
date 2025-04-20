@@ -89,8 +89,8 @@ const YouTubeEmbed: React.FC<YouTubeEmbedProps> = ({
 
   // If we have a specific video ID, embed that video
   if (loadedVideoId) {
-    // Append autoplay parameter for live videos
-    const embedParams = isLive ? '?autoplay=1&mute=1' : '';
+    // Append autoplay parameter for live videos and additional parameters for better error handling
+    const embedParams = isLive ? '?autoplay=1&mute=1&enablejsapi=1' : '?enablejsapi=1';
     
     return (
       <div className={`relative ${className || 'w-full h-0 pb-[56.25%]'}`}>
@@ -109,7 +109,7 @@ const YouTubeEmbed: React.FC<YouTubeEmbedProps> = ({
   return (
     <div className={`relative ${className || 'w-full h-0 pb-[56.25%]'}`}>
       <iframe 
-        src={`https://www.youtube.com/embed?listType=user_uploads&list=${channelId}`}
+        src={`https://www.youtube.com/embed?listType=user_uploads&list=${channelId}&enablejsapi=1`}
         title="YouTube video player"
         className="absolute top-0 left-0 w-full h-full rounded-lg shadow-lg"
         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"

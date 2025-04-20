@@ -39,6 +39,8 @@ export const useSermons = (channelId?: string) => {
         return;
       }
       
+      console.log("Edge function response:", data);
+      
       if (data.error) {
         console.warn("Edge function returned error:", data.error);
         setError(data.error);
