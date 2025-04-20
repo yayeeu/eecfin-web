@@ -14,12 +14,12 @@ export const useHomeLiveStream = () => {
         setLoading(true);
         
         // Call Supabase edge function to fetch videos
-        const { data, error } = await supabase.functions.invoke('fetch-youtube-videos', {
+        const { data, error: functionError } = await supabase.functions.invoke('fetch-youtube-videos', {
           body: {}  // Using default channel from environment
         });
         
-        if (error) {
-          console.error("Error calling edge function:", error);
+        if (functionError) {
+          console.error("Error calling edge function:", functionError);
           setError("Failed to load broadcast. Please try again later.");
           setLoading(false);
           return;
@@ -27,8 +27,9 @@ export const useHomeLiveStream = () => {
         
         console.log("Edge function response:", data);
         
+        // If the data contains an error but we got a 200 response
         if (data.error) {
-          console.error("Edge function returned error:", data.error);
+          console.warn("Edge function returned error:", data.error);
           setError(data.error);
           setLoading(false);
           return;
@@ -58,7 +59,17 @@ export const useHomeLiveStream = () => {
     };
 
     fetchLiveOrLatest();
-  }, []);
+    
+    // Add a retry mechanism if there's an error
+    const retryTimer = setTimeout(() => {
+      if (error) {
+        console.log("Retrying video fetch due to previous error");
+        fetchLiveOrLatest();
+      }
+    }, 5000); // Retry after 5 seconds if there was an error
+    
+    return () => clearTimeout(retryTimer);
+  }, [error]);
 
   return { videoId, isLive, loading, error };
 };
