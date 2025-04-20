@@ -70,10 +70,12 @@ const Sermons = () => {
         
         <div className="flex flex-col md:flex-row gap-8 mb-12">
           <div className="md:w-1/2">
-            {selectedVideo && (
+            {/* Only show the video if we have real data */}
+            {selectedVideo && hasRealData && (
               <LatestSermon videoId={selectedVideo} isLive={isLive} />
             )}
-            {!selectedVideo && !hasRealData && (
+            {/* Show error state instead of mock data */}
+            {(!selectedVideo || !hasRealData) && (
               <div className="flex flex-col items-center justify-center h-64 bg-gray-100 rounded-lg p-6">
                 <AlertTriangle className="h-12 w-12 text-amber-500 mb-4" />
                 <p className="text-center text-gray-600">
@@ -122,6 +124,7 @@ const Sermons = () => {
           </div>
         </div>
 
+        {/* Only show sermon library when we have real data */}
         {hasRealData && (
           <div id="sermon-library">
             <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'sermon' | 'broadcast')} className="w-full">

@@ -31,7 +31,8 @@ serve(async (req) => {
       JSON.stringify({ 
         error: 'Invalid request body',
         hasRealData: false,
-        videos: getMockVideoData() 
+        videos: [], 
+        sermons: []
       }),
       { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
@@ -45,7 +46,8 @@ serve(async (req) => {
       JSON.stringify({ 
         error: 'No YouTube channel ID configured',
         hasRealData: false,
-        videos: getMockVideoData() 
+        videos: [],
+        sermons: []
       }),
       { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
@@ -57,7 +59,8 @@ serve(async (req) => {
       JSON.stringify({ 
         error: 'YouTube API not configured',
         hasRealData: false,
-        videos: getMockVideoData() 
+        videos: [],
+        sermons: []
       }),
       { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
@@ -136,7 +139,7 @@ serve(async (req) => {
         error: "Unable to fetch videos from YouTube",
         errorDetails: error.message,
         hasRealData: false,
-        videos: getMockVideoData(),
+        videos: [],
         sermons: [],
         isLive: false,
         liveVideoId: null,

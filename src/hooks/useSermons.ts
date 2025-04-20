@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { YouTubeVideo } from '@/types/sermon.types';
 import { supabase } from '@/lib/supabaseClient';
@@ -50,18 +51,8 @@ export const useSermons = (channelId?: string) => {
       if (data.error) {
         console.warn("Edge function returned error:", data.error);
         setError(data.error);
-
-        if (data.videos && data.videos.length > 0) {
-          console.log('Using mock videos as fallback');
-          const fallbackVideos = filterLastNMonths(data.videos);
-          setVideos(fallbackVideos);
-          setHasRealData(false);
-          setSelectedVideo(fallbackVideos[0]?.id);
-          setError(null);
-        } else {
-          setHasRealData(false);
-        }
-
+        // Remove the fallback to mock data logic completely
+        setHasRealData(false);
         setLoading(false);
         return;
       }
