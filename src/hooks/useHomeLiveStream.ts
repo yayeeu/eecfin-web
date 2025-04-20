@@ -10,6 +10,9 @@ export const useHomeLiveStream = () => {
   const [error, setError] = useState<string | null>(null);
   const [retryCount, setRetryCount] = useState(0);
   const MAX_RETRIES = 3;
+  
+  // Mock video ID to use as ultimate fallback
+  const FALLBACK_VIDEO_ID = "6KfL9DbrO4I"; // A stable video ID to use if all else fails
 
   const fetchLiveOrLatest = useCallback(async () => {
     try {
@@ -22,6 +25,9 @@ export const useHomeLiveStream = () => {
       if (functionError) {
         console.error("Error calling edge function:", functionError);
         setError("Failed to load broadcast. Please try again later.");
+        // Ultimate fallback - use hardcoded video ID
+        setVideoId(FALLBACK_VIDEO_ID);
+        setIsLive(false);
         setLoading(false);
         return;
       }
@@ -44,6 +50,11 @@ export const useHomeLiveStream = () => {
           setIsLive(false);
           setVideoId(data.videos[0].id);
           setError(null);
+        } else {
+          // Ultimate fallback - use hardcoded video ID
+          console.log('Using hardcoded fallback video ID');
+          setVideoId(FALLBACK_VIDEO_ID);
+          setIsLive(false);
         }
         setLoading(false);
         return;
@@ -70,12 +81,16 @@ export const useHomeLiveStream = () => {
         setVideoId(data.videos[0].id);
         setError(null);
       } else {
-        console.log('No videos available');
-        setError("No videos available");
+        console.log('No videos available, using hardcoded fallback');
+        setIsLive(false);
+        setVideoId(FALLBACK_VIDEO_ID);
       }
     } catch (err) {
       console.error("Error in useHomeLiveStream hook:", err);
       setError("Failed to load broadcast. Please try again later.");
+      // Ultimate fallback - use hardcoded video ID
+      setVideoId(FALLBACK_VIDEO_ID);
+      setIsLive(false);
     } finally {
       setLoading(false);
     }
