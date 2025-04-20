@@ -9,9 +9,9 @@ import { useHomeLiveStream } from '@/hooks/useHomeLiveStream';
 import LiveIndicator from './LiveIndicator';
 
 const MediaSection = () => {
-  const { videoId, isLive, loading, error } = useHomeLiveStream();
+  const { videoId, isLive, loading, error, hasRealData } = useHomeLiveStream();
 
-  console.log("MediaSection rendering with:", { videoId, isLive, loading, error });
+  console.log("MediaSection rendering with:", { videoId, isLive, loading, error, hasRealData });
 
   return (
     <section className="py-10 bg-gradient-to-b from-white to-gray-50">
@@ -22,7 +22,7 @@ const MediaSection = () => {
             <div className="flex items-center mb-4">
               <Video className="mr-2 h-6 w-6 text-red-600" />
               <h2 className="section-title mb-0 mr-2">Live & Recent Broadcasts</h2>
-              <LiveIndicator isLive={isLive} />
+              {isLive && <LiveIndicator isLive={isLive} />}
             </div>
             
             {/* YouTube Embed */}
@@ -44,7 +44,7 @@ const MediaSection = () => {
                     </a>
                   </Button>
                 </div>
-              ) : (
+              ) : videoId ? (
                 <>
                   {isLive && (
                     <div className="absolute top-3 right-3 z-10">
@@ -52,12 +52,12 @@ const MediaSection = () => {
                     </div>
                   )}
                   <YouTubeEmbed 
-                    videoId={videoId || undefined} 
+                    videoId={videoId} 
                     isLive={isLive}
                     className="w-full h-full"
                   />
                 </>
-              )}
+              ) : null}
             </div>
             
             <div className="mt-4 flex justify-end">

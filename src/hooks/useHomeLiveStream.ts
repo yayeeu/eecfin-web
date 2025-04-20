@@ -1,12 +1,15 @@
 
 import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabaseClient';
+import { YouTubeVideo } from '@/types/sermon.types';
 
 export const useHomeLiveStream = () => {
   const [videoId, setVideoId] = useState<string | null>(null);
   const [isLive, setIsLive] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [hasRealData, setHasRealData] = useState(false);
+  const [videos, setVideos] = useState<YouTubeVideo[]>([]);
 
   useEffect(() => {
     const fetchLiveOrLatest = async () => {
@@ -22,7 +25,7 @@ export const useHomeLiveStream = () => {
         if (error) {
           console.error("Error calling edge function:", error);
           setError("Failed to load broadcast. Please try again later.");
-          setLoading(false);
+          setHasRealData(false);
           return;
         }
         
@@ -31,8 +34,16 @@ export const useHomeLiveStream = () => {
         if (data.error) {
           console.error("Edge function returned error:", data.error);
           setError(data.error);
-          setLoading(false);
+          setHasRealData(false);
           return;
+        }
+
+        // Set hasRealData flag
+        setHasRealData(data.hasRealData || false);
+        
+        // Store all videos
+        if (data.videos && data.videos.length > 0) {
+          setVideos(data.videos);
         }
         
         // If there's a live stream, show it
@@ -53,6 +64,7 @@ export const useHomeLiveStream = () => {
       } catch (err) {
         console.error("Error in useHomeLiveStream hook:", err);
         setError("Failed to load broadcast. Please try again later.");
+        setHasRealData(false);
       } finally {
         setLoading(false);
       }
@@ -61,5 +73,5 @@ export const useHomeLiveStream = () => {
     fetchLiveOrLatest();
   }, []);
 
-  return { videoId, isLive, loading, error };
+  return { videoId, isLive, loading, error, hasRealData, videos };
 };
