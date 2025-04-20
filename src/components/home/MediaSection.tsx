@@ -62,7 +62,7 @@ const MediaSection = () => {
             
             <div className="mt-4 flex justify-end">
               <Button asChild variant="outline" size="sm">
-                <Link to="/sermons">View All Sermons</Link>
+                <Link to="/sermons">View All Broadcasts</Link>
               </Button>
             </div>
           </div>
@@ -85,3 +85,4 @@ const MediaSection = () => {
 };
 
 export default MediaSection;
+
