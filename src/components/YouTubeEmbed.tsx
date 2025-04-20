@@ -25,7 +25,6 @@ const YouTubeEmbed: React.FC<YouTubeEmbedProps> = ({
       try {
         // If a direct videoId is provided, use it
         if (videoId) {
-          console.log("YouTubeEmbed: Using provided videoId:", videoId);
           setLoadedVideoId(videoId);
           setLoading(false);
           return;
@@ -33,19 +32,17 @@ const YouTubeEmbed: React.FC<YouTubeEmbedProps> = ({
 
         // Otherwise, try to get the latest video from the channel
         if (channelId) {
-          console.log("YouTubeEmbed: Using channel:", channelId);
           // In a real implementation, you would use the YouTube API to get the latest video
           // For now, we'll use the channel embed which shows latest content
           setLoading(false);
         } else {
-          console.log("YouTubeEmbed: No video or channel ID provided");
           setError("No video or channel ID provided");
           setLoading(false);
         }
       } catch (err) {
-        console.error("YouTube fetch error:", err);
         setError("Could not load the video");
         setLoading(false);
+        console.error("YouTube fetch error:", err);
       }
     };
 
@@ -89,16 +86,15 @@ const YouTubeEmbed: React.FC<YouTubeEmbedProps> = ({
 
   // If we have a specific video ID, embed that video
   if (loadedVideoId) {
-    console.log("YouTubeEmbed: Rendering iframe with videoId:", loadedVideoId);
     // Append autoplay parameter for live videos
     const embedParams = isLive ? '?autoplay=1&mute=1' : '';
     
     return (
-      <div className={`relative overflow-hidden ${className || 'w-full h-0 pb-[56.25%]'}`}>
+      <div className={`relative ${className || 'w-full h-0 pb-[56.25%]'}`}>
         <iframe 
           src={`https://www.youtube.com/embed/${loadedVideoId}${embedParams}`}
           title="YouTube video player"
-          className="absolute top-0 left-0 w-full h-full rounded-lg"
+          className="absolute top-0 left-0 w-full h-full rounded-lg shadow-lg"
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
           allowFullScreen
         ></iframe>
