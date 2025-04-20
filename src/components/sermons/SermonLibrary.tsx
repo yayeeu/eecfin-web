@@ -1,6 +1,5 @@
 
 import React from 'react';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
 import SermonGridView from './SermonGridView';
 import SermonDateView from './SermonDateView';
@@ -26,51 +25,63 @@ const SermonLibrary: React.FC<SermonLibraryProps> = ({
 }) => {
   return (
     <section>
-      <h2 className="section-title mb-6">Sermon Library</h2>
+      <div className="mb-6 flex justify-between items-center">
+        <h2 className="section-title">Video Library</h2>
+        
+        <div className="flex gap-4">
+          <div className="text-sm text-gray-500">
+            {currentVideos.length > 0 && (
+              <span>Showing {currentVideos.length} videos</span>
+            )}
+          </div>
+        </div>
+      </div>
       
-      <Tabs defaultValue="grid" className="mb-6">
-        <TabsList>
-          <TabsTrigger value="grid">Grid View</TabsTrigger>
-          <TabsTrigger value="date">Date View</TabsTrigger>
-        </TabsList>
-        
-        <TabsContent value="grid">
-          <SermonGridView videos={currentVideos} onVideoClick={onVideoClick} />
-          
-          {totalPages > 1 && (
-            <Pagination>
-              <PaginationContent>
-                {currentPage > 1 && (
-                  <PaginationItem>
-                    <PaginationPrevious onClick={() => onPageChange(currentPage - 1)} />
-                  </PaginationItem>
-                )}
-                
-                {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                  <PaginationItem key={page}>
-                    <PaginationLink
-                      isActive={currentPage === page}
-                      onClick={() => onPageChange(page)}
-                    >
-                      {page}
-                    </PaginationLink>
-                  </PaginationItem>
-                ))}
-                
-                {currentPage < totalPages && (
-                  <PaginationItem>
-                    <PaginationNext onClick={() => onPageChange(currentPage + 1)} />
-                  </PaginationItem>
-                )}
-              </PaginationContent>
-            </Pagination>
-          )}
-        </TabsContent>
-        
-        <TabsContent value="date">
-          <SermonDateView videosByDate={videosByDate} onVideoClick={onVideoClick} />
-        </TabsContent>
-      </Tabs>
+      <SermonGridView videos={currentVideos} onVideoClick={onVideoClick} />
+      
+      {totalPages > 1 && (
+        <Pagination className="mt-8">
+          <PaginationContent>
+            {currentPage > 1 && (
+              <PaginationItem>
+                <PaginationPrevious onClick={() => onPageChange(currentPage - 1)} />
+              </PaginationItem>
+            )}
+            
+            {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => {
+              // If there are more than 5 pages, show ellipsis
+              if (totalPages > 5) {
+                if (currentPage <= 3) {
+                  // Show first 5 pages
+                  return i + 1;
+                } else if (currentPage >= totalPages - 2) {
+                  // Show last 5 pages
+                  return totalPages - 4 + i;
+                } else {
+                  // Show 2 pages before and after current page
+                  return currentPage - 2 + i;
+                }
+              }
+              return i + 1;
+            }).map((page) => (
+              <PaginationItem key={page}>
+                <PaginationLink
+                  isActive={currentPage === page}
+                  onClick={() => onPageChange(page)}
+                >
+                  {page}
+                </PaginationLink>
+              </PaginationItem>
+            ))}
+            
+            {currentPage < totalPages && (
+              <PaginationItem>
+                <PaginationNext onClick={() => onPageChange(currentPage + 1)} />
+              </PaginationItem>
+            )}
+          </PaginationContent>
+        </Pagination>
+      )}
     </section>
   );
 };

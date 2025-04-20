@@ -69,17 +69,18 @@ export const useSermons = (channelId?: string) => {
       if (data.sermons) {
         console.log(`Received ${data.sermons.length} sermons from edge function`);
         setSermons(data.sermons);
+
+        // Set sermons as selected video by default if available
+        if (data.sermons.length > 0 && !data.isLive) {
+          setSelectedVideo(data.sermons[0].id);
+        }
       }
       
       setError(null);
       
-      if (!data.isLive) {
-        const defaultVideo = activeTab === 'sermon' 
-          ? data.sermons?.[0]?.id 
-          : data.videos?.[0]?.id;
-        setSelectedVideo(defaultVideo);
-      } else if (data.liveVideoId) {
+      if (data.isLive) {
         setSelectedVideo(data.liveVideoId);
+        setActiveTab('broadcast'); // Switch to broadcast tab if there's a live stream
       }
       
     } catch (err) {
@@ -89,7 +90,12 @@ export const useSermons = (channelId?: string) => {
     } finally {
       setLoading(false);
     }
-  }, [channelId, activeTab]);
+  }, [channelId]);
+
+  // Reset page when changing tabs
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [activeTab]);
 
   useEffect(() => {
     fetchVideos();

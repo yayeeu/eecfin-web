@@ -14,6 +14,8 @@ const Sermons = () => {
   const { toast } = useToast();
   
   const { 
+    videos,
+    sermons,
     currentItems,
     itemsByDate,
     loading,
@@ -122,33 +124,39 @@ const Sermons = () => {
 
         {hasRealData && (
           <div id="sermon-library">
-            <Tabs defaultValue="sermon" className="w-full" onValueChange={(value) => setActiveTab(value as 'sermon' | 'broadcast')}>
-              <TabsList>
+            <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'sermon' | 'broadcast')} className="w-full">
+              <TabsList className="mb-6">
                 <TabsTrigger value="sermon">Sermons</TabsTrigger>
                 <TabsTrigger value="broadcast">Broadcasts</TabsTrigger>
               </TabsList>
 
-              <TabsContent value="sermon" className="mt-6">
+              <TabsContent value="sermon">
                 <SermonLibrary 
-                  videos={[]}
+                  videos={sermons}
                   currentVideos={currentItems}
                   videosByDate={itemsByDate}
                   currentPage={currentPage}
                   totalPages={totalPages}
                   onPageChange={handlePageChange}
-                  onVideoClick={openVideoOnYouTube}
+                  onVideoClick={videoId => {
+                    setSelectedVideo(videoId);
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }}
                 />
               </TabsContent>
 
-              <TabsContent value="broadcast" className="mt-6">
+              <TabsContent value="broadcast">
                 <SermonLibrary 
-                  videos={[]}
+                  videos={videos}
                   currentVideos={currentItems}
                   videosByDate={itemsByDate}
                   currentPage={currentPage}
                   totalPages={totalPages}
                   onPageChange={handlePageChange}
-                  onVideoClick={openVideoOnYouTube}
+                  onVideoClick={videoId => {
+                    setSelectedVideo(videoId);
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }}
                 />
               </TabsContent>
             </Tabs>
