@@ -29,11 +29,10 @@ serve(async (req) => {
 
   // Use channel ID from params if provided, otherwise fall back to environment variable
   const channelId = params.channelId || YOUTUBE_CHANNEL_ID;
-  const checkLive = params.checkLive !== undefined ? params.checkLive : true;
 
   if (!channelId) {
     return new Response(
-      JSON.stringify({ error: 'No YouTube channel ID configured', hasRealData: false }),
+      JSON.stringify({ error: 'No YouTube channel ID configured' }),
       { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   }
@@ -41,60 +40,56 @@ serve(async (req) => {
   if (!GOOGLE_API_KEY) {
     console.error('GOOGLE_API_KEY not configured in environment variables');
     return new Response(
-      JSON.stringify({ 
-        error: 'YouTube API not configured', 
-        hasRealData: false 
-      }),
+      JSON.stringify({ error: 'YouTube API not configured' }),
       { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   }
 
-  console.log(`Fetching YouTube videos for channel: ${channelId}`);
-
   try {
+    // First check for live streams
+    console.log('Checking for live streams...');
+    const liveResponse = await fetch(
+      `https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=${channelId}&eventType=live&type=video&key=${GOOGLE_API_KEY}`
+    );
+    
+    if (!liveResponse.ok) {
+      console.error(`YouTube API error (live check): ${liveResponse.status}`);
+      throw new Error(`YouTube API error (live check): ${liveResponse.status}`);
+    }
+    
+    const liveData = await liveResponse.json();
+    console.log('Live stream response:', liveData);
+    
     let isLive = false;
     let liveVideoId = null;
-
-    // Check for live streams if requested
-    if (checkLive) {
-      console.log('Checking for live streams...');
-      const liveResponse = await fetch(
-        `https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=${channelId}&eventType=live&type=video&key=${GOOGLE_API_KEY}`
-      );
-      
-      if (!liveResponse.ok) {
-        throw new Error(`YouTube API error (live check): ${liveResponse.status} ${liveResponse.statusText}`);
-      }
-      
-      const liveData = await liveResponse.json();
-      
-      if (liveData.items && liveData.items.length > 0) {
-        console.log('Live broadcast found');
-        isLive = true;
-        liveVideoId = liveData.items[0].id.videoId;
-      }
+    
+    if (liveData.items && liveData.items.length > 0) {
+      console.log('Found live stream');
+      isLive = true;
+      liveVideoId = liveData.items[0].id.videoId;
     }
 
-    // Fetch videos from channel
-    console.log('Fetching videos from channel...');
+    // Fetch latest videos regardless of live status
+    console.log('Fetching latest videos...');
     const response = await fetch(
       `https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=${channelId}&maxResults=50&order=date&type=video&key=${GOOGLE_API_KEY}`
     );
     
     if (!response.ok) {
-      throw new Error(`YouTube API error (video fetch): ${response.status} ${response.statusText}`);
+      console.error(`YouTube API error (video fetch): ${response.status}`);
+      throw new Error(`YouTube API error (video fetch): ${response.status}`);
     }
     
     const data = await response.json();
+    console.log(`Fetched ${data.items?.length || 0} videos`);
     
     if (!data.items || data.items.length === 0) {
-      console.log('No videos found for this channel');
       return new Response(
         JSON.stringify({ 
           videos: [], 
-          hasRealData: false,
-          isLive,
-          liveVideoId
+          isLive: false,
+          liveVideoId: null,
+          hasRealData: true 
         }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
@@ -107,24 +102,19 @@ serve(async (req) => {
       thumbnailUrl: item.snippet.thumbnails.medium.url
     }));
     
-    console.log(`Fetched ${videos.length} videos from YouTube`);
-    
     return new Response(
       JSON.stringify({ 
         videos, 
-        hasRealData: true,
         isLive,
-        liveVideoId
+        liveVideoId,
+        hasRealData: true 
       }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   } catch (error) {
     console.error("Error fetching YouTube videos:", error);
     return new Response(
-      JSON.stringify({ 
-        error: "Failed to load videos. Please try again later.",
-        hasRealData: false
-      }),
+      JSON.stringify({ error: error.message || "Failed to load videos" }),
       { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   }
