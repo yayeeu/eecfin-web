@@ -12,6 +12,7 @@ export const useHomeLiveStream = () => {
     const fetchLiveOrLatest = async () => {
       try {
         setLoading(true);
+        console.log('Fetching YouTube videos from edge function...');
         
         // Call Supabase edge function to fetch videos
         const { data, error } = await supabase.functions.invoke('fetch-youtube-videos', {
@@ -36,7 +37,7 @@ export const useHomeLiveStream = () => {
         
         // If there's a live stream, show it
         if (data.isLive && data.liveVideoId) {
-          console.log('Live stream found, showing live broadcast');
+          console.log('Live stream found, showing live broadcast:', data.liveVideoId);
           setIsLive(true);
           setVideoId(data.liveVideoId);
         } 
