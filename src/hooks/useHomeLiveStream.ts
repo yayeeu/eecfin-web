@@ -15,24 +15,24 @@ export const useHomeLiveStream = () => {
     const fetchLiveOrLatest = async () => {
       try {
         setLoading(true);
-        console.log('Fetching YouTube videos from edge function...');
+        console.log('⚡ Home Live Stream: Fetching YouTube videos from edge function...');
         
         // Call Supabase edge function to fetch videos
         const { data, error } = await supabase.functions.invoke('fetch-youtube-videos', {
           body: {}  // Using default channel from environment
         });
         
+        console.log('⚡ Home Live Stream: Full edge function response:', { data, error });
+        
         if (error) {
-          console.error("Error calling edge function:", error);
+          console.error("⚡ Home Live Stream: Error calling edge function:", error);
           setError("Failed to load broadcast. Please try again later.");
           setHasRealData(false);
           return;
         }
         
-        console.log("Edge function response:", data);
-        
         if (data.error) {
-          console.error("Edge function returned error:", data.error);
+          console.error("⚡ Home Live Stream: Edge function returned error:", data.error);
           setError(data.error);
           setHasRealData(false);
           return;
@@ -48,21 +48,21 @@ export const useHomeLiveStream = () => {
         
         // If there's a live stream, show it
         if (data.isLive && data.liveVideoId) {
-          console.log('Live stream found, showing live broadcast:', data.liveVideoId);
+          console.log('⚡ Home Live Stream: Live stream found, showing live broadcast:', data.liveVideoId);
           setIsLive(true);
           setVideoId(data.liveVideoId);
         } 
         // Otherwise show the most recent video
         else if (data.videos && data.videos.length > 0) {
-          console.log('No live stream, showing latest video:', data.videos[0].id);
+          console.log('⚡ Home Live Stream: No live stream, showing latest video:', data.videos[0].id);
           setIsLive(false);
           setVideoId(data.videos[0].id);
         } else {
-          console.log('No videos available');
+          console.log('⚡ Home Live Stream: No videos available');
           setError("No videos available");
         }
       } catch (err) {
-        console.error("Error in useHomeLiveStream hook:", err);
+        console.error("⚡ Home Live Stream: Error in useHomeLiveStream hook:", err);
         setError("Failed to load broadcast. Please try again later.");
         setHasRealData(false);
       } finally {
@@ -75,3 +75,4 @@ export const useHomeLiveStream = () => {
 
   return { videoId, isLive, loading, error, hasRealData, videos };
 };
+
