@@ -25,6 +25,7 @@ const YouTubeEmbed: React.FC<YouTubeEmbedProps> = ({
       try {
         // If a direct videoId is provided, use it
         if (videoId) {
+          console.log("YouTubeEmbed: Using provided videoId:", videoId);
           setLoadedVideoId(videoId);
           setLoading(false);
           return;
@@ -32,17 +33,19 @@ const YouTubeEmbed: React.FC<YouTubeEmbedProps> = ({
 
         // Otherwise, try to get the latest video from the channel
         if (channelId) {
+          console.log("YouTubeEmbed: Using channel:", channelId);
           // In a real implementation, you would use the YouTube API to get the latest video
           // For now, we'll use the channel embed which shows latest content
           setLoading(false);
         } else {
+          console.log("YouTubeEmbed: No video or channel ID provided");
           setError("No video or channel ID provided");
           setLoading(false);
         }
       } catch (err) {
+        console.error("YouTube fetch error:", err);
         setError("Could not load the video");
         setLoading(false);
-        console.error("YouTube fetch error:", err);
       }
     };
 

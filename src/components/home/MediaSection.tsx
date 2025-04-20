@@ -11,6 +11,8 @@ import LiveIndicator from './LiveIndicator';
 const MediaSection = () => {
   const { videoId, isLive, loading, error } = useHomeLiveStream();
 
+  console.log("MediaSection rendering with:", { videoId, isLive, loading, error });
+
   return (
     <section className="py-10 bg-gradient-to-b from-white to-gray-50">
       <div className="container-custom">

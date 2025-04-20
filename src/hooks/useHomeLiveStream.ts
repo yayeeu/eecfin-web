@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 
@@ -24,6 +25,8 @@ export const useHomeLiveStream = () => {
           return;
         }
         
+        console.log("Edge function response:", data);
+        
         if (data.error) {
           console.error("Edge function returned error:", data.error);
           setError(data.error);
@@ -39,10 +42,11 @@ export const useHomeLiveStream = () => {
         } 
         // Otherwise show the most recent video
         else if (data.videos && data.videos.length > 0) {
-          console.log('No live stream, showing latest video');
+          console.log('No live stream, showing latest video:', data.videos[0].id);
           setIsLive(false);
           setVideoId(data.videos[0].id);
         } else {
+          console.log('No videos available');
           setError("No videos available");
         }
       } catch (err) {
