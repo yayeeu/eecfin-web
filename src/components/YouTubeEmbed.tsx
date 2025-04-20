@@ -94,11 +94,11 @@ const YouTubeEmbed: React.FC<YouTubeEmbedProps> = ({
     const embedParams = isLive ? '?autoplay=1&mute=1' : '';
     
     return (
-      <div className={`relative ${className || 'w-full h-0 pb-[56.25%]'}`}>
+      <div className={`relative overflow-hidden ${className || 'w-full h-0 pb-[56.25%]'}`}>
         <iframe 
           src={`https://www.youtube.com/embed/${loadedVideoId}${embedParams}`}
           title="YouTube video player"
-          className="absolute top-0 left-0 w-full h-full rounded-lg shadow-lg"
+          className="absolute top-0 left-0 w-full h-full rounded-lg"
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
           allowFullScreen
         ></iframe>
