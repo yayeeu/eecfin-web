@@ -28,11 +28,11 @@ const MediaSection = () => {
             {/* YouTube Embed */}
             <div className="h-full bg-white rounded-lg shadow-md overflow-hidden flex-1 relative">
               {loading ? (
-                <div className="flex items-center justify-center h-full p-6">
+                <div className="flex items-center justify-center h-full p-6 min-h-[250px]">
                   <div className="animate-pulse text-eecfin-navy">Loading broadcast...</div>
                 </div>
               ) : error ? (
-                <div className="flex flex-col items-center justify-center h-full p-6">
+                <div className="flex flex-col items-center justify-center h-full p-6 min-h-[250px]">
                   <p className="text-center text-gray-600 mb-4">{error}</p>
                   <Button asChild variant="outline">
                     <a 
@@ -45,7 +45,7 @@ const MediaSection = () => {
                   </Button>
                 </div>
               ) : videoId ? (
-                <>
+                <div className="w-full h-full min-h-[250px]">
                   {isLive && (
                     <div className="absolute top-3 right-3 z-10">
                       <LiveIndicator isLive={isLive} />
@@ -56,8 +56,21 @@ const MediaSection = () => {
                     isLive={isLive}
                     className="w-full h-full"
                   />
-                </>
-              ) : null}
+                </div>
+              ) : (
+                <div className="flex flex-col items-center justify-center h-full p-6 min-h-[250px]">
+                  <p className="text-center text-gray-600 mb-4">No videos available</p>
+                  <Button asChild variant="outline">
+                    <a 
+                      href="https://www.youtube.com/@eecfin" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                    >
+                      Visit Our YouTube Channel
+                    </a>
+                  </Button>
+                </div>
+              )}
             </div>
             
             <div className="mt-4 flex justify-end">

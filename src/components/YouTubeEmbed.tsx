@@ -89,6 +89,7 @@ const YouTubeEmbed: React.FC<YouTubeEmbedProps> = ({
 
   // If we have a specific video ID, embed that video
   if (loadedVideoId) {
+    console.log("YouTubeEmbed: Rendering iframe with videoId:", loadedVideoId);
     // Append autoplay parameter for live videos
     const embedParams = isLive ? '?autoplay=1&mute=1' : '';
     
