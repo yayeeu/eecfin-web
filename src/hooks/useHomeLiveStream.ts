@@ -1,5 +1,4 @@
-
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 
 export const useHomeLiveStream = () => {
@@ -7,69 +6,83 @@ export const useHomeLiveStream = () => {
   const [isLive, setIsLive] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [retryCount, setRetryCount] = useState(0);
+  const MAX_RETRIES = 3;
 
-  useEffect(() => {
-    const fetchLiveOrLatest = async () => {
-      try {
-        setLoading(true);
+  const fetchLiveOrLatest = useCallback(async () => {
+    try {
+      setLoading(true);
+      
+      // Call Supabase edge function to fetch videos
+      const { data, error: functionError } = await supabase.functions.invoke('fetch-youtube-videos', {
+        body: {}  // Using default channel from environment
+      });
+      
+      if (functionError) {
+        console.error("Error calling edge function:", functionError);
+        setError("Failed to load broadcast. Please try again later.");
+        setLoading(false);
+        return;
+      }
+      
+      console.log("Edge function response:", data);
+      
+      // If the data contains an error but we got a 200 response
+      if (data.error) {
+        console.warn("Edge function returned error:", data.error);
+        setError(data.error);
         
-        // Call Supabase edge function to fetch videos
-        const { data, error: functionError } = await supabase.functions.invoke('fetch-youtube-videos', {
-          body: {}  // Using default channel from environment
-        });
-        
-        if (functionError) {
-          console.error("Error calling edge function:", functionError);
-          setError("Failed to load broadcast. Please try again later.");
-          setLoading(false);
-          return;
-        }
-        
-        console.log("Edge function response:", data);
-        
-        // If the data contains an error but we got a 200 response
-        if (data.error) {
-          console.warn("Edge function returned error:", data.error);
-          setError(data.error);
-          setLoading(false);
-          return;
-        }
-        
-        // If there's a live stream, show it
-        if (data.isLive && data.liveVideoId) {
-          console.log('Live stream found, showing live broadcast');
-          setIsLive(true);
-          setVideoId(data.liveVideoId);
-        } 
-        // Otherwise show the most recent video
-        else if (data.videos && data.videos.length > 0) {
-          console.log('No live stream, showing latest video:', data.videos[0].id);
+        // If we have mock videos, we can still show them
+        if (data.videos && data.videos.length > 0) {
+          console.log('Using mock videos as fallback');
           setIsLive(false);
           setVideoId(data.videos[0].id);
-        } else {
-          console.log('No videos available');
-          setError("No videos available");
+          setError(null); // Clear error if we have fallback videos
         }
-      } catch (err) {
-        console.error("Error in useHomeLiveStream hook:", err);
-        setError("Failed to load broadcast. Please try again later.");
-      } finally {
+        
         setLoading(false);
+        return;
       }
-    };
+      
+      // If there's a live stream, show it
+      if (data.isLive && data.liveVideoId) {
+        console.log('Live stream found, showing live broadcast');
+        setIsLive(true);
+        setVideoId(data.liveVideoId);
+        setError(null);
+      } 
+      // Otherwise show the most recent video
+      else if (data.videos && data.videos.length > 0) {
+        console.log('No live stream, showing latest video:', data.videos[0].id);
+        setIsLive(false);
+        setVideoId(data.videos[0].id);
+        setError(null);
+      } else {
+        console.log('No videos available');
+        setError("No videos available");
+      }
+    } catch (err) {
+      console.error("Error in useHomeLiveStream hook:", err);
+      setError("Failed to load broadcast. Please try again later.");
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
+  useEffect(() => {
     fetchLiveOrLatest();
     
-    // Add a retry mechanism if there's an error
+    // Add a retry mechanism for errors
     const retryTimer = setTimeout(() => {
-      if (error) {
-        console.log("Retrying video fetch due to previous error");
+      if (error && retryCount < MAX_RETRIES) {
+        console.log(`Retrying video fetch (attempt ${retryCount + 1} of ${MAX_RETRIES})`);
+        setRetryCount(prev => prev + 1);
         fetchLiveOrLatest();
       }
-    }, 5000); // Retry after 5 seconds if there was an error
+    }, 5000); // Retry after 5 seconds
     
     return () => clearTimeout(retryTimer);
-  }, [error]);
+  }, [error, retryCount, fetchLiveOrLatest]);
 
   return { videoId, isLive, loading, error };
 };
