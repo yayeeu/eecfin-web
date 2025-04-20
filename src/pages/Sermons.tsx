@@ -8,24 +8,27 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { MessageSquareText, Youtube, AlertTriangle } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const Sermons = () => {
   const { toast } = useToast();
   
   const { 
-    currentVideos, 
-    videosByDate, 
-    loading, 
-    error, 
-    selectedVideo, 
+    currentItems,
+    itemsByDate,
+    loading,
+    error,
+    selectedVideo,
     setSelectedVideo,
-    currentPage, 
-    totalPages, 
+    currentPage,
+    totalPages,
     handlePageChange,
     isLive,
     liveVideoId,
-    hasRealData
-  } = useSermons(); // No longer passing channel ID here
+    hasRealData,
+    activeTab,
+    setActiveTab
+  } = useSermons();
 
   useEffect(() => {
     if (isLive) {
@@ -64,7 +67,6 @@ const Sermons = () => {
         <h1 className="page-title">Sermons</h1>
         
         <div className="flex flex-col md:flex-row gap-8 mb-12">
-          {/* Featured Video - Using a smaller size */}
           <div className="md:w-1/2">
             {selectedVideo && (
               <LatestSermon videoId={selectedVideo} isLive={isLive} />
@@ -79,7 +81,6 @@ const Sermons = () => {
             )}
           </div>
 
-          {/* EECFIN Media Section - Moved from home page */}
           <div className="md:w-1/2">
             <Card className="h-full bg-gradient-to-br from-eecfin-navy/95 to-eecfin-navy shadow-lg border-0">
               <CardHeader className="pb-2">
@@ -119,18 +120,38 @@ const Sermons = () => {
           </div>
         </div>
 
-        {/* Video Library - Only show if we have real data */}
         {hasRealData && (
           <div id="sermon-library">
-            <SermonLibrary 
-              videos={[]} // Not used in component but keeping for type consistency
-              currentVideos={currentVideos}
-              videosByDate={videosByDate}
-              currentPage={currentPage}
-              totalPages={totalPages}
-              onPageChange={handlePageChange}
-              onVideoClick={openVideoOnYouTube}
-            />
+            <Tabs defaultValue="sermon" className="w-full" onValueChange={(value) => setActiveTab(value as 'sermon' | 'broadcast')}>
+              <TabsList>
+                <TabsTrigger value="sermon">Sermons</TabsTrigger>
+                <TabsTrigger value="broadcast">Broadcasts</TabsTrigger>
+              </TabsList>
+
+              <TabsContent value="sermon" className="mt-6">
+                <SermonLibrary 
+                  videos={[]}
+                  currentVideos={currentItems}
+                  videosByDate={itemsByDate}
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  onPageChange={handlePageChange}
+                  onVideoClick={openVideoOnYouTube}
+                />
+              </TabsContent>
+
+              <TabsContent value="broadcast" className="mt-6">
+                <SermonLibrary 
+                  videos={[]}
+                  currentVideos={currentItems}
+                  videosByDate={itemsByDate}
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  onPageChange={handlePageChange}
+                  onVideoClick={openVideoOnYouTube}
+                />
+              </TabsContent>
+            </Tabs>
           </div>
         )}
       </div>

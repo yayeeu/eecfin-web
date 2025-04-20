@@ -3,8 +3,11 @@ import { useState, useEffect, useMemo, useCallback } from 'react';
 import { YouTubeVideo } from '@/types/sermon.types';
 import { supabase } from '@/lib/supabaseClient';
 
+export type VideoType = 'sermon' | 'broadcast';
+
 export const useSermons = (channelId?: string) => {
   const [videos, setVideos] = useState<YouTubeVideo[]>([]);
+  const [sermons, setSermons] = useState<YouTubeVideo[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedVideo, setSelectedVideo] = useState<string | null>(null);
@@ -12,6 +15,7 @@ export const useSermons = (channelId?: string) => {
   const [isLive, setIsLive] = useState(false);
   const [liveVideoId, setLiveVideoId] = useState<string | null>(null);
   const [hasRealData, setHasRealData] = useState(false);
+  const [activeTab, setActiveTab] = useState<VideoType>('sermon');
   const [retryCount, setRetryCount] = useState(0);
   const MAX_RETRIES = 3;
   const videosPerPage = 8;
@@ -23,7 +27,6 @@ export const useSermons = (channelId?: string) => {
       const requestBody = channelId ? { channelId } : {};
       console.log('Fetching videos from edge function', requestBody);
       
-      // Call Supabase edge function to fetch videos
       const { data, error } = await supabase.functions.invoke('fetch-youtube-videos', {
         body: requestBody
       });
@@ -36,20 +39,15 @@ export const useSermons = (channelId?: string) => {
         return;
       }
       
-      console.log('Edge function response:', data);
-      
       if (data.error) {
         console.warn("Edge function returned error:", data.error);
         setError(data.error);
         
-        // If we have mock videos from the fallback, still show them
         if (data.videos && data.videos.length > 0) {
           console.log('Using mock videos as fallback');
           setVideos(data.videos);
-          setHasRealData(false); // They're not real API data
+          setHasRealData(false);
           setSelectedVideo(data.videos[0].id);
-          
-          // We're showing useful content, so clear the error
           setError(null);
         } else {
           setHasRealData(false);
@@ -59,32 +57,31 @@ export const useSermons = (channelId?: string) => {
         return;
       }
       
-      // Set live status
       setIsLive(data.isLive || false);
       setLiveVideoId(data.liveVideoId || null);
-      
-      // Set hasRealData flag
       setHasRealData(data.hasRealData || false);
       
-      // Set videos
-      if (data.videos && data.videos.length > 0) {
-        console.log(`Received ${data.videos.length} videos from edge function`);
+      if (data.videos) {
+        console.log(`Received ${data.videos.length} broadcasts from edge function`);
         setVideos(data.videos);
-        setError(null);
-        
-        // Set the most recent video as the selected video if not live
-        if (!data.isLive) {
-          setSelectedVideo(data.videos[0].id);
-        } else if (data.liveVideoId) {
-          setSelectedVideo(data.liveVideoId);
-        }
-      } else {
-        console.log('No videos returned from edge function');
-        setVideos([]);
-        if (!data.error) {
-          setError("No videos available at this time");
-        }
       }
+      
+      if (data.sermons) {
+        console.log(`Received ${data.sermons.length} sermons from edge function`);
+        setSermons(data.sermons);
+      }
+      
+      setError(null);
+      
+      if (!data.isLive) {
+        const defaultVideo = activeTab === 'sermon' 
+          ? data.sermons?.[0]?.id 
+          : data.videos?.[0]?.id;
+        setSelectedVideo(defaultVideo);
+      } else if (data.liveVideoId) {
+        setSelectedVideo(data.liveVideoId);
+      }
+      
     } catch (err) {
       console.error("Error in useSermons hook:", err);
       setError("Failed to load videos. Please try again later.");
@@ -92,32 +89,40 @@ export const useSermons = (channelId?: string) => {
     } finally {
       setLoading(false);
     }
-  }, [channelId]);
-  
+  }, [channelId, activeTab]);
+
   useEffect(() => {
     fetchVideos();
     
-    // Add a retry mechanism for errors
     const retryTimer = setTimeout(() => {
       if (error && retryCount < MAX_RETRIES) {
         console.log(`Retrying sermon videos fetch (attempt ${retryCount + 1} of ${MAX_RETRIES})`);
         setRetryCount(prev => prev + 1);
         fetchVideos();
       }
-    }, 5000); // Retry after 5 seconds
+    }, 5000);
     
     return () => clearTimeout(retryTimer);
   }, [error, retryCount, fetchVideos]);
 
-  // Calculate pagination
-  const indexOfLastVideo = currentPage * videosPerPage;
-  const indexOfFirstVideo = indexOfLastVideo - videosPerPage;
-  const currentVideos = videos.slice(indexOfFirstVideo, indexOfLastVideo);
-  const totalPages = Math.ceil(videos.length / videosPerPage);
+  // Get current videos based on active tab and pagination
+  const currentItems = useMemo(() => {
+    const items = activeTab === 'sermon' ? sermons : videos;
+    const indexOfLastVideo = currentPage * videosPerPage;
+    const indexOfFirstVideo = indexOfLastVideo - videosPerPage;
+    return items.slice(indexOfFirstVideo, indexOfLastVideo);
+  }, [activeTab, videos, sermons, currentPage]);
 
-  // Group videos by month and year for date-based navigation
-  const videosByDate = useMemo(() => {
-    return videos.reduce((acc, video) => {
+  // Calculate total pages
+  const totalPages = useMemo(() => {
+    const items = activeTab === 'sermon' ? sermons : videos;
+    return Math.ceil(items.length / videosPerPage);
+  }, [activeTab, videos, sermons]);
+
+  // Group videos by month and year
+  const itemsByDate = useMemo(() => {
+    const items = activeTab === 'sermon' ? sermons : videos;
+    return items.reduce((acc, video) => {
       const date = new Date(video.publishedAt);
       const monthYear = `${date.toLocaleString('default', { month: 'long' })} ${date.getFullYear()}`;
       
@@ -128,7 +133,7 @@ export const useSermons = (channelId?: string) => {
       acc[monthYear].push(video);
       return acc;
     }, {} as Record<string, YouTubeVideo[]>);
-  }, [videos]);
+  }, [activeTab, videos, sermons]);
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
@@ -137,8 +142,9 @@ export const useSermons = (channelId?: string) => {
 
   return {
     videos,
-    currentVideos,
-    videosByDate,
+    sermons,
+    currentItems,
+    itemsByDate,
     loading,
     error,
     selectedVideo,
@@ -148,6 +154,8 @@ export const useSermons = (channelId?: string) => {
     handlePageChange,
     isLive,
     liveVideoId,
-    hasRealData
+    hasRealData,
+    activeTab,
+    setActiveTab
   };
 };

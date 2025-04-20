@@ -1,11 +1,8 @@
-
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
 const GOOGLE_API_KEY = Deno.env.get('GOOGLE_API_KEY');
 const YOUTUBE_CHANNEL_ID = Deno.env.get('YOUTUBE_CHANNEL_ID');
-
-// Maximum number of retries for API calls
-const MAX_RETRIES = 2;
+const SERMONS_PLAYLIST_ID = 'PLbVHz4urQBZlOM69HDFOaH0oR-Ql_7SpQ'; // ስብከቶች playlist ID
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -13,7 +10,7 @@ const corsHeaders = {
 };
 
 // Helper function to implement retries with exponential backoff
-async function fetchWithRetry(url: string, options = {}, retries = MAX_RETRIES) {
+async function fetchWithRetry(url: string, options = {}, retries = 2) {
   try {
     const response = await fetch(url, options);
     
@@ -27,7 +24,7 @@ async function fetchWithRetry(url: string, options = {}, retries = MAX_RETRIES) 
     }
     
     // Exponential backoff delay (500ms, 1000ms, 2000ms, etc.)
-    const delay = Math.pow(2, MAX_RETRIES - retries) * 500;
+    const delay = Math.pow(2, 2 - retries) * 500;
     console.log(`Retrying in ${delay}ms... (${retries} retries left)`);
     
     // Wait for the delay
@@ -41,7 +38,7 @@ async function fetchWithRetry(url: string, options = {}, retries = MAX_RETRIES) 
     }
     
     // If it's a network error, retry
-    const delay = Math.pow(2, MAX_RETRIES - retries) * 500;
+    const delay = Math.pow(2, 2 - retries) * 500;
     console.log(`Network error. Retrying in ${delay}ms... (${retries} retries left)`);
     await new Promise(resolve => setTimeout(resolve, delay));
     
@@ -49,7 +46,7 @@ async function fetchWithRetry(url: string, options = {}, retries = MAX_RETRIES) 
   }
 }
 
-// Mock data to return when API calls fail (for development/backup)
+// Mock data to return when API calls fail
 const getMockVideoData = () => {
   return [
     {
@@ -67,13 +64,37 @@ const getMockVideoData = () => {
   ];
 };
 
+async function fetchLiveAndUploads(channelId: string) {
+  // Check for live streams
+  const liveUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=${channelId}&eventType=live&type=video&key=${GOOGLE_API_KEY}`;
+  const liveResponse = await fetchWithRetry(liveUrl);
+  const liveData = await liveResponse.json();
+
+  // Fetch regular videos
+  const videosUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=${channelId}&maxResults=50&order=date&type=video&key=${GOOGLE_API_KEY}`;
+  const response = await fetchWithRetry(videosUrl);
+  const data = await response.json();
+
+  return {
+    liveStream: liveData.items?.[0],
+    videos: data.items || []
+  };
+}
+
+async function fetchPlaylistItems(playlistId: string) {
+  const url = `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50&playlistId=${playlistId}&key=${GOOGLE_API_KEY}`;
+  const response = await fetchWithRetry(url);
+  const data = await response.json();
+  
+  return data.items || [];
+}
+
 serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
 
-  // Parse request body
   let params;
   try {
     params = await req.json();
@@ -89,16 +110,13 @@ serve(async (req) => {
     );
   }
 
-  // Use channel ID from params if provided, otherwise fall back to environment variable
   const channelId = params.channelId || YOUTUBE_CHANNEL_ID;
-  const checkLive = params.checkLive !== undefined ? params.checkLive : true;
 
-  // Check if we have the necessary configuration
   if (!channelId) {
     console.warn('No YouTube channel ID provided or configured');
     return new Response(
       JSON.stringify({ 
-        error: 'No YouTube channel ID configured', 
+        error: 'No YouTube channel ID configured',
         hasRealData: false,
         videos: getMockVideoData() 
       }),
@@ -110,7 +128,7 @@ serve(async (req) => {
     console.error('GOOGLE_API_KEY not configured in environment variables');
     return new Response(
       JSON.stringify({ 
-        error: 'YouTube API not configured, please check your environment variables.', 
+        error: 'YouTube API not configured',
         hasRealData: false,
         videos: getMockVideoData() 
       }),
@@ -118,94 +136,56 @@ serve(async (req) => {
     );
   }
 
-  console.log(`Fetching YouTube videos for channel: ${channelId}`);
-
   try {
-    let isLive = false;
-    let liveVideoId = null;
+    // Fetch both live streams, regular videos and sermon playlist items
+    const [channelContent, sermonPlaylistItems] = await Promise.all([
+      fetchLiveAndUploads(channelId),
+      fetchPlaylistItems(SERMONS_PLAYLIST_ID)
+    ]);
 
-    // Check for live streams if requested
-    if (checkLive) {
-      console.log('Checking for live streams...');
-      try {
-        const liveUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=${channelId}&eventType=live&type=video&key=${GOOGLE_API_KEY}`;
-        const liveResponse = await fetchWithRetry(liveUrl);
-        
-        const liveData = await liveResponse.json();
-        
-        if (liveData.items && liveData.items.length > 0) {
-          console.log('Live broadcast found');
-          isLive = true;
-          liveVideoId = liveData.items[0].id.videoId;
-        }
-      } catch (liveError) {
-        console.warn("Error checking for live streams:", liveError.message);
-        // Continue execution to fetch regular videos
-      }
-    }
+    const { liveStream, videos } = channelContent;
+    const isLive = !!liveStream;
+    const liveVideoId = liveStream?.id?.videoId;
 
-    // Fetch videos from channel
-    console.log('Fetching videos from channel...');
-    try {
-      const videosUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=${channelId}&maxResults=50&order=date&type=video&key=${GOOGLE_API_KEY}`;
-      const response = await fetchWithRetry(videosUrl);
-      
-      const data = await response.json();
-      
-      if (!data.items || data.items.length === 0) {
-        console.log('No videos found for this channel');
-        return new Response(
-          JSON.stringify({ 
-            videos: [], 
-            hasRealData: true,
-            isLive,
-            liveVideoId
-          }),
-          { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-        );
-      }
-      
-      const videos = data.items.map((item: any) => ({
-        id: item.id.videoId,
-        title: item.snippet.title,
-        publishedAt: item.snippet.publishedAt,
-        thumbnailUrl: item.snippet.thumbnails.medium?.url || 'https://via.placeholder.com/320x180?text=No+Thumbnail'
-      }));
-      
-      console.log(`Fetched ${videos.length} videos from YouTube`);
-      
-      return new Response(
-        JSON.stringify({ 
-          videos, 
-          hasRealData: true,
-          isLive,
-          liveVideoId
-        }),
-        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    } catch (videoError) {
-      console.error("Error fetching videos:", videoError);
-      // Instead of throwing, we'll return a more graceful response with mock data
-      return new Response(
-        JSON.stringify({ 
-          error: "Unable to fetch videos from YouTube at this time. The API might be temporarily unavailable.",
-          hasRealData: false,
-          isLive: false,
-          liveVideoId: null,
-          videos: getMockVideoData()
-        }),
-        { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
+    // Format regular videos
+    const formattedVideos = videos.map((item: any) => ({
+      id: item.id.videoId,
+      title: item.snippet.title,
+      publishedAt: item.snippet.publishedAt,
+      thumbnailUrl: item.snippet.thumbnails.medium?.url || 'https://via.placeholder.com/320x180?text=No+Thumbnail',
+      type: 'broadcast'
+    }));
+
+    // Format sermon playlist items
+    const formattedSermons = sermonPlaylistItems.map((item: any) => ({
+      id: item.snippet.resourceId.videoId,
+      title: item.snippet.title,
+      publishedAt: item.snippet.publishedAt,
+      thumbnailUrl: item.snippet.thumbnails.medium?.url || 'https://via.placeholder.com/320x180?text=No+Thumbnail',
+      type: 'sermon'
+    }));
+
+    return new Response(
+      JSON.stringify({ 
+        videos: formattedVideos,
+        sermons: formattedSermons,
+        hasRealData: true,
+        isLive,
+        liveVideoId
+      }),
+      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+    );
+
   } catch (error) {
     console.error("Error in fetch-youtube-videos edge function:", error);
     return new Response(
       JSON.stringify({ 
-        error: "We are experiencing issues connecting to YouTube. Please try again later.",
+        error: "Unable to fetch videos from YouTube",
         hasRealData: false,
+        videos: getMockVideoData(),
+        sermons: [],
         isLive: false,
-        liveVideoId: null,
-        videos: getMockVideoData()
+        liveVideoId: null
       }),
       { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );

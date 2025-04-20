@@ -5,4 +5,5 @@ export interface YouTubeVideo {
   title: string;
   publishedAt: string;
   thumbnailUrl: string;
+  type?: 'sermon' | 'broadcast';
 }
