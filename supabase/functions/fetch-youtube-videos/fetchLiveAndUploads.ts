@@ -2,20 +2,25 @@
 import { fetchWithRetry } from './fetchWithRetry.ts';
 
 // Fetch live streams, past live broadcasts, and regular uploads for a channel.
+// Optimize: request only the minimum fields needed (snippet-> title, publishedAt, thumbnails).
 export async function fetchLiveAndUploads(channelId: string, GOOGLE_API_KEY: string) {
   try {
-    // Check for live streams
-    const liveUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=${channelId}&eventType=live&type=video&key=${GOOGLE_API_KEY}`;
+    // Only ask for minimum snippet fields needed
+    // Live Stream
+    const liveUrl =
+      `https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=${channelId}&eventType=live&type=video&fields=items(id/videoId,snippet/title,snippet/publishedAt,snippet/thumbnails/medium/url)&key=${GOOGLE_API_KEY}`;
     const liveResponse = await fetchWithRetry(liveUrl);
     const liveData = await liveResponse.json();
 
-    // Fetch regular uploads (for fallback only if no live or past live)
-    const videosUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=${channelId}&maxResults=50&order=date&type=video&key=${GOOGLE_API_KEY}`;
+    // Latest uploads (broadcasts)
+    const videosUrl =
+      `https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=${channelId}&maxResults=50&order=date&type=video&fields=items(id/videoId,snippet/title,snippet/publishedAt,snippet/thumbnails/medium/url)&key=${GOOGLE_API_KEY}`;
     const videosResponse = await fetchWithRetry(videosUrl);
     const videosData = await videosResponse.json();
 
-    // Fetch completed/past live broadcasts
-    const pastLivesUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=${channelId}&eventType=completed&type=video&order=date&maxResults=5&key=${GOOGLE_API_KEY}`;
+    // Past completed live
+    const pastLivesUrl =
+      `https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=${channelId}&eventType=completed&type=video&order=date&maxResults=5&fields=items(id/videoId,snippet/title,snippet/publishedAt,snippet/thumbnails/medium/url)&key=${GOOGLE_API_KEY}`;
     const pastLivesResponse = await fetchWithRetry(pastLivesUrl);
     const pastLivesData = await pastLivesResponse.json();
 

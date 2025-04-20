@@ -1,4 +1,3 @@
-
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { fetchWithRetry } from './fetchWithRetry.ts';
 import { getMockVideoData } from './mockData.ts';
@@ -13,6 +12,13 @@ const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
+
+// Simple in-memory cache for Edge Functions (persists for life of function process)
+const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+let lastCache: {
+  timestamp: number,
+  data: any
+} | null = null;
 
 serve(async (req) => {
   console.log("Edge function called: fetch-youtube-videos");
@@ -63,6 +69,15 @@ serve(async (req) => {
         sermons: []
       }),
       { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+    );
+  }
+
+  // Return from cache if valid
+  if (lastCache && (Date.now() - lastCache.timestamp < CACHE_TTL)) {
+    console.log('Serving videos from cache.');
+    return new Response(
+      JSON.stringify(lastCache.data),
+      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   }
 
@@ -121,15 +136,22 @@ serve(async (req) => {
       console.log(`Live stream detected: ${liveVideoId}`);
     }
 
+    const responseObj = {
+      videos: formattedVideos,
+      pastLives: formattedPastLives,
+      sermons: formattedSermons,
+      hasRealData: true,
+      isLive,
+      liveVideoId
+    };
+
+    lastCache = {
+      timestamp: Date.now(),
+      data: responseObj
+    };
+
     return new Response(
-      JSON.stringify({ 
-        videos: formattedVideos,
-        pastLives: formattedPastLives,
-        sermons: formattedSermons,
-        hasRealData: true,
-        isLive,
-        liveVideoId
-      }),
+      JSON.stringify(responseObj),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   } catch (error) {
