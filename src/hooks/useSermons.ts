@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { YouTubeVideo } from '@/types/sermon.types';
 import { supabase } from '@/lib/supabaseClient';
@@ -20,17 +19,24 @@ export const useSermons = (channelId?: string) => {
   const MAX_RETRIES = 3;
   const videosPerPage = 8;
 
+  const filterLastNMonths = (items: YouTubeVideo[], months = 3) => {
+    const cutoff = new Date();
+    cutoff.setMonth(cutoff.getMonth() - months);
+    return items.filter(v => {
+      const pubDate = new Date(v.publishedAt);
+      return pubDate >= cutoff;
+    });
+  };
+
   const fetchVideos = useCallback(async () => {
     try {
       setLoading(true);
-      
       const requestBody = channelId ? { channelId } : {};
       console.log('Fetching videos from edge function', requestBody);
-      
       const { data, error } = await supabase.functions.invoke('fetch-youtube-videos', {
         body: requestBody
       });
-      
+
       if (error) {
         console.error("Error calling edge function:", error);
         setError("Failed to load videos. Please try again later.");
@@ -38,53 +44,54 @@ export const useSermons = (channelId?: string) => {
         setLoading(false);
         return;
       }
-      
+
       console.log("Edge function response:", data);
-      
+
       if (data.error) {
         console.warn("Edge function returned error:", data.error);
         setError(data.error);
-        
+
         if (data.videos && data.videos.length > 0) {
           console.log('Using mock videos as fallback');
-          setVideos(data.videos);
+          const fallbackVideos = filterLastNMonths(data.videos);
+          setVideos(fallbackVideos);
           setHasRealData(false);
-          setSelectedVideo(data.videos[0].id);
+          setSelectedVideo(fallbackVideos[0]?.id);
           setError(null);
         } else {
           setHasRealData(false);
         }
-        
+
         setLoading(false);
         return;
       }
-      
+
       setIsLive(data.isLive || false);
       setLiveVideoId(data.liveVideoId || null);
       setHasRealData(data.hasRealData || false);
-      
-      if (data.videos) {
-        console.log(`Received ${data.videos.length} broadcasts from edge function`);
-        setVideos(data.videos);
-      }
-      
-      if (data.sermons) {
-        console.log(`Received ${data.sermons.length} sermons from edge function`);
-        setSermons(data.sermons);
 
-        // Set sermons as selected video by default if available
-        if (data.sermons.length > 0 && !data.isLive) {
-          setSelectedVideo(data.sermons[0].id);
+      if (data.videos) {
+        const filteredVideos = filterLastNMonths(data.videos);
+        console.log(`Received ${filteredVideos.length} broadcasts from edge function (filtered by 3 months)`);
+        setVideos(filteredVideos);
+      }
+
+      if (data.sermons) {
+        const filteredSermons = filterLastNMonths(data.sermons);
+        console.log(`Received ${filteredSermons.length} sermons from edge function (filtered by 3 months)`);
+        setSermons(filteredSermons);
+
+        if (filteredSermons.length > 0 && !data.isLive) {
+          setSelectedVideo(filteredSermons[0].id);
         }
       }
-      
+
       setError(null);
-      
+
       if (data.isLive) {
         setSelectedVideo(data.liveVideoId);
         setActiveTab('broadcast'); // Switch to broadcast tab if there's a live stream
       }
-      
     } catch (err) {
       console.error("Error in useSermons hook:", err);
       setError("Failed to load videos. Please try again later.");
@@ -94,7 +101,6 @@ export const useSermons = (channelId?: string) => {
     }
   }, [channelId]);
 
-  // Reset page when changing tabs
   useEffect(() => {
     setCurrentPage(1);
   }, [activeTab]);
@@ -113,7 +119,6 @@ export const useSermons = (channelId?: string) => {
     return () => clearTimeout(retryTimer);
   }, [error, retryCount, fetchVideos]);
 
-  // Get current videos based on active tab and pagination
   const currentItems = useMemo(() => {
     const items = activeTab === 'sermon' ? sermons : videos;
     const indexOfLastVideo = currentPage * videosPerPage;
@@ -121,13 +126,11 @@ export const useSermons = (channelId?: string) => {
     return items.slice(indexOfFirstVideo, indexOfLastVideo);
   }, [activeTab, videos, sermons, currentPage]);
 
-  // Calculate total pages
   const totalPages = useMemo(() => {
     const items = activeTab === 'sermon' ? sermons : videos;
     return Math.ceil(items.length / videosPerPage);
   }, [activeTab, videos, sermons]);
 
-  // Group videos by month and year
   const itemsByDate = useMemo(() => {
     const items = activeTab === 'sermon' ? sermons : videos;
     return items.reduce((acc, video) => {
