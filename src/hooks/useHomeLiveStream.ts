@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 
@@ -12,25 +13,30 @@ export const useHomeLiveStream = () => {
       try {
         setLoading(true);
         
+        // Call Supabase edge function to fetch videos
         const { data, error } = await supabase.functions.invoke('fetch-youtube-videos', {
-          body: {} // Using default channel from environment
+          body: {}  // Using default channel from environment
         });
         
         if (error) {
           console.error("Error calling edge function:", error);
           setError("Failed to load broadcast. Please try again later.");
+          setLoading(false);
           return;
         }
+        
+        console.log("Edge function response:", data);
         
         if (data.error) {
           console.error("Edge function returned error:", data.error);
           setError(data.error);
+          setLoading(false);
           return;
         }
-
-        // If there's a live stream, prioritize it
+        
+        // If there's a live stream, show it
         if (data.isLive && data.liveVideoId) {
-          console.log('Live stream found, showing live broadcast:', data.liveVideoId);
+          console.log('Live stream found, showing live broadcast');
           setIsLive(true);
           setVideoId(data.liveVideoId);
         } 

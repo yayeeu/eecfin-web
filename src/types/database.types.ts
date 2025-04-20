@@ -1,4 +1,3 @@
-
 export interface Slide {
   id: string;
   created_at?: string;
@@ -75,7 +74,7 @@ export interface Member {
   gender?: string;
   marital_status?: string;
   spouse_name?: string;
-  children_names?: string | number; // Updated to accept both string and number
+  children_names?: string;
   previous_church?: string;
   role_in_previous_church?: string;
   emergency_contact?: string;
