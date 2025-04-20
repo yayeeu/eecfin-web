@@ -21,7 +21,7 @@ const MediaSection = () => {
           <div className="w-full md:w-1/2 flex flex-col">
             <div className="flex items-center mb-4">
               <Video className="mr-2 h-6 w-6 text-red-600" />
-              <h2 className="section-title mb-0 mr-2">Live & Recent Broadcasts</h2>
+              <h2 className="section-title mb-0 mr-2">YouTube Broadcasts</h2>
               <LiveIndicator isLive={isLive} />
             </div>
             
