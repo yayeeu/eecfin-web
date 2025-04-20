@@ -7,7 +7,6 @@ import { fetchPlaylistItems } from './fetchPlaylistItems.ts';
 
 const GOOGLE_API_KEY = Deno.env.get('GOOGLE_API_KEY');
 const YOUTUBE_CHANNEL_ID = Deno.env.get('YOUTUBE_CHANNEL_ID');
-// Updated to use the actual EECFIN sermons playlist ID
 const SERMONS_PLAYLIST_ID = 'PLI8Nt_ZL1WmJ5w7YGYAUtSyB7Vz1pIHnV';
 
 const corsHeaders = {
@@ -68,23 +67,22 @@ serve(async (req) => {
     console.log(`Fetching videos for channel: ${channelId}`);
     console.log(`Using sermons playlist ID: ${SERMONS_PLAYLIST_ID}`);
     
-    // Fetch both live streams, regular videos and sermon playlist items
+    // Fetch: live, past live, regular uploads, and sermon playlist items
     let channelContent, sermonPlaylistItems;
-    
     try {
       [channelContent, sermonPlaylistItems] = await Promise.all([
         fetchLiveAndUploads(channelId, GOOGLE_API_KEY),
         fetchPlaylistItems(SERMONS_PLAYLIST_ID, GOOGLE_API_KEY)
       ]);
-      
       console.log(`Successfully fetched ${sermonPlaylistItems.length} sermon playlist items`);
       console.log(`Successfully fetched ${channelContent.videos.length} regular videos`);
+      console.log(`Successfully fetched ${channelContent.pastLiveVideos.length} past live videos`);
     } catch (error) {
       console.error("Error fetching videos or playlist items:", error);
       throw error;
     }
 
-    const { liveStream, videos } = channelContent;
+    const { liveStream, pastLiveVideos, videos } = channelContent;
     const isLive = !!liveStream;
     const liveVideoId = liveStream?.id?.videoId;
 
@@ -97,6 +95,15 @@ serve(async (req) => {
       type: 'broadcast'
     }));
 
+    // Format past live videos
+    const formattedPastLives = pastLiveVideos.map((item: any) => ({
+      id: item.id.videoId,
+      title: item.snippet.title,
+      publishedAt: item.snippet.publishedAt,
+      thumbnailUrl: item.snippet.thumbnails.medium?.url || 'https://via.placeholder.com/320x180?text=No+Thumbnail',
+      type: 'past_live'
+    }));
+
     // Format sermon playlist items
     const formattedSermons = sermonPlaylistItems.map((item: any) => ({
       id: item.snippet.resourceId.videoId,
@@ -106,8 +113,7 @@ serve(async (req) => {
       type: 'sermon'
     }));
 
-    console.log(`Returning ${formattedVideos.length} broadcasts and ${formattedSermons.length} sermons`);
-    
+    console.log(`Returning ${formattedVideos.length} broadcasts, ${formattedPastLives.length} past lives, and ${formattedSermons.length} sermons`);
     if (isLive) {
       console.log(`Live stream detected: ${liveVideoId}`);
     }
@@ -115,6 +121,7 @@ serve(async (req) => {
     return new Response(
       JSON.stringify({ 
         videos: formattedVideos,
+        pastLives: formattedPastLives,
         sermons: formattedSermons,
         hasRealData: true,
         isLive,
@@ -122,7 +129,6 @@ serve(async (req) => {
       }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
-
   } catch (error) {
     console.error("Error in fetch-youtube-videos edge function:", error);
     return new Response(
@@ -133,7 +139,8 @@ serve(async (req) => {
         videos: getMockVideoData(),
         sermons: [],
         isLive: false,
-        liveVideoId: null
+        liveVideoId: null,
+        pastLives: []
       }),
       { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
