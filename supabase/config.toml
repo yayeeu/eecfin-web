@@ -1,1 +1,7 @@
+
 project_id = "gtllrruuvhywnbnyding"
+
+[functions.get-sermon-playlist-id]
+verify_jwt = false
+
+# ... keep existing code (other function configs etc) ...
