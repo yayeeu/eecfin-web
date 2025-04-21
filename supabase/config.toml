@@ -1,7 +1,5 @@
 
 project_id = "gtllrruuvhywnbnyding"
 
-[functions.get-sermon-playlist-id]
+[functions.get-youtube-videos]
 verify_jwt = false
-
-# ... keep existing code (other function configs etc) ...
