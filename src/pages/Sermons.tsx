@@ -1,4 +1,5 @@
-import React, { useEffect } from 'react';
+
+import React, { useEffect, useState } from 'react';
 import SermonHero from '@/components/sermons/SermonHero';
 import LatestSermon from '@/components/sermons/LatestSermon';
 import SermonLibrary from '@/components/sermons/SermonLibrary';
@@ -8,13 +9,12 @@ import { Button } from "@/components/ui/button";
 import { MessageSquareText, Youtube } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-
-const SERMONS_PLAYLIST_ID = "PLI8Nt_ZL1WmJ5w7YGYAUtSyB7Vz1pIHnV"; // Change if needed
+import { supabase } from "@/lib/supabaseClient";
 
 const Sermons = () => {
   const { toast } = useToast();
-  
-  const { 
+
+  const {
     videos,
     sermons,
     currentItems,
@@ -32,6 +32,24 @@ const Sermons = () => {
     activeTab,
     setActiveTab
   } = useSermons();
+
+  // State to store playlist ID
+  const [playlistId, setPlaylistId] = useState<string | null>(null);
+  const [playlistLoading, setPlaylistLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchPlaylistId = async () => {
+      setPlaylistLoading(true);
+      const { data, error } = await supabase.functions.invoke("get-sermon-playlist-id");
+      if (data && data.playlistId) {
+        setPlaylistId(data.playlistId);
+      } else {
+        setPlaylistId(null);
+      }
+      setPlaylistLoading(false);
+    };
+    fetchPlaylistId();
+  }, []);
 
   useEffect(() => {
     if (isLive) {
@@ -68,7 +86,7 @@ const Sermons = () => {
 
       <div className="container-custom py-12">
         <h1 className="page-title">Sermons</h1>
-        
+
         <div className="flex flex-col md:flex-row gap-8 mb-12">
           <div className="md:w-1/2">
             {/* Only show the video if we have real data */}
@@ -83,15 +101,25 @@ const Sermons = () => {
                   <h2 className="section-title mb-0">Sermon Library</h2>
                 </div>
                 <div className="w-full aspect-video">
-                  <iframe
-                    width="100%"
-                    src={`https://www.youtube-nocookie.com/embed/videoseries?list=${SERMONS_PLAYLIST_ID}`}
-                    frameBorder="0"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                    allowFullScreen
-                    title="Sermons Playlist"
-                    className="w-full rounded-lg shadow-lg"
-                  ></iframe>
+                  {playlistLoading ? (
+                    <div className="flex items-center justify-center bg-gray-100 w-full h-full rounded-lg min-h-[120px]">
+                      <span className="animate-pulse text-eecfin-navy">Loading playlist...</span>
+                    </div>
+                  ) : playlistId ? (
+                    <iframe
+                      width="100%"
+                      src={`https://www.youtube-nocookie.com/embed/videoseries?list=${playlistId}`}
+                      frameBorder="0"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                      allowFullScreen
+                      title="Sermons Playlist"
+                      className="w-full h-full rounded-lg shadow-lg"
+                    ></iframe>
+                  ) : (
+                    <div className="flex items-center justify-center bg-gray-100 w-full h-full rounded-lg min-h-[120px] text-eecfin-navy">
+                      Playlist unavailable
+                    </div>
+                  )}
                 </div>
                 <div className="mt-2 text-center text-gray-600 text-sm">
                   Browse all sermons in our YouTube playlist
