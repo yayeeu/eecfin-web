@@ -9,7 +9,7 @@ import { useHomeLiveStream } from '@/hooks/useHomeLiveStream';
 import LiveIndicator from './LiveIndicator';
 
 const MediaSection = () => {
-  const { videoId, isLive, loading, fallbackUsed } = useHomeLiveStream();
+  const { videoId, isLive, loading, fallbackUsed, useChannelEmbed } = useHomeLiveStream();
 
   return (
     <section className="py-10 bg-gradient-to-b from-white to-gray-50">
@@ -41,6 +41,7 @@ const MediaSection = () => {
                     isLive={isLive}
                     className="w-full h-full"
                     fallbackEmbed={fallbackUsed}
+                    useChannelEmbed={useChannelEmbed}
                   />
                 </>
               )}

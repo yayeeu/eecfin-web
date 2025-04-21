@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 
 interface YouTubeEmbedProps {
@@ -7,6 +8,7 @@ interface YouTubeEmbedProps {
   openInNewTab?: boolean;
   isLive?: boolean;
   fallbackEmbed?: boolean; // True if data is from fallback for quota-avoidance
+  useChannelEmbed?: boolean; // New prop to use the channel uploads embed
 }
 
 const YouTubeEmbed: React.FC<YouTubeEmbedProps> = ({ 
@@ -15,13 +17,21 @@ const YouTubeEmbed: React.FC<YouTubeEmbedProps> = ({
   className,
   openInNewTab = false,
   isLive = false,
-  fallbackEmbed = false
+  fallbackEmbed = false,
+  useChannelEmbed = false
 }) => {
   const [loadedVideoId, setLoadedVideoId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    // If channel embed is requested, skip loading video ID
+    if (useChannelEmbed) {
+      setLoading(false);
+      setError(null);
+      return;
+    }
+
     // If fallback is forced, short-circuit normal loading
     if (fallbackEmbed && videoId) {
       setLoadedVideoId(videoId);
@@ -29,6 +39,7 @@ const YouTubeEmbed: React.FC<YouTubeEmbedProps> = ({
       setError(null);
       return;
     }
+
     const fetchVideo = async () => {
       try {
         // If a direct videoId is provided, use it
@@ -50,19 +61,34 @@ const YouTubeEmbed: React.FC<YouTubeEmbedProps> = ({
       }
     };
     fetchVideo();
-  }, [channelId, videoId, fallbackEmbed]);
+  }, [channelId, videoId, fallbackEmbed, useChannelEmbed]);
 
   if (loading) {
     return (
       <div className={`flex items-center justify-center bg-gray-100 ${className || 'h-[315px] w-full'}`}>
-        <div className="animate-pulse text-eecfin-navy">Loading video...</div>
+        <div className="animate-pulse text-eecfin-navy">Loading broadcast...</div>
       </div>
     );
   }
 
   // NO ERROR MESSAGE for users - always show at least fallback!
 
-  // Fallback: always-safe iframe embed, doesn't use quotas
+  // Channel embed: uses the user_uploads playlist without specific video ID
+  if (useChannelEmbed) {
+    return (
+      <div className={`relative ${className || 'w-full h-0 pb-[56.25%]'}`}>
+        <iframe
+          src="https://www.youtube-nocookie.com/embed?listType=user_uploads&list=eecfin"
+          title="YouTube Channel Videos"
+          className="absolute top-0 left-0 w-full h-full rounded-lg shadow-lg"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowFullScreen
+        ></iframe>
+      </div>
+    );
+  }
+
+  // Fallback: regular iframe embed, doesn't use quotas
   if (fallbackEmbed && loadedVideoId) {
     return (
       <div className={`relative ${className || 'w-full h-0 pb-[56.25%]'}`}>
