@@ -1,4 +1,3 @@
-
 import React, { useEffect } from 'react';
 import SermonHero from '@/components/sermons/SermonHero';
 import LatestSermon from '@/components/sermons/LatestSermon';
@@ -77,19 +76,22 @@ const Sermons = () => {
               <LatestSermon videoId={selectedVideo} isLive={isLive} />
             )}
 
-            {/* Fallback: show playlist embed instead */}
+            {/* Fallback: show updated playlist embed instead */}
             {(!selectedVideo || !hasRealData) && (
               <div className="flex flex-col">
                 <div className="mb-4">
                   <h2 className="section-title mb-0">Sermon Library</h2>
                 </div>
-                <div className="w-full aspect-video">
+                <div className="w-full">
                   <iframe
-                    src={`https://www.youtube-nocookie.com/embed?listType=playlist&list=${SERMONS_PLAYLIST_ID}`}
-                    title="Sermons Playlist"
-                    className="w-full h-full rounded-lg shadow-lg"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    width="100%"
+                    height="500"
+                    src={`https://www.youtube-nocookie.com/embed/videoseries?list=${SERMONS_PLAYLIST_ID}`}
+                    frameBorder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                     allowFullScreen
+                    title="Sermons Playlist"
+                    className="w-full rounded-lg shadow-lg"
                   ></iframe>
                 </div>
                 <div className="mt-2 text-center text-gray-600 text-sm">
