@@ -10,9 +10,11 @@ const Sermons = () => {
   return (
     <div className="container-custom py-8">
       <div className="flex items-start gap-8 flex-col lg:flex-row">
-        <div className="w-full lg:w-[60%]">
-          <Card className="overflow-hidden">
-            <YouTubeEmbed playlistId={playlistId} />
+        <div className="w-full lg:w-[60%] max-w-full">
+          <Card className="overflow-hidden w-full">
+            <div className="w-full">
+              <YouTubeEmbed playlistId={playlistId} />
+            </div>
           </Card>
         </div>
 

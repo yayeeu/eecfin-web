@@ -25,10 +25,11 @@ export const YouTubeEmbed: React.FC<YouTubeEmbedProps> = ({
   }
 
   return (
-    <div className={`relative w-full pt-[56.25%] ${className || ''}`}>
+    <div className={`relative w-full pt-[56.25%] ${className || ''}`} style={{width: '100%'}}>
       <iframe
         src={embedUrl}
         className="absolute top-0 left-0 w-full h-full"
+        style={{width: '100%', height: '100%'}}
         allowFullScreen
         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
         title="YouTube Video"
