@@ -39,15 +39,28 @@ const Sermons = () => {
 
   useEffect(() => {
     const fetchPlaylistId = async () => {
-      setPlaylistLoading(true);
-      const { data, error } = await supabase.functions.invoke("get-sermon-playlist-id");
-      if (data && data.playlistId) {
-        setPlaylistId(data.playlistId);
-      } else {
+      try {
+        setPlaylistLoading(true);
+        const { data, error } = await supabase.functions.invoke("get-sermon-playlist-id");
+        if (error) {
+          console.error("Error fetching playlist ID:", error);
+          setPlaylistId(null);
+          return;
+        }
+        
+        if (data && data.playlistId) {
+          setPlaylistId(data.playlistId);
+        } else {
+          setPlaylistId(null);
+        }
+      } catch (err) {
+        console.error("Unexpected error fetching playlist ID:", err);
         setPlaylistId(null);
+      } finally {
+        setPlaylistLoading(false);
       }
-      setPlaylistLoading(false);
     };
+    
     fetchPlaylistId();
   }, []);
 

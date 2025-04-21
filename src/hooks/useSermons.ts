@@ -17,7 +17,8 @@ export const useSermons = (channelId?: string) => {
   const [hasRealData, setHasRealData] = useState(false);
   const [activeTab, setActiveTab] = useState<VideoType>('sermon');
   const [retryCount, setRetryCount] = useState(0);
-  const MAX_RETRIES = 3;
+  const [shouldRetry, setShouldRetry] = useState(true);
+  const MAX_RETRIES = 1; // Reduced from 3 to 1 to prevent excessive retries
   const videosPerPage = 8;
 
   const filterLastNMonths = (items: YouTubeVideo[], months = 3) => {
@@ -99,16 +100,21 @@ export const useSermons = (channelId?: string) => {
   useEffect(() => {
     fetchVideos();
     
+    // Only retry if shouldRetry is true and retryCount is less than MAX_RETRIES
     const retryTimer = setTimeout(() => {
-      if (error && retryCount < MAX_RETRIES) {
+      if (error && retryCount < MAX_RETRIES && shouldRetry) {
         console.log(`Retrying sermon videos fetch (attempt ${retryCount + 1} of ${MAX_RETRIES})`);
         setRetryCount(prev => prev + 1);
         fetchVideos();
+      } else if (retryCount >= MAX_RETRIES && shouldRetry) {
+        // Stop retrying after max retries
+        console.log(`Max retry attempts (${MAX_RETRIES}) reached. Stopping retries.`);
+        setShouldRetry(false);
       }
-    }, 5000);
+    }, 3000); // Increased from 5000 to allow more time between retries
     
     return () => clearTimeout(retryTimer);
-  }, [error, retryCount, fetchVideos]);
+  }, [error, retryCount, fetchVideos, shouldRetry]);
 
   const currentItems = useMemo(() => {
     const items = activeTab === 'sermon' ? sermons : videos;
