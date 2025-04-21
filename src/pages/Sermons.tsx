@@ -43,7 +43,7 @@ const Sermons = () => {
       <h1 className="text-3xl font-bold mb-6">Our Sermons</h1>
       
       {error && (
-        <Alert variant="warning" className="mb-4">
+        <Alert variant="destructive" className="mb-4">
           <AlertDescription>{error}</AlertDescription>
         </Alert>
       )}
