@@ -20,27 +20,39 @@ interface VideoLibraryProps {
 export const VideoLibrary: React.FC<VideoLibraryProps> = ({ type }) => {
   const [videos, setVideos] = useState<Video[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
 
   useEffect(() => {
     const fetchVideos = async () => {
       try {
+        setError(null);
+        console.log("Fetching videos from edge function...");
+        
         const { data, error } = await supabase.functions.invoke('fetch-youtube-videos', {
           body: {}
         });
 
-        if (error || !data || data.error) {
-          throw new Error(error?.message || data?.error || 'Failed to fetch videos');
+        if (error) {
+          console.error("Supabase function error:", error);
+          throw new Error(error.message || 'Failed to fetch videos');
         }
+
+        if (!data || data.error) {
+          console.error("Data error:", data?.error || "No data returned");
+          throw new Error(data?.error || 'Failed to fetch videos');
+        }
+
+        console.log("Received video data:", data);
 
         const threeMonthsAgo = new Date();
         threeMonthsAgo.setMonth(threeMonthsAgo.getMonth() - 3);
 
         let filteredVideos = [];
         if (type === 'sermon') {
-          filteredVideos = data.sermons;
+          filteredVideos = data.sermons || [];
         } else {
-          filteredVideos = [...data.pastLives];
+          filteredVideos = [...(data.pastLives || [])];
           if (data.isLive) {
             filteredVideos.unshift({
               id: data.liveVideoId,
@@ -57,9 +69,11 @@ export const VideoLibrary: React.FC<VideoLibraryProps> = ({ type }) => {
           new Date(video.publishedAt) >= threeMonthsAgo
         );
 
+        console.log(`Filtered ${filteredVideos.length} videos for type ${type}`);
         setVideos(filteredVideos);
-      } catch (error) {
-        console.error('Error fetching videos:', error);
+      } catch (err) {
+        console.error('Error fetching videos:', err);
+        setError(err instanceof Error ? err.message : 'Unknown error occurred');
         toast({
           variant: "destructive",
           title: "Error",
@@ -77,6 +91,15 @@ export const VideoLibrary: React.FC<VideoLibraryProps> = ({ type }) => {
     return (
       <div className="flex justify-center items-center py-12">
         <Loader2 className="h-8 w-8 animate-spin" />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="text-center py-12">
+        <p className="text-red-500 mb-2">Failed to load videos</p>
+        <p className="text-gray-500 text-sm">{error}</p>
       </div>
     );
   }

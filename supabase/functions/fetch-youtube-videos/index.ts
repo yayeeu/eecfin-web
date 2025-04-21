@@ -1,3 +1,4 @@
+
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { fetchWithRetry } from './fetchWithRetry.ts';
 import { getMockVideoData } from './mockData.ts';
@@ -8,6 +9,7 @@ const GOOGLE_API_KEY = Deno.env.get('GOOGLE_API_KEY');
 const YOUTUBE_CHANNEL_ID = Deno.env.get('YOUTUBE_CHANNEL_ID');
 const SERMONS_PLAYLIST_ID = 'PLI8Nt_ZL1WmJ5w7YGYAUtSyB7Vz1pIHnV';
 
+// Proper CORS headers to ensure the function can be called from any origin
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
