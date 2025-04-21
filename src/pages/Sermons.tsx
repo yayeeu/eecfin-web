@@ -82,10 +82,9 @@ const Sermons = () => {
                 <div className="mb-4">
                   <h2 className="section-title mb-0">Sermon Library</h2>
                 </div>
-                <div className="w-full">
+                <div className="w-full aspect-video">
                   <iframe
                     width="100%"
-                    height="500"
                     src={`https://www.youtube-nocookie.com/embed/videoseries?list=${SERMONS_PLAYLIST_ID}`}
                     frameBorder="0"
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
