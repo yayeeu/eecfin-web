@@ -12,8 +12,13 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { supabase } from "@/lib/supabaseClient";
 
 const Sermons = () => {
+  // Make sure all useState hooks are called in the same order on every render
+  const [playlistId, setPlaylistId] = useState<string | null>(null);
+  const [playlistLoading, setPlaylistLoading] = useState(true);
+  
   const { toast } = useToast();
 
+  // Call the useSermons hook after all other useState hooks
   const {
     videos,
     sermons,
@@ -32,10 +37,6 @@ const Sermons = () => {
     activeTab,
     setActiveTab
   } = useSermons();
-
-  // State to store playlist ID
-  const [playlistId, setPlaylistId] = useState<string | null>(null);
-  const [playlistLoading, setPlaylistLoading] = useState(true);
 
   useEffect(() => {
     const fetchPlaylistId = async () => {
