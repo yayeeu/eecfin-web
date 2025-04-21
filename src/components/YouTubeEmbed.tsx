@@ -1,149 +1,38 @@
 
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 
 interface YouTubeEmbedProps {
-  channelId?: string;
+  playlistId?: string;
   videoId?: string;
   className?: string;
-  openInNewTab?: boolean;
-  isLive?: boolean;
-  fallbackEmbed?: boolean; // True if data is from fallback for quota-avoidance
-  useChannelEmbed?: boolean; // New prop to use the channel uploads embed
 }
 
-const YouTubeEmbed: React.FC<YouTubeEmbedProps> = ({ 
-  channelId, 
-  videoId, 
-  className,
-  openInNewTab = false,
-  isLive = false,
-  fallbackEmbed = false,
-  useChannelEmbed = false
+export const YouTubeEmbed: React.FC<YouTubeEmbedProps> = ({ 
+  playlistId,
+  videoId,
+  className
 }) => {
-  const [loadedVideoId, setLoadedVideoId] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    // If channel embed is requested, skip loading video ID
-    if (useChannelEmbed) {
-      setLoading(false);
-      setError(null);
-      return;
-    }
-
-    // If fallback is forced, short-circuit normal loading
-    if (fallbackEmbed && videoId) {
-      setLoadedVideoId(videoId);
-      setLoading(false);
-      setError(null);
-      return;
-    }
-
-    const fetchVideo = async () => {
-      try {
-        // If a direct videoId is provided, use it
-        if (videoId) {
-          setLoadedVideoId(videoId);
-          setLoading(false);
-          return;
-        }
-        // Otherwise, try to get the latest video from the channel
-        if (channelId) {
-          setLoading(false);
-        } else {
-          setError("No video or channel ID provided");
-          setLoading(false);
-        }
-      } catch (err) {
-        setError("Could not load the video");
-        setLoading(false);
-      }
-    };
-    fetchVideo();
-  }, [channelId, videoId, fallbackEmbed, useChannelEmbed]);
-
-  if (loading) {
-    return (
-      <div className={`flex items-center justify-center bg-gray-100 ${className || 'h-[315px] w-full'}`}>
-        <div className="animate-pulse text-eecfin-navy">Loading broadcast...</div>
-      </div>
-    );
+  // Determine the correct embed URL
+  let embedUrl = '';
+  
+  if (playlistId) {
+    embedUrl = `https://www.youtube.com/embed/videoseries?list=${playlistId}`;
+  } else if (videoId) {
+    embedUrl = `https://www.youtube.com/embed/${videoId}`;
+  } else {
+    // Fallback to channel
+    embedUrl = 'https://www.youtube.com/embed?listType=user_uploads&list=eecfin';
   }
 
-  // NO ERROR MESSAGE for users - always show at least fallback!
-
-  // Channel embed: uses the user_uploads playlist without specific video ID
-  if (useChannelEmbed) {
-    return (
-      <div className={`relative ${className || 'w-full h-0 pb-[56.25%]'}`}>
-        <iframe
-          src="https://www.youtube-nocookie.com/embed?listType=user_uploads&list=eecfin"
-          title="YouTube Channel Videos"
-          className="absolute top-0 left-0 w-full h-full rounded-lg shadow-lg"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          allowFullScreen
-        ></iframe>
-      </div>
-    );
-  }
-
-  // Fallback: regular iframe embed, doesn't use quotas
-  if (fallbackEmbed && loadedVideoId) {
-    return (
-      <div className={`relative ${className || 'w-full h-0 pb-[56.25%]'}`}>
-        <iframe
-          src={`https://www.youtube.com/embed/${loadedVideoId}?autoplay=0`}
-          title="Broadcast Video"
-          className="absolute top-0 left-0 w-full h-full rounded-lg shadow-lg"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          allowFullScreen
-        ></iframe>
-      </div>
-    );
-  }
-
-  // Open in new tab thumbnail mode (not used in home page, but kept for other use)
-  if (openInNewTab && loadedVideoId) {
-    return (
-      <a 
-        href={`https://www.youtube.com/watch?v=${loadedVideoId}`}
-        target="_blank"
-        rel="noopener noreferrer"
-        className={`block ${className || 'w-full'}`}
-      >
-        <img 
-          src={`https://img.youtube.com/vi/${loadedVideoId}/maxresdefault.jpg`} 
-          alt="Video thumbnail" 
-          className="w-full h-auto rounded-lg shadow-lg hover:opacity-90 transition-opacity"
-        />
-        <div className="mt-2 text-center text-sm text-gray-600">Click to watch on YouTube</div>
-      </a>
-    );
-  }
-
-  // Standard embed (uses loadedVideoId)
-  if (loadedVideoId) {
-    const embedParams = isLive ? '?autoplay=1&mute=1&enablejsapi=1' : '?enablejsapi=1';
-    return (
-      <div className={`relative ${className || 'w-full h-0 pb-[56.25%]'}`}>
-        <iframe 
-          src={`https://www.youtube.com/embed/${loadedVideoId}${embedParams}`}
-          title="YouTube video player"
-          className="absolute top-0 left-0 w-full h-full rounded-lg shadow-lg"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          allowFullScreen
-        ></iframe>
-      </div>
-    );
-  }
-
-  // If nothing is available, render a placeholder
   return (
-    <div className={`flex items-center justify-center bg-gray-100 ${className || 'h-[315px] w-full'}`}>
-      <div className="text-eecfin-navy">Broadcast unavailable</div>
+    <div className={`relative pt-[56.25%] ${className || ''}`}>
+      <iframe
+        src={embedUrl}
+        className="absolute top-0 left-0 w-full h-full"
+        allowFullScreen
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        title="YouTube Video"
+      />
     </div>
   );
 };
-
-export default YouTubeEmbed;
