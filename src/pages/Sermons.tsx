@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
 
 const Sermons = () => {
-  const [playlistId, setPlaylistId] = useState<string>('eecfin');
+  const [playlistId, setPlaylistId] = useState<string>('PL827hn5fOPy27cTOXAdkdqO70eoUzKNIQ');
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -33,7 +33,7 @@ const Sermons = () => {
         <div className="relative pt-[56.25%]">
           {!isLoading && (
             <iframe
-              src={`https://www.youtube-nocookie.com/embed?listType=user_uploads&list=${playlistId}`}
+              src={`https://www.youtube.com/embed/videoseries?list=${playlistId}`}
               className="absolute top-0 left-0 w-full h-full"
               allowFullScreen
               title="EECFIN Sermons"
