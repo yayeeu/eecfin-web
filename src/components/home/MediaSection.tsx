@@ -9,9 +9,7 @@ import { useHomeLiveStream } from '@/hooks/useHomeLiveStream';
 import LiveIndicator from './LiveIndicator';
 
 const MediaSection = () => {
-  const { videoId, isLive, loading, error } = useHomeLiveStream();
-
-  console.log("MediaSection rendering with:", { videoId, isLive, loading, error });
+  const { videoId, isLive, loading, fallbackUsed } = useHomeLiveStream();
 
   return (
     <section className="py-10 bg-gradient-to-b from-white to-gray-50">
@@ -31,19 +29,6 @@ const MediaSection = () => {
                 <div className="flex items-center justify-center h-full p-6">
                   <div className="animate-pulse text-eecfin-navy">Loading broadcast...</div>
                 </div>
-              ) : error ? (
-                <div className="flex flex-col items-center justify-center h-full p-6">
-                  <p className="text-center text-gray-600 mb-4">{error}</p>
-                  <Button asChild variant="outline">
-                    <a 
-                      href="https://www.youtube.com/@eecfin" 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                    >
-                      Visit Our YouTube Channel
-                    </a>
-                  </Button>
-                </div>
               ) : (
                 <>
                   {isLive && (
@@ -55,6 +40,7 @@ const MediaSection = () => {
                     videoId={videoId || undefined} 
                     isLive={isLive}
                     className="w-full h-full"
+                    fallbackEmbed={fallbackUsed}
                   />
                 </>
               )}
@@ -85,4 +71,3 @@ const MediaSection = () => {
 };
 
 export default MediaSection;
-

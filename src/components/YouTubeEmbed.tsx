@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 
 interface YouTubeEmbedProps {
@@ -7,6 +6,7 @@ interface YouTubeEmbedProps {
   className?: string;
   openInNewTab?: boolean;
   isLive?: boolean;
+  fallbackEmbed?: boolean; // True if data is from fallback for quota-avoidance
 }
 
 const YouTubeEmbed: React.FC<YouTubeEmbedProps> = ({ 
@@ -14,43 +14,43 @@ const YouTubeEmbed: React.FC<YouTubeEmbedProps> = ({
   videoId, 
   className,
   openInNewTab = false,
-  isLive = false
+  isLive = false,
+  fallbackEmbed = false
 }) => {
   const [loadedVideoId, setLoadedVideoId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    // If fallback is forced, short-circuit normal loading
+    if (fallbackEmbed && videoId) {
+      setLoadedVideoId(videoId);
+      setLoading(false);
+      setError(null);
+      return;
+    }
     const fetchVideo = async () => {
       try {
         // If a direct videoId is provided, use it
         if (videoId) {
-          console.log("YouTubeEmbed: Using provided videoId:", videoId);
           setLoadedVideoId(videoId);
           setLoading(false);
           return;
         }
-
         // Otherwise, try to get the latest video from the channel
         if (channelId) {
-          console.log("YouTubeEmbed: Using channel:", channelId);
-          // In a real implementation, you would use the YouTube API to get the latest video
-          // For now, we'll use the channel embed which shows latest content
           setLoading(false);
         } else {
-          console.log("YouTubeEmbed: No video or channel ID provided");
           setError("No video or channel ID provided");
           setLoading(false);
         }
       } catch (err) {
-        console.error("YouTube fetch error:", err);
         setError("Could not load the video");
         setLoading(false);
       }
     };
-
     fetchVideo();
-  }, [channelId, videoId]);
+  }, [channelId, videoId, fallbackEmbed]);
 
   if (loading) {
     return (
@@ -60,15 +60,24 @@ const YouTubeEmbed: React.FC<YouTubeEmbedProps> = ({
     );
   }
 
-  if (error) {
+  // NO ERROR MESSAGE for users - always show at least fallback!
+
+  // Fallback: always-safe iframe embed, doesn't use quotas
+  if (fallbackEmbed && loadedVideoId) {
     return (
-      <div className={`flex items-center justify-center bg-gray-100 ${className || 'h-[315px] w-full'}`}>
-        <div className="text-red-500">{error}</div>
+      <div className={`relative ${className || 'w-full h-0 pb-[56.25%]'}`}>
+        <iframe
+          src={`https://www.youtube.com/embed/${loadedVideoId}?autoplay=0`}
+          title="Broadcast Video"
+          className="absolute top-0 left-0 w-full h-full rounded-lg shadow-lg"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowFullScreen
+        ></iframe>
       </div>
     );
   }
 
-  // If openInNewTab is true, return a thumbnail with a link
+  // Open in new tab thumbnail mode (not used in home page, but kept for other use)
   if (openInNewTab && loadedVideoId) {
     return (
       <a 
@@ -87,11 +96,9 @@ const YouTubeEmbed: React.FC<YouTubeEmbedProps> = ({
     );
   }
 
-  // If we have a specific video ID, embed that video
+  // Standard embed (uses loadedVideoId)
   if (loadedVideoId) {
-    // Append autoplay parameter for live videos and additional parameters for better error handling
     const embedParams = isLive ? '?autoplay=1&mute=1&enablejsapi=1' : '?enablejsapi=1';
-    
     return (
       <div className={`relative ${className || 'w-full h-0 pb-[56.25%]'}`}>
         <iframe 
@@ -105,16 +112,10 @@ const YouTubeEmbed: React.FC<YouTubeEmbedProps> = ({
     );
   }
 
-  // Otherwise, embed the channel's uploads playlist
+  // If nothing is available, render a placeholder
   return (
-    <div className={`relative ${className || 'w-full h-0 pb-[56.25%]'}`}>
-      <iframe 
-        src={`https://www.youtube.com/embed?listType=user_uploads&list=${channelId}&enablejsapi=1`}
-        title="YouTube video player"
-        className="absolute top-0 left-0 w-full h-full rounded-lg shadow-lg"
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-        allowFullScreen
-      ></iframe>
+    <div className={`flex items-center justify-center bg-gray-100 ${className || 'h-[315px] w-full'}`}>
+      <div className="text-eecfin-navy">Broadcast unavailable</div>
     </div>
   );
 };
