@@ -23,6 +23,7 @@ const Constitution = lazy(() => import("./pages/Constitution"));
 const Admin = lazy(() => import("./pages/Admin"));
 const Auth = lazy(() => import("./pages/Auth"));
 const Profile = lazy(() => import("./pages/Profile"));
+const Sermons = lazy(() => import("./pages/Sermons"));
 
 // Configure the query client with performance optimizations
 const queryClient = new QueryClient({
@@ -52,7 +53,8 @@ const publicRoutes = [
   { path: "/contact", element: <Contact /> },
   { path: "/get-involved", element: <GetInvolved /> },
   { path: "/give", element: <Give /> },
-  { path: "/constitution", element: <Constitution /> }
+  { path: "/constitution", element: <Constitution /> },
+  { path: "/sermons", element: <Sermons /> }
 ];
 
 const protectedRoutes = [
