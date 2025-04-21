@@ -1,4 +1,3 @@
-
 import { Suspense, lazy } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -19,7 +18,6 @@ const OurLeadership = lazy(() => import("./pages/OurLeadership"));
 const Events = lazy(() => import("./pages/Events"));
 const Contact = lazy(() => import("./pages/Contact"));
 const GetInvolved = lazy(() => import("./pages/GetInvolved"));
-const Sermons = lazy(() => import("./pages/Sermons"));
 const Give = lazy(() => import("./pages/Give"));
 const Constitution = lazy(() => import("./pages/Constitution"));
 const Admin = lazy(() => import("./pages/Admin"));
@@ -51,7 +49,6 @@ const publicRoutes = [
   { path: "/our-faith", element: <OurFaith /> },
   { path: "/our-leadership", element: <OurLeadership /> },
   { path: "/events", element: <Events /> },
-  { path: "/sermons", element: <Sermons /> },
   { path: "/contact", element: <Contact /> },
   { path: "/get-involved", element: <GetInvolved /> },
   { path: "/give", element: <Give /> },
