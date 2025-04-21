@@ -1,3 +1,4 @@
+
 import React, { useEffect } from 'react';
 import SermonHero from '@/components/sermons/SermonHero';
 import LatestSermon from '@/components/sermons/LatestSermon';
@@ -5,7 +6,7 @@ import SermonLibrary from '@/components/sermons/SermonLibrary';
 import { useSermons } from '@/hooks/useSermons';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { MessageSquareText, Youtube, AlertTriangle } from 'lucide-react';
+import { MessageSquareText, Youtube } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
@@ -76,33 +77,24 @@ const Sermons = () => {
               <LatestSermon videoId={selectedVideo} isLive={isLive} />
             )}
 
-            {/* Fallback: show playlist embed instead of error if no real data */}
+            {/* Fallback: show playlist embed instead */}
             {(!selectedVideo || !hasRealData) && (
-              <div className="flex flex-col items-center justify-center h-64 bg-gray-100 rounded-lg p-0 overflow-hidden">
-                {SERMONS_PLAYLIST_ID ? (
-                  <>
-                    <div className="w-full h-64 relative">
-                      <iframe
-                        src={`https://www.youtube-nocookie.com/embed?listType=playlist&list=${SERMONS_PLAYLIST_ID}`}
-                        title="Sermons Playlist"
-                        className="absolute top-0 left-0 w-full h-full rounded-lg shadow-lg"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                        allowFullScreen
-                      ></iframe>
-                    </div>
-                    <div className="mt-2 text-center text-gray-600 text-sm">
-                      Can't load the latest sermon automatically, but you can browse all past sermons above!
-                    </div>
-                  </>
-                ) : (
-                  // Defensive: only display this if playlist ID is missing
-                  <div className="flex flex-col items-center justify-center h-full w-full">
-                    <AlertTriangle className="h-12 w-12 text-amber-500 mb-4" />
-                    <p className="text-center text-gray-600">
-                      No fallback playlist specified. Please try again later.
-                    </p>
-                  </div>
-                )}
+              <div className="flex flex-col">
+                <div className="mb-4">
+                  <h2 className="section-title mb-0">Sermon Library</h2>
+                </div>
+                <div className="w-full aspect-video">
+                  <iframe
+                    src={`https://www.youtube-nocookie.com/embed?listType=playlist&list=${SERMONS_PLAYLIST_ID}`}
+                    title="Sermons Playlist"
+                    className="w-full h-full rounded-lg shadow-lg"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                  ></iframe>
+                </div>
+                <div className="mt-2 text-center text-gray-600 text-sm">
+                  Browse all sermons in our YouTube playlist
+                </div>
               </div>
             )}
           </div>
