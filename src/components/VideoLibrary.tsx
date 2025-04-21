@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { Card } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
+import { supabase } from "@/lib/supabaseClient";
 
 interface Video {
   id: string;
@@ -24,16 +25,12 @@ export const VideoLibrary: React.FC<VideoLibraryProps> = ({ type }) => {
   useEffect(() => {
     const fetchVideos = async () => {
       try {
-        const response = await fetch('/api/fetch-youtube-videos', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({})
+        const { data, error } = await supabase.functions.invoke('fetch-youtube-videos', {
+          body: {}
         });
 
-        const data = await response.json();
-
-        if (!data.hasRealData) {
-          throw new Error(data.error || 'Failed to fetch videos');
+        if (error || !data || data.error) {
+          throw new Error(error?.message || data?.error || 'Failed to fetch videos');
         }
 
         const threeMonthsAgo = new Date();
