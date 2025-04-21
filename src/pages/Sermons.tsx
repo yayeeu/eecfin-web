@@ -84,36 +84,11 @@ const Sermons = () => {
     window.open('https://www.youtube.com/@eecfin?sub_confirmation=1', '_blank');
   };
 
-  // If there is an error or there is no real data available, embed user_uploads playlist right away
-  if (error || !hasRealData) {
+  if (loading) {
     return (
       <div className="container-custom py-12">
-        <h1 className="page-title">Sermons</h1>
-        <div className="mb-8">
-          <h2 className="section-title mb-4">EECFIN YouTube Playlist</h2>
-          <div className="w-full aspect-video">
-            {playlistLoading ? (
-              <div className="flex items-center justify-center bg-gray-100 w-full h-full rounded-lg min-h-[120px]">
-                <span className="animate-pulse text-eecfin-navy">Loading playlist...</span>
-              </div>
-            ) : playlistId ? (
-              <iframe
-                src={`https://www.youtube-nocookie.com/embed?listType=user_uploads&list=${playlistId}`}
-                width="100%"
-                allowFullScreen
-                title="Sermons Playlist"
-                className="w-full h-full rounded-lg shadow-lg"
-                data-mce-fragment="1"
-              ></iframe>
-            ) : (
-              <div className="flex items-center justify-center bg-gray-100 w-full h-full rounded-lg min-h-[120px] text-eecfin-navy">
-                Playlist unavailable
-              </div>
-            )}
-          </div>
-          <div className="mt-2 text-center text-gray-600 text-sm">
-            Browse all sermons in our YouTube Playlist
-          </div>
+        <div className="flex items-center justify-center h-64 bg-gray-100 rounded-lg">
+          <div className="animate-pulse text-eecfin-navy text-xl">Loading sermons...</div>
         </div>
       </div>
     );

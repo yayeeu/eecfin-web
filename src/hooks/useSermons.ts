@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { YouTubeVideo } from '@/types/sermon.types';
 import { supabase } from '@/lib/supabaseClient';
@@ -17,7 +18,7 @@ export const useSermons = (channelId?: string) => {
   const [activeTab, setActiveTab] = useState<VideoType>('sermon');
   const [retryCount, setRetryCount] = useState(0);
   const [shouldRetry, setShouldRetry] = useState(true);
-  const MAX_RETRIES = 1;
+  const MAX_RETRIES = 1; // Reduced from 3 to 1 to prevent excessive retries
   const videosPerPage = 8;
 
   const filterLastNMonths = (items: YouTubeVideo[], months = 3) => {
@@ -38,9 +39,20 @@ export const useSermons = (channelId?: string) => {
         body: requestBody
       });
 
-      if (error || data?.error) {
-        console.error("Error calling edge function:", error || data?.error);
+      if (error) {
+        console.error("Error calling edge function:", error);
         setError("Failed to load videos. Please try again later.");
+        setHasRealData(false);
+        setLoading(false);
+        return;
+      }
+
+      console.log("Edge function response:", data);
+
+      if (data.error) {
+        console.warn("Edge function returned error:", data.error);
+        setError(data.error);
+        // Remove the fallback to mock data logic completely
         setHasRealData(false);
         setLoading(false);
         return;
@@ -52,11 +64,13 @@ export const useSermons = (channelId?: string) => {
 
       if (data.videos) {
         const filteredVideos = filterLastNMonths(data.videos);
+        console.log(`Received ${filteredVideos.length} broadcasts from edge function (filtered by 3 months)`);
         setVideos(filteredVideos);
       }
 
       if (data.sermons) {
         const filteredSermons = filterLastNMonths(data.sermons);
+        console.log(`Received ${filteredSermons.length} sermons from edge function (filtered by 3 months)`);
         setSermons(filteredSermons);
 
         if (filteredSermons.length > 0 && !data.isLive) {
@@ -68,7 +82,7 @@ export const useSermons = (channelId?: string) => {
 
       if (data.isLive) {
         setSelectedVideo(data.liveVideoId);
-        setActiveTab('broadcast');
+        setActiveTab('broadcast'); // Switch to broadcast tab if there's a live stream
       }
     } catch (err) {
       console.error("Error in useSermons hook:", err);
@@ -85,7 +99,22 @@ export const useSermons = (channelId?: string) => {
 
   useEffect(() => {
     fetchVideos();
-  }, [fetchVideos]);
+    
+    // Only retry if shouldRetry is true and retryCount is less than MAX_RETRIES
+    const retryTimer = setTimeout(() => {
+      if (error && retryCount < MAX_RETRIES && shouldRetry) {
+        console.log(`Retrying sermon videos fetch (attempt ${retryCount + 1} of ${MAX_RETRIES})`);
+        setRetryCount(prev => prev + 1);
+        fetchVideos();
+      } else if (retryCount >= MAX_RETRIES && shouldRetry) {
+        // Stop retrying after max retries
+        console.log(`Max retry attempts (${MAX_RETRIES}) reached. Stopping retries.`);
+        setShouldRetry(false);
+      }
+    }, 3000); // Increased from 5000 to allow more time between retries
+    
+    return () => clearTimeout(retryTimer);
+  }, [error, retryCount, fetchVideos, shouldRetry]);
 
   const currentItems = useMemo(() => {
     const items = activeTab === 'sermon' ? sermons : videos;
