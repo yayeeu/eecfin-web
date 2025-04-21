@@ -2,13 +2,15 @@
 import React from 'react';
 import { Card } from "@/components/ui/card";
 import { YouTubeEmbed } from "@/components/YouTubeEmbed";
-import { MessageSquare } from "lucide-react";
+import { MessageSquare, Video, ListVideo } from "lucide-react";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { VideoLibrary } from "@/components/VideoLibrary";
 
 const Sermons = () => {
   const playlistId = 'PL827hn5fOPy27cTOXAdkdqO70eoUzKNIQ';
 
   return (
-    <div className="container-custom py-8">
+    <div className="container-custom py-8 space-y-12">
       <div className="flex items-start gap-8 flex-col lg:flex-row">
         <div className="w-full lg:w-[60%] max-w-full">
           <Card className="overflow-hidden w-full">
@@ -43,6 +45,29 @@ const Sermons = () => {
             Visit Our YouTube Channel
           </a>
         </div>
+      </div>
+
+      <div className="w-full">
+        <Tabs defaultValue="sermons">
+          <TabsList className="mb-4">
+            <TabsTrigger value="sermons" className="gap-2">
+              <Video className="h-4 w-4" />
+              Sermons
+            </TabsTrigger>
+            <TabsTrigger value="livestreams" className="gap-2">
+              <ListVideo className="h-4 w-4" />
+              Live Streams
+            </TabsTrigger>
+          </TabsList>
+          
+          <TabsContent value="sermons" className="mt-0">
+            <VideoLibrary type="sermon" />
+          </TabsContent>
+          
+          <TabsContent value="livestreams" className="mt-0">
+            <VideoLibrary type="live" />
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );
