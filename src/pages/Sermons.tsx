@@ -2,9 +2,10 @@
 import React from 'react';
 import { Card } from "@/components/ui/card";
 import { YouTubeEmbed } from "@/components/YouTubeEmbed";
-import { MessageSquare, Video, ListVideo } from "lucide-react";
+import { MessageSquare, Video, ListVideo, Calendar, Info } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { VideoLibrary } from "@/components/VideoLibrary";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 const Sermons = () => {
   const playlistId = 'PL827hn5fOPy27cTOXAdkdqO70eoUzKNIQ';
@@ -33,6 +34,13 @@ const Sermons = () => {
             events. Watch our services live or catch up on past messages.
           </p>
 
+          <Alert className="bg-blue-50 border-blue-100">
+            <Info className="h-4 w-4 text-blue-500" />
+            <AlertDescription className="text-blue-700">
+              Our service times: <strong>Sunday 10:00 AM</strong> • Live streaming available
+            </AlertDescription>
+          </Alert>
+
           <a 
             href={`https://www.youtube.com/playlist?list=${playlistId}`} 
             target="_blank" 
@@ -44,6 +52,11 @@ const Sermons = () => {
             </svg>
             Visit Our YouTube Channel
           </a>
+
+          <div className="flex items-center gap-2 text-gray-600">
+            <Calendar className="w-5 h-5" />
+            <span>New sermons uploaded every Tuesday</span>
+          </div>
         </div>
       </div>
 
