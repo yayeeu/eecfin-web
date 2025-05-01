@@ -46,6 +46,12 @@ const RoleGuard: React.FC<RoleGuardProps> = ({
     return <Navigate to="/auth" replace />;
   }
 
+  // If there are allowed roles but the user role is null, redirect
+  if (allowedRoles.length > 0 && !userRole) {
+    console.log('User role not found, redirecting');
+    return <Navigate to={redirectTo} replace />;
+  }
+
   // If user doesn't have the required role, redirect
   if (allowedRoles.length > 0 && !hasPermission(allowedRoles)) {
     console.log('User does not have required role:', allowedRoles, 'Current role:', userRole);

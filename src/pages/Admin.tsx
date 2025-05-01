@@ -38,8 +38,8 @@ const Admin: React.FC<AdminProps> = ({ activeSection = 'slider' }) => {
     register: ['admin'], // Only admin can access member registration
   };
 
-  // If member role tries to access admin, redirect to home
-  if (userRole === 'member') {
+  // If user is not admin, elder, IT or volunteer, redirect to home
+  if (userRole && !['admin', 'elder', 'it', 'volunteer'].includes(userRole)) {
     return <Navigate to="/" replace />;
   }
 

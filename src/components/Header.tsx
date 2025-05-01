@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Menu, X, Mail, Heart, Facebook, Instagram, Youtube, User, LogOut } from 'lucide-react';
@@ -76,24 +75,13 @@ const Header = () => {
               ))}
               
               {user ? (
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <button className="flex items-center text-sm hover:text-eecfin-navy/70 transition-colors">
-                      <User size={16} className="mr-1" />
-                      Account
-                    </button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuItem asChild>
-                      <Link to="/profile">Profile</Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem onClick={() => signOut()}>
-                      <LogOut size={16} className="mr-2" />
-                      Sign Out
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
+                <Link 
+                  to="/profile"
+                  className="flex items-center text-sm hover:text-eecfin-navy/70 transition-colors"
+                >
+                  <User size={16} className="mr-1" />
+                  Profile
+                </Link>
               ) : (
                 <Link 
                   to="/auth"
