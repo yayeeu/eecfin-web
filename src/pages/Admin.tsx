@@ -32,12 +32,11 @@ const Admin: React.FC<AdminProps> = ({ activeSection = 'slider' }) => {
   };
 
   // Define which roles can access which sections based on requirements
+  // Removed 'settings' and 'register' entries
   const sectionAccess: Record<string, UserRole[]> = {
     slider: ['admin', 'it', 'volunteer'],
     ministries: ['admin'],
-    settings: ['admin'],
     auth: ['admin', 'member', 'elder', 'it', 'volunteer'],
-    register: ['admin'], // Only admin can access member registration
   };
 
   return (
@@ -60,7 +59,7 @@ const Admin: React.FC<AdminProps> = ({ activeSection = 'slider' }) => {
             {/* Content Component */}
             <AdminContent 
               activeSection={activeSectionState} 
-              signUp={signOut} // Corrected this from signUp to signOut as it's used for signing out
+              signUp={signOut} // Using signOut function
             />
           </div>
         </div>

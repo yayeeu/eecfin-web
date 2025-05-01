@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { LogOut, Home, Settings, Image, Users } from 'lucide-react';
+import { LogOut, Home, Image, Users } from 'lucide-react';
 import { Separator } from "@/components/ui/separator";
 import { UserRole } from '@/types/auth.types';
 import {
@@ -27,17 +27,13 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({
   const sectionAccess: Record<string, UserRole[]> = {
     slider: ['admin', 'it', 'volunteer'],
     ministries: ['admin'],
-    settings: ['admin'],
     auth: ['admin', 'member', 'elder', 'it', 'volunteer'],
-    register: ['admin'], // Only admin can access member registration
   };
 
-  // Filter menu items based on user role
+  // Filter menu items based on user role - removed 'settings' and 'register' items
   const menuItems = [
     { id: 'slider', label: 'Slider Images', icon: Image, roles: ['admin', 'it', 'volunteer'] },
     { id: 'ministries', label: 'Ministries', icon: Users, roles: ['admin'] },
-    { id: 'settings', label: 'Settings', icon: Settings, roles: ['admin'] },
-    { id: 'register', label: 'Add Member', icon: Users, roles: ['admin'] }, // Only for admin
   ].filter(item => {
     // Admin can see everything, others only see what they have permission for
     if (userRole === 'admin') return true;
@@ -48,7 +44,7 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({
     <Sidebar>
       <SidebarHeader className="px-2">
         <div className="flex items-center gap-2 py-4">
-          <Settings className="h-6 w-6 text-eecfin-navy" />
+          <Image className="h-6 w-6 text-eecfin-navy" />
           <span className="text-xl font-bold text-eecfin-navy">Admin Panel</span>
         </div>
         <Separator />

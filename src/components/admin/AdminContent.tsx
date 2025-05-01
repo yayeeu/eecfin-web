@@ -17,8 +17,6 @@ const AdminContent: React.FC<AdminContentProps> = ({ activeSection, signUp }) =>
     switch (activeSection) {
       case 'slider': return 'Manage Slider Images';
       case 'ministries': return 'Manage Ministries';
-      case 'settings': return 'Settings';
-      case 'register': return 'Add New Member';
       default: return '';
     }
   };
@@ -29,10 +27,6 @@ const AdminContent: React.FC<AdminContentProps> = ({ activeSection, signUp }) =>
         return 'Add, edit, or delete slider images displayed on the homepage.';
       case 'ministries': 
         return 'Add, edit, or delete ministry information displayed on the Get Involved page.';
-      case 'settings': 
-        return 'Configure website settings.';
-      case 'register':
-        return 'Register a new member account with appropriate role.';
       default: 
         return '';
     }
@@ -57,21 +51,6 @@ const AdminContent: React.FC<AdminContentProps> = ({ activeSection, signUp }) =>
       {activeSection === 'ministries' && (
         <RoleGuard allowedRoles={['admin']}>
           <MinistryManager />
-        </RoleGuard>
-      )}
-      {activeSection === 'settings' && (
-        <RoleGuard allowedRoles={['admin']}>
-          <div className="bg-white p-6 rounded-lg shadow">
-            <h2 className="text-xl font-semibold mb-4">Site Settings</h2>
-            <p>Settings management will be implemented in a future update.</p>
-          </div>
-        </RoleGuard>
-      )}
-      {activeSection === 'register' && (
-        <RoleGuard allowedRoles={['admin']}>
-          <div className="max-w-md mx-auto">
-            <SignupForm onSubmit={signUp} />
-          </div>
         </RoleGuard>
       )}
     </div>
