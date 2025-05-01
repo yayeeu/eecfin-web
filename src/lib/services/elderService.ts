@@ -12,7 +12,7 @@ export const getElderMembers = async () => {
   
   const { data, error } = await supabase!
     .from('members')
-    .select('*, roles(id, name), ministries!members_ministry_id_fkey(id, name)')
+    .select('*, roles!inner(*)')
     .eq('roles.name', 'elder')
     .order('name');
   

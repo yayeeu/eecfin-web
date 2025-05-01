@@ -3,7 +3,7 @@ import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Member } from '@/types/database.types';
 import { getElderMembers } from '@/lib/services/elderService';
-import { Loader2 } from 'lucide-react';
+import { Loader2, UserCircle2 } from 'lucide-react';
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 
 const EldersList = () => {
@@ -52,8 +52,11 @@ const EldersList = () => {
                 className="object-cover"
               />
             ) : (
-              <AvatarFallback className="bg-gray-200 text-gray-400 text-2xl">
-                👨‍⚖️
+              <AvatarFallback className="bg-eecfin-navy/10 text-eecfin-navy">
+                <div className="flex flex-col items-center justify-center h-full">
+                  <UserCircle2 className="w-12 h-12" />
+                  <span className="text-xs mt-1 font-medium">Elder</span>
+                </div>
               </AvatarFallback>
             )}
           </Avatar>
