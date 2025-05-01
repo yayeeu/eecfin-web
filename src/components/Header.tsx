@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Menu, X, Mail, Heart, Facebook, Instagram, Youtube, User, LogOut } from 'lucide-react';
@@ -75,13 +76,13 @@ const Header = () => {
               ))}
               
               {user ? (
-                <Link 
-                  to="/profile"
+                <button 
+                  onClick={signOut}
                   className="flex items-center text-sm hover:text-eecfin-navy/70 transition-colors"
                 >
-                  <User size={16} className="mr-1" />
-                  Profile
-                </Link>
+                  <LogOut size={16} className="mr-1" />
+                  Sign Out
+                </button>
               ) : (
                 <Link 
                   to="/auth"
@@ -148,26 +149,16 @@ const Header = () => {
                 </Link>
               ))}
               {user ? (
-                <>
-                  <Link 
-                    to="/profile" 
-                    className="nav-link px-4 py-2 flex items-center"
-                    onClick={() => setIsMenuOpen(false)}
-                  >
-                    <User size={16} className="mr-2" />
-                    Profile
-                  </Link>
-                  <button 
-                    onClick={() => {
-                      signOut();
-                      setIsMenuOpen(false);
-                    }}
-                    className="nav-link px-4 py-2 flex items-center w-full text-left"
-                  >
-                    <LogOut size={16} className="mr-2" />
-                    Sign Out
-                  </button>
-                </>
+                <button 
+                  onClick={() => {
+                    signOut();
+                    setIsMenuOpen(false);
+                  }}
+                  className="nav-link px-4 py-2 flex items-center w-full text-left"
+                >
+                  <LogOut size={16} className="mr-2" />
+                  Sign Out
+                </button>
               ) : (
                 <Link 
                   to="/auth" 
