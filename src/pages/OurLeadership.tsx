@@ -51,38 +51,7 @@ const OurLeadership = () => {
               </p>
             </div>
 
-            {/* Elder Leadership Section */}
-            <div className="bg-gray-50 rounded-lg p-8 mb-12">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
-                <div>
-                  <h3 className="text-2xl font-semibold text-eecfin-navy mb-4">Role of Elders</h3>
-                  <p className="mb-4">
-                    In accordance with biblical teaching, our elders serve as shepherds of the congregation,
-                    providing spiritual guidance, teaching sound doctrine, and modeling Christ-like living.
-                    They work together to discern God's direction for our church and make decisions that
-                    honor our mission and values.
-                  </p>
-                  <p>
-                    Elders are selected based on their spiritual maturity, commitment to the church, 
-                    and demonstration of the qualifications described in 1 Timothy 3 and Titus 1.
-                  </p>
-                </div>
-                <div>
-                  <h3 className="text-2xl font-semibold text-eecfin-navy mb-4">Elder Responsibilities</h3>
-                  <ul className="list-disc pl-5 space-y-2">
-                    <li>Providing spiritual oversight and guidance</li>
-                    <li>Teaching and defending sound doctrine</li>
-                    <li>Praying for the congregation and its needs</li>
-                    <li>Leading ministry initiatives and community outreach</li>
-                    <li>Pastoral care and visitation</li>
-                    <li>Mentoring new believers and future leaders</li>
-                    <li>Church administration and financial stewardship</li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-
-            {/* Current Elders */}
+            {/* Current Elders - Box above this section has been removed */}
             <div className="mb-16">
               <h3 className="text-2xl font-semibold text-center mb-8 text-eecfin-navy">
                 Meet Our Current Elders
