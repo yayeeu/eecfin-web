@@ -12,10 +12,10 @@ const MediaSection = () => {
   return (
     <section className="py-10 bg-gradient-to-b from-white to-gray-50">
       <div className="container-custom">
-        <div className="flex flex-col md:flex-row gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {/* YouTube Video Section */}
-          <div className="w-full md:w-3/5">
-            <Card className="h-full">
+          <div className="w-full h-full">
+            <Card className="h-full flex flex-col">
               <CardHeader className="space-y-1">
                 <div className="flex items-center justify-between">
                   <CardTitle>Watch Now</CardTitle>
@@ -25,25 +25,34 @@ const MediaSection = () => {
                   {isLive ? "Join us live now!" : "Watch our latest service"}
                 </CardDescription>
               </CardHeader>
-              <CardContent>
-                <YouTubeEmbed 
-                  videoId={videoId} 
-                  className="w-full"
-                />
+              <CardContent className="flex-grow flex flex-col">
+                <div className="w-full h-full flex-grow">
+                  <YouTubeEmbed 
+                    videoId={videoId} 
+                    className="w-full h-full"
+                  />
+                </div>
               </CardContent>
             </Card>
           </div>
 
           {/* Our Mission with language slider */}
-          <div className="w-full md:w-2/5 flex flex-col">
-            <div className="h-full flex flex-col">
-              <div className="flex items-center mb-4">
-                <h2 className="section-title mb-0">Our Mission</h2>
-              </div>
-              <div className="flex-1">
-                <MissionSlider />
-              </div>
-            </div>
+          <div className="w-full h-full">
+            <Card className="h-full">
+              <CardHeader className="space-y-1">
+                <div className="flex items-center justify-between">
+                  <CardTitle>Our Mission</CardTitle>
+                </div>
+                <CardDescription>
+                  Learn about our church's core mission
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="flex-grow">
+                <div className="h-full">
+                  <MissionSlider />
+                </div>
+              </CardContent>
+            </Card>
           </div>
         </div>
       </div>

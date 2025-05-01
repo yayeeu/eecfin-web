@@ -25,7 +25,7 @@ export const YouTubeEmbed: React.FC<YouTubeEmbedProps> = ({
   }
 
   return (
-    <div className={`relative w-full pt-[56.25%] ${className || ''}`} style={{width: '100%'}}>
+    <div className={`relative w-full h-full ${className || ''}`} style={{aspectRatio: '16/9'}}>
       <iframe
         src={embedUrl}
         className="absolute top-0 left-0 w-full h-full"
