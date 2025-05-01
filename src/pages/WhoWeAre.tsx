@@ -12,7 +12,7 @@ const queryClient = new QueryClient();
 const WhoWeAre = () => {
   return (
     <QueryClientProvider client={queryClient}>
-      <div>
+      <div className="w-full">
         {/* Hero Section with Background Image */}
         <WhoWeHero />
 
