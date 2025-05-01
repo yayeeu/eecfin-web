@@ -14,7 +14,7 @@ const InvolvedHero: React.FC = () => {
         />
         <div className="absolute inset-0 bg-eecfin-accent/40"></div>
       </div>
-      <div className="max-w-[90rem] mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10 py-12">
+      <div className="max-w-[100rem] mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10 py-12">
         <div className="absolute top-2 right-2">
           <AdminLink />
         </div>

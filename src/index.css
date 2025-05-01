@@ -58,7 +58,7 @@
 
 @layer components {
   .container-custom {
-    @apply container px-4 mx-auto max-w-[90rem];
+    @apply container px-4 mx-auto max-w-[100rem];
   }
   
   .nav-link {
