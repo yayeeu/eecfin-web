@@ -1,3 +1,4 @@
+
 import React from 'react';
 import {
   Carousel,
@@ -49,8 +50,8 @@ const MissionSlider: React.FC = () => {
       >
         <CarouselContent className="h-full">
           {missionSlides.map((slide, index) => (
-            <CarouselItem key={index} className="h-full">
-              <div className="bg-white/80 backdrop-blur-sm p-6 h-full rounded-lg shadow-md flex flex-col border border-gray-200">
+            <CarouselItem key={index} className="h-full flex">
+              <div className="bg-white/80 backdrop-blur-sm p-6 rounded-lg shadow-md flex flex-col h-full w-full border border-gray-200">
                 <div className="flex justify-between items-center mb-4">
                   <h2 className="section-title mb-0">{slide.title}</h2>
                   <span className="text-sm font-medium text-gray-500 px-2 py-1 bg-gray-100 rounded-full">{slide.language}</span>
