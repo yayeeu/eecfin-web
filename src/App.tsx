@@ -44,7 +44,7 @@ const PageLoader = () => (
   </div>
 );
 
-// Define public routes and protected routes
+// Define public routes
 const publicRoutes = [
   { path: "/", element: <Index /> },
   { path: "/who-we-are", element: <WhoWeAre /> },

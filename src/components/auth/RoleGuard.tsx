@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
@@ -49,7 +50,7 @@ const RoleGuard: React.FC<RoleGuardProps> = ({
   if (allowedRoles.length > 0) {
     // If there are allowed roles but the user role is null, redirect
     if (!userRole) {
-      console.log('User role not found, redirecting');
+      console.log('User role not found, redirecting to:', redirectTo);
       return <Navigate to={redirectTo} replace />;
     }
 

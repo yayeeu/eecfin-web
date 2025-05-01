@@ -18,6 +18,7 @@ const AdminContent: React.FC<AdminContentProps> = ({ activeSection, signUp }) =>
       case 'slider': return 'Manage Slider Images';
       case 'ministries': return 'Manage Ministries';
       case 'settings': return 'Settings';
+      case 'register': return 'Add New Member';
       default: return '';
     }
   };
@@ -30,6 +31,8 @@ const AdminContent: React.FC<AdminContentProps> = ({ activeSection, signUp }) =>
         return 'Add, edit, or delete ministry information displayed on the Get Involved page.';
       case 'settings': 
         return 'Configure website settings.';
+      case 'register':
+        return 'Register a new member account with appropriate role.';
       default: 
         return '';
     }
@@ -37,16 +40,14 @@ const AdminContent: React.FC<AdminContentProps> = ({ activeSection, signUp }) =>
 
   return (
     <div className="flex-1 p-6">
-      {activeSection !== 'register' && (
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-eecfin-navy">
-            {getSectionTitle()}
-          </h1>
-          <p className="text-gray-500 mt-2">
-            {getSectionDescription()}
-          </p>
-        </div>
-      )}
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold text-eecfin-navy">
+          {getSectionTitle()}
+        </h1>
+        <p className="text-gray-500 mt-2">
+          {getSectionDescription()}
+        </p>
+      </div>
       
       {activeSection === 'slider' && (
         <RoleGuard allowedRoles={['admin', 'it', 'volunteer']}>
@@ -68,10 +69,6 @@ const AdminContent: React.FC<AdminContentProps> = ({ activeSection, signUp }) =>
       )}
       {activeSection === 'register' && (
         <RoleGuard allowedRoles={['admin']}>
-          <div className="mb-8">
-            <h1 className="text-3xl font-bold text-eecfin-navy">Add New Member</h1>
-            <p className="text-gray-500 mt-2">Register a new member account with appropriate role.</p>
-          </div>
           <div className="max-w-md mx-auto">
             <SignupForm onSubmit={signUp} />
           </div>

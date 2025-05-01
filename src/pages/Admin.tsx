@@ -15,8 +15,9 @@ interface AdminProps {
 const Admin: React.FC<AdminProps> = ({ activeSection = 'slider' }) => {
   const [activeSectionState, setActiveSection] = useState<string>(activeSection);
   const navigate = useNavigate();
-  const { userRole, signOut, signUp } = useAuth();
+  const { userRole, signOut } = useAuth();
 
+  // Helper function to handle menu clicks
   const handleMenuClick = (id: string) => {
     // Check if user has access to this section
     if (userRole && (userRole === 'admin' || sectionAccess[id]?.includes(userRole))) {
@@ -24,6 +25,7 @@ const Admin: React.FC<AdminProps> = ({ activeSection = 'slider' }) => {
     }
   };
 
+  // Handle sign out
   const handleSignOut = async () => {
     await signOut();
     navigate('/');
@@ -58,7 +60,7 @@ const Admin: React.FC<AdminProps> = ({ activeSection = 'slider' }) => {
             {/* Content Component */}
             <AdminContent 
               activeSection={activeSectionState} 
-              signUp={signUp} 
+              signUp={signOut} // Corrected this from signUp to signOut as it's used for signing out
             />
           </div>
         </div>
