@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { useNavigate, Navigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { UserRole } from '@/types/auth.types';
 import { SidebarProvider } from "@/components/ui/sidebar";
@@ -37,11 +37,6 @@ const Admin: React.FC<AdminProps> = ({ activeSection = 'slider' }) => {
     auth: ['admin', 'member', 'elder', 'it', 'volunteer'],
     register: ['admin'], // Only admin can access member registration
   };
-
-  // If user is not admin, elder, IT or volunteer, redirect to home
-  if (userRole && !['admin', 'elder', 'it', 'volunteer'].includes(userRole)) {
-    return <Navigate to="/" replace />;
-  }
 
   return (
     <div className="min-h-screen w-full">

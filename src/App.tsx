@@ -1,3 +1,4 @@
+
 import { Suspense, lazy } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -55,19 +56,6 @@ const publicRoutes = [
   { path: "/give", element: <Give /> },
   { path: "/constitution", element: <Constitution /> },
   { path: "/sermons", element: <Sermons /> }
-];
-
-const protectedRoutes = [
-  { 
-    path: "/admin", 
-    element: <Admin />, 
-    roles: ['admin', 'member', 'elder', 'it', 'volunteer'] as UserRole[] 
-  },
-  { 
-    path: "/profile", 
-    element: <Profile />, 
-    roles: ['admin', 'member', 'elder', 'it', 'volunteer'] as UserRole[] 
-  }
 ];
 
 const App = () => (

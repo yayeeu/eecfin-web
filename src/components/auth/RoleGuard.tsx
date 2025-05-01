@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
@@ -46,16 +45,19 @@ const RoleGuard: React.FC<RoleGuardProps> = ({
     return <Navigate to="/auth" replace />;
   }
 
-  // If there are allowed roles but the user role is null, redirect
-  if (allowedRoles.length > 0 && !userRole) {
-    console.log('User role not found, redirecting');
-    return <Navigate to={redirectTo} replace />;
-  }
+  // Only check role permissions if allowedRoles is not empty
+  if (allowedRoles.length > 0) {
+    // If there are allowed roles but the user role is null, redirect
+    if (!userRole) {
+      console.log('User role not found, redirecting');
+      return <Navigate to={redirectTo} replace />;
+    }
 
-  // If user doesn't have the required role, redirect
-  if (allowedRoles.length > 0 && !hasPermission(allowedRoles)) {
-    console.log('User does not have required role:', allowedRoles, 'Current role:', userRole);
-    return <Navigate to={redirectTo} replace />;
+    // If user doesn't have the required role, redirect
+    if (!hasPermission(allowedRoles)) {
+      console.log('User does not have required role:', allowedRoles, 'Current role:', userRole);
+      return <Navigate to={redirectTo} replace />;
+    }
   }
 
   // Otherwise, render the children
