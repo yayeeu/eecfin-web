@@ -12,8 +12,8 @@ export const getElderMembers = async () => {
   
   const { data, error } = await supabase!
     .from('members')
-    .select('*, ministries(id, name), roles(id, name)')
-    .eq('role', 'elder')
+    .select('*, roles(id, name), ministries!members_ministry_id_fkey(id, name)')
+    .eq('roles.name', 'elder')
     .order('name');
   
   if (error) {
@@ -44,7 +44,7 @@ export const getEldersForDropdown = async () => {
   const { data, error } = await supabase!
     .from('members')
     .select('id, name, email, phone, status')
-    .eq('role', 'elder')
+    .eq('roles.name', 'elder')
     .eq('status', 'active')
     .order('name');
   

@@ -2,7 +2,7 @@
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Member } from '@/types/database.types';
-import { getElderMembers } from '@/lib/memberService';
+import { getElderMembers } from '@/lib/services/elderService';
 import { Loader2 } from 'lucide-react';
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 
