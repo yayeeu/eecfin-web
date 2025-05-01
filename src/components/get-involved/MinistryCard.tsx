@@ -1,9 +1,8 @@
 
 import React from 'react';
 import { Mail, Phone, User } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 import { Ministry } from '@/types/database.types';
-import { Card, CardContent, CardFooter } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 
 interface MinistryCardProps {
   ministry: Ministry;
@@ -22,7 +21,7 @@ const MinistryCard: React.FC<MinistryCardProps> = ({ ministry }) => {
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center bg-eecfin-navy/10">
-            <span className="text-eecfin-navy text-xl font-semibold">{ministry.name.charAt(0)}</span>
+            <span className="text-eecfin-navy text-xl font-semibold">{ministry.name}</span>
           </div>
         )}
       </div>
@@ -56,12 +55,6 @@ const MinistryCard: React.FC<MinistryCardProps> = ({ ministry }) => {
           )}
         </div>
       </CardContent>
-      
-      <CardFooter className="pt-0 p-3">
-        <Button className="bg-eecfin-navy hover:bg-eecfin-navy/80 w-full text-xs h-8" size="sm">
-          Get Involved
-        </Button>
-      </CardFooter>
     </Card>
   );
 };
