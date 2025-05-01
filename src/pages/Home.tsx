@@ -7,9 +7,9 @@ import WelcomeEventBanner from '../components/home/WelcomeEventBanner';
 
 const Home = () => {
   return (
-    <div>
-      {/* Image Slider Banner with Overlaid Event Box */}
-      <div className="relative">
+    <div className="w-full">
+      {/* Image Slider Banner with Overlaid Event Box - Full Width */}
+      <div className="relative w-full">
         <ImageSlider />
         <div className="absolute top-4 right-4 md:top-8 md:right-8 w-full max-w-xs z-10">
           <WelcomeEventBanner overlayStyle={true} />

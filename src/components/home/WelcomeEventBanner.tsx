@@ -22,7 +22,7 @@ const WelcomeEventBanner = ({ overlayStyle = false }: WelcomeEventBannerProps) =
   
   if (isLoading) {
     return (
-      <div className={overlayStyle ? "bg-white/90 rounded-lg shadow-lg p-4" : "py-8 bg-eecfin-navy bg-[url('/lovable-uploads/54e6cd73-6658-4990-b0c6-d369f39e1cb9.png')] bg-cover bg-center bg-blend-overlay"}>
+      <div className={overlayStyle ? "bg-white/90 rounded-lg shadow-lg p-4" : "py-8 bg-eecfin-navy bg-[url('/lovable-uploads/54e6cd73-6658-4990-b0c6-d369f39e1cb9.png')] bg-cover bg-center bg-blend-overlay w-full"}>
         <div className={overlayStyle ? "" : "container-custom"}>
           <div className="animate-pulse flex flex-col items-center">
             <div className="h-8 bg-white/20 rounded w-3/4 mb-4"></div>
@@ -37,7 +37,7 @@ const WelcomeEventBanner = ({ overlayStyle = false }: WelcomeEventBannerProps) =
   // If no event is available
   if (!nextEvent) {
     return (
-      <div className={overlayStyle ? "bg-white/90 rounded-lg shadow-lg p-4" : "py-8 bg-eecfin-navy bg-[url('/lovable-uploads/54e6cd73-6658-4990-b0c6-d369f39e1cb9.png')] bg-cover bg-center bg-blend-overlay"}>
+      <div className={overlayStyle ? "bg-white/90 rounded-lg shadow-lg p-4" : "py-8 bg-eecfin-navy bg-[url('/lovable-uploads/54e6cd73-6658-4990-b0c6-d369f39e1cb9.png')] bg-cover bg-center bg-blend-overlay w-full"}>
         <div className={overlayStyle ? "" : "container-custom"}>
           <div className="text-center text-eecfin-navy">
             <h2 className="text-lg md:text-xl font-bold mb-2">Join Our Next Service</h2>
@@ -94,7 +94,7 @@ const WelcomeEventBanner = ({ overlayStyle = false }: WelcomeEventBannerProps) =
   }
   
   return (
-    <section className="bg-eecfin-navy relative bg-[url('/lovable-uploads/54e6cd73-6658-4990-b0c6-d369f39e1cb9.png')] bg-cover bg-center bg-blend-overlay">
+    <section className="bg-eecfin-navy relative bg-[url('/lovable-uploads/54e6cd73-6658-4990-b0c6-d369f39e1cb9.png')] bg-cover bg-center bg-blend-overlay w-full">
       <div className="container-custom py-6">
         <div className="bg-white/95 p-6 rounded-lg shadow-lg md:w-5/6 mx-auto relative transform translate-y-0 md:-translate-y-12">
           <div className="flex flex-col md:flex-row md:items-center">
