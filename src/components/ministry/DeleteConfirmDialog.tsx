@@ -8,24 +8,21 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
+} from "@/components/ui/alert-dialog";
 
 interface DeleteConfirmDialogProps {
   onConfirm: () => void;
   onCancel: () => void;
 }
 
-const DeleteConfirmDialog: React.FC<DeleteConfirmDialogProps> = ({
-  onConfirm,
-  onCancel
-}) => {
+const DeleteConfirmDialog: React.FC<DeleteConfirmDialogProps> = ({ onConfirm, onCancel }) => {
   return (
     <AlertDialogContent>
       <AlertDialogHeader>
-        <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+        <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
         <AlertDialogDescription>
-          This action cannot be undone. This will permanently delete the ministry
-          from the database.
+          This action cannot be undone. This will permanently delete this ministry
+          and remove it from our database.
         </AlertDialogDescription>
       </AlertDialogHeader>
       <AlertDialogFooter>

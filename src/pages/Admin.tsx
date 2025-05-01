@@ -12,7 +12,7 @@ interface AdminProps {
   activeSection?: string;
 }
 
-const Admin: React.FC<AdminProps> = ({ activeSection = 'dashboard' }) => {
+const Admin: React.FC<AdminProps> = ({ activeSection = 'slider' }) => {
   const [activeSectionState, setActiveSection] = useState<string>(activeSection);
   const navigate = useNavigate();
   const { userRole, signOut, signUp } = useAuth();
@@ -31,10 +31,8 @@ const Admin: React.FC<AdminProps> = ({ activeSection = 'dashboard' }) => {
 
   // Define which roles can access which sections based on requirements
   const sectionAccess: Record<string, UserRole[]> = {
-    dashboard: ['admin', 'elder'],
     slider: ['admin', 'it', 'volunteer'],
     ministries: ['admin'],
-    members: ['admin', 'elder'],
     settings: ['admin'],
     auth: ['admin', 'member', 'elder', 'it', 'volunteer'],
     register: ['admin'], // Only admin can access member registration

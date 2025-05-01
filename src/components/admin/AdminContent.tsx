@@ -1,13 +1,10 @@
 
 import React from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import RoleGuard from '@/components/auth/RoleGuard';
 import SignupForm from '@/components/auth/SignupForm';
-import Dashboard from '@/components/Dashboard';
 import SliderManager from '@/components/slider/SliderManager';
 import MinistryManager from '@/components/MinistryManager';
-import MemberManager from '@/components/MemberManager';
-import ElderManager from '@/components/ElderManager';
 import { UserRole } from '@/types/auth.types';
 
 interface AdminContentProps {
@@ -18,11 +15,8 @@ interface AdminContentProps {
 const AdminContent: React.FC<AdminContentProps> = ({ activeSection, signUp }) => {
   const getSectionTitle = () => {
     switch (activeSection) {
-      case 'dashboard': return 'Church Dashboard';
       case 'slider': return 'Manage Slider Images';
       case 'ministries': return 'Manage Ministries';
-      case 'members': return 'All Church Members';
-      case 'elders': return 'Church Elders';
       case 'settings': return 'Settings';
       default: return '';
     }
@@ -30,16 +24,10 @@ const AdminContent: React.FC<AdminContentProps> = ({ activeSection, signUp }) =>
 
   const getSectionDescription = () => {
     switch (activeSection) {
-      case 'dashboard': 
-        return 'Overview of church metrics, member statistics, and ministry activity.';
       case 'slider': 
         return 'Add, edit, or delete slider images displayed on the homepage.';
       case 'ministries': 
         return 'Add, edit, or delete ministry information displayed on the Get Involved page.';
-      case 'members': 
-        return 'View all church members and their assigned roles.';
-      case 'elders': 
-        return 'View and manage church elders.';
       case 'settings': 
         return 'Configure website settings.';
       default: 
@@ -60,11 +48,6 @@ const AdminContent: React.FC<AdminContentProps> = ({ activeSection, signUp }) =>
         </div>
       )}
       
-      {activeSection === 'dashboard' && (
-        <RoleGuard allowedRoles={['admin', 'elder']}>
-          <Dashboard />
-        </RoleGuard>
-      )}
       {activeSection === 'slider' && (
         <RoleGuard allowedRoles={['admin', 'it', 'volunteer']}>
           <SliderManager />
@@ -73,16 +56,6 @@ const AdminContent: React.FC<AdminContentProps> = ({ activeSection, signUp }) =>
       {activeSection === 'ministries' && (
         <RoleGuard allowedRoles={['admin']}>
           <MinistryManager />
-        </RoleGuard>
-      )}
-      {activeSection === 'members' && (
-        <RoleGuard allowedRoles={['admin', 'elder']}>
-          <MemberManager />
-        </RoleGuard>
-      )}
-      {activeSection === 'elders' && (
-        <RoleGuard allowedRoles={['admin', 'elder']}>
-          <ElderManager />
         </RoleGuard>
       )}
       {activeSection === 'settings' && (
