@@ -28,7 +28,7 @@ const Header = () => {
   const navItems = [
     { title: 'Home', path: '/' },
     { title: 'Who We Are', path: '/who-we-are' },
-    { title: 'Our Faith', path: '/our-faith' },
+    // Removed "Our Faith" item
     { title: 'Events', path: '/events' },
     { title: 'Sermons', path: '/sermons' },
     { title: 'Get Involved', path: '/get-involved' },
