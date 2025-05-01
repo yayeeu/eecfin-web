@@ -2,11 +2,10 @@
 import React, { useState, useEffect } from 'react';
 import { Card } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, RefreshCw, Video, AlertCircle, ExternalLink } from "lucide-react";
+import { Loader2, RefreshCw, AlertCircle, ExternalLink } from "lucide-react";
 import { supabase } from "@/lib/supabaseClient";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { YouTubeEmbed } from './YouTubeEmbed';
 
 interface Video {
   id: string;
@@ -139,19 +138,6 @@ export const VideoLibrary: React.FC<VideoLibraryProps> = ({ type }) => {
               Visit YouTube Channel
             </Button>
           </div>
-        </div>
-
-        {/* Fallback embedded channel when API fails */}
-        <div className="mt-8 max-w-3xl mx-auto">
-          <h3 className="text-lg font-medium mb-4">Our YouTube Channel</h3>
-          <Card className="overflow-hidden">
-            <div className="aspect-video">
-              <YouTubeEmbed />
-            </div>
-          </Card>
-          <p className="text-sm text-gray-500 mt-2">
-            This shows our latest uploads. For sermon categories and live streams, please visit YouTube directly.
-          </p>
         </div>
       </div>
     );
