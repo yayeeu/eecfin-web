@@ -17,8 +17,9 @@ import { toast } from 'sonner';
 const formSchema = z.object({
   name: z.string().min(1, 'Ministry name is required'),
   description: z.string().min(1, 'Description is required'),
-  contact_person_id: z.string().min(1, 'Contact person is required'),
+  contact_name: z.string().min(1, 'Contact name is required'),
   contact_email: z.string().email('Please enter a valid email address').min(1, 'Email is required'),
+  contact_phone: z.string().optional(),
   photo: z.string().optional(),
   status: z.enum(['active', 'inactive'])
 });
@@ -53,19 +54,10 @@ const MinistryManager = () => {
   };
 
   const handleSubmit = (values: FormValues) => {
-    const selectedMember = elders?.find(e => e.id === values.contact_person_id) || 
-                           members?.find(m => m.id === values.contact_person_id);
-    
-    if (!selectedMember) {
-      toast.error("Selected contact person not found");
-      return;
-    }
-
+    // Use the direct contact name from the form
     const ministryData = {
       ...values,
-      contact_name: selectedMember.name || '',
-      contact_email: values.contact_email, // Use the email from the form
-      contact_phone: selectedMember.phone || ''
+      contact_person_id: selectedMember?.id, // Store the relationship if a member is selected
     };
 
     console.log("Submitting ministry data:", ministryData);

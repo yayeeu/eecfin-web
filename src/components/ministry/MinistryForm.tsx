@@ -28,8 +28,9 @@ import { Loader2 } from 'lucide-react';
 const formSchema = z.object({
   name: z.string().min(1, 'Ministry name is required'),
   description: z.string().min(1, 'Description is required'),
-  contact_person_id: z.string().min(1, 'Contact person is required'),
+  contact_name: z.string().min(1, 'Contact name is required'),
   contact_email: z.string().email('Please enter a valid email address').min(1, 'Email is required'),
+  contact_phone: z.string().optional(),
   photo: z.string().optional(),
   status: z.enum(['active', 'inactive'])
 });
@@ -61,20 +62,15 @@ const MinistryForm: React.FC<MinistryFormProps> = ({
     defaultValues: {
       name: ministry?.name || '',
       description: ministry?.description || '',
-      contact_person_id: ministry?.contact_person_id || '',
+      contact_name: ministry?.contact_name || '',
       contact_email: ministry?.contact_email || '',
+      contact_phone: ministry?.contact_phone || '',
       photo: ministry?.photo || '',
       status: (ministry?.status as 'active' | 'inactive') || 'active'
     }
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
-
-  // Get all contacts (elders + members) for dropdown
-  const allContacts = [...elders, ...members].filter(contact => 
-    // Filter out duplicates if a member is also an elder
-    !elders.some(elder => elder.id === contact.id && members.some(member => member.id === contact.id))
-  );
 
   // When form is submitted
   const handleSubmit = (values: FormValues) => {
@@ -86,23 +82,29 @@ const MinistryForm: React.FC<MinistryFormProps> = ({
     }
   };
 
-  // Update contact email when contact person changes
-  const handleContactPersonChange = (contactPersonId: string) => {
-    onContactPersonChange(contactPersonId);
-    
-    // Find the selected contact and update the email field if available
-    const selectedContact = allContacts.find(contact => contact.id === contactPersonId);
-    if (selectedContact?.email) {
-      form.setValue('contact_email', selectedContact.email);
-    }
-  };
-
-  // Update form when selected member changes
+  // If a member is selected, update the contact fields
   useEffect(() => {
-    if (selectedMember?.email) {
-      form.setValue('contact_email', selectedMember.email);
+    if (selectedMember) {
+      // Only update if the contact_name field is empty or we're creating a new ministry
+      if (!ministry || !form.getValues('contact_name')) {
+        form.setValue('contact_name', selectedMember.name || '');
+      }
+      
+      if (selectedMember.email) {
+        form.setValue('contact_email', selectedMember.email);
+      }
+      
+      if (selectedMember.phone) {
+        form.setValue('contact_phone', selectedMember.phone || '');
+      }
     }
-  }, [selectedMember, form]);
+  }, [selectedMember, form, ministry]);
+
+  // Get all contacts (elders + members) for dropdown
+  const allContacts = [...elders, ...members].filter(contact => 
+    // Filter out duplicates if a member is also an elder
+    !elders.some(elder => elder.id === contact.id && members.some(member => member.id === contact.id))
+  );
 
   return (
     <Form {...form}>
@@ -141,32 +143,13 @@ const MinistryForm: React.FC<MinistryFormProps> = ({
 
         <FormField
           control={form.control}
-          name="contact_person_id"
+          name="contact_name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Contact Person</FormLabel>
-              <Select
-                onValueChange={(value) => {
-                  field.onChange(value);
-                  handleContactPersonChange(value);
-                }}
-                defaultValue={field.value}
-              >
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select a contact person" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  <div className="max-h-[300px] overflow-y-auto">
-                    {allContacts.map((contact) => (
-                      <SelectItem key={contact.id} value={contact.id}>
-                        {contact.name} {contact.role_id === '1' ? '(Elder)' : ''}
-                      </SelectItem>
-                    ))}
-                  </div>
-                </SelectContent>
-              </Select>
+              <FormLabel>Contact Name</FormLabel>
+              <FormControl>
+                <Input placeholder="Enter contact name" {...field} />
+              </FormControl>
               <FormMessage />
             </FormItem>
           )}
@@ -189,6 +172,46 @@ const MinistryForm: React.FC<MinistryFormProps> = ({
             </FormItem>
           )}
         />
+
+        <FormField
+          control={form.control}
+          name="contact_phone"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Contact Phone (Optional)</FormLabel>
+              <FormControl>
+                <Input
+                  type="text"
+                  placeholder="Enter contact phone"
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <div className="bg-gray-50 p-4 rounded-md">
+          <p className="text-sm text-gray-500 mb-2">Optional: Select a member to use their contact information</p>
+          <Select
+            onValueChange={(value) => onContactPersonChange(value)}
+            value={selectedMember?.id}
+          >
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="Select a contact person" />
+            </SelectTrigger>
+            <SelectContent>
+              <div className="max-h-[300px] overflow-y-auto">
+                {allContacts.map((contact) => (
+                  <SelectItem key={contact.id} value={contact.id}>
+                    {contact.name} {contact.role === 'elder' ? '(Elder)' : ''}
+                  </SelectItem>
+                ))}
+              </div>
+            </SelectContent>
+          </Select>
+          <p className="text-xs text-gray-500 mt-1">Selecting a member will auto-fill contact information</p>
+        </div>
 
         <FormField
           control={form.control}

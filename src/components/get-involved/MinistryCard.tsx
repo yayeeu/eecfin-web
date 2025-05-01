@@ -32,24 +32,19 @@ const MinistryCard: React.FC<MinistryCardProps> = ({ ministry }) => {
         <p className="text-xs text-gray-600 mb-2 line-clamp-2">{ministry.description}</p>
         
         <div className="space-y-1 text-xs">
-          {ministry.contact_elder ? (
-            <div className="flex items-start text-gray-700">
-              <User className="h-3 w-3 mr-1 mt-0.5 text-eecfin-navy flex-shrink-0" />
-              <span className="truncate">{ministry.contact_elder.name}</span>
-            </div>
-          ) : (
+          <div className="flex items-center text-gray-700">
+            <User className="h-3 w-3 mr-1 text-eecfin-navy flex-shrink-0" />
+            <span className="truncate">{ministry.contact_name}</span>
+          </div>
+          
+          {ministry.contact_email && (
             <div className="flex items-center text-gray-700">
-              <User className="h-3 w-3 mr-1 text-eecfin-navy flex-shrink-0" />
-              <span className="truncate">{ministry.contact_name}</span>
+              <Mail className="h-3 w-3 mr-1 text-eecfin-navy flex-shrink-0" />
+              <a href={`mailto:${ministry.contact_email}`} className="hover:text-eecfin-navy truncate">
+                {ministry.contact_email}
+              </a>
             </div>
           )}
-          
-          <div className="flex items-center text-gray-700">
-            <Mail className="h-3 w-3 mr-1 text-eecfin-navy flex-shrink-0" />
-            <a href={`mailto:${ministry.contact_email}`} className="hover:text-eecfin-navy truncate">
-              {ministry.contact_email}
-            </a>
-          </div>
           
           {ministry.contact_phone && (
             <div className="flex items-center text-gray-700">

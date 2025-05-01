@@ -21,11 +21,10 @@ const MinistryCard: React.FC<MinistryCardProps> = ({
   onEdit,
   onDelete
 }) => {
-  // Display contact person from either direct ministry data or from relations
-  const displayContact = contactPerson || contactElder;
-  const contactName = ministry.contact_name || displayContact?.name || 'No contact assigned';
-  const contactEmail = ministry.contact_email || displayContact?.email || '';
-  const contactPhone = ministry.contact_phone || displayContact?.phone || '';
+  // Always use the contact_name from ministry directly
+  const contactName = ministry.contact_name || 'No contact assigned';
+  const contactEmail = ministry.contact_email || '';
+  const contactPhone = ministry.contact_phone || '';
 
   return (
     <Card className="flex flex-col h-full">
