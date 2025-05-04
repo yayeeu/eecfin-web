@@ -18,19 +18,28 @@ const MediaSection = () => {
             <Card className="h-full flex flex-col">
               <CardHeader className="space-y-1">
                 <div className="flex items-center justify-between">
-                  <CardTitle>Watch Now</CardTitle>
-                  <LiveIndicator isLive={isLive} />
+                  <CardTitle className="flex items-center gap-2">
+                    Watch Now
+                    <LiveIndicator isLive={isLive} size="sm" className="ml-2" />
+                  </CardTitle>
                 </div>
                 <CardDescription>
                   {isLive ? "Join us live now!" : "Watch our latest service"}
                 </CardDescription>
               </CardHeader>
               <CardContent className="flex-grow flex flex-col">
-                <div className="w-full h-full flex-grow">
+                <div className="w-full h-full flex-grow relative">
                   <YouTubeEmbed 
                     videoId={videoId} 
                     className="w-full h-full"
+                    autoplay={isLive}
+                    isLive={isLive}
                   />
+                  {isLive && (
+                    <div className="absolute top-2 left-2 z-10">
+                      <LiveIndicator isLive={isLive} size="lg" />
+                    </div>
+                  )}
                 </div>
               </CardContent>
             </Card>

@@ -5,12 +5,16 @@ interface YouTubeEmbedProps {
   playlistId?: string;
   videoId?: string;
   className?: string;
+  autoplay?: boolean;
+  isLive?: boolean;
 }
 
 export const YouTubeEmbed: React.FC<YouTubeEmbedProps> = ({ 
   playlistId,
   videoId,
-  className
+  className,
+  autoplay = false,
+  isLive = false
 }) => {
   // Determine the correct embed URL
   let embedUrl = '';
@@ -24,6 +28,11 @@ export const YouTubeEmbed: React.FC<YouTubeEmbedProps> = ({
     embedUrl = 'https://www.youtube.com/embed?listType=user_uploads&list=eecfin';
   }
 
+  // Add autoplay parameter if needed
+  if (autoplay) {
+    embedUrl += embedUrl.includes('?') ? '&autoplay=1' : '?autoplay=1';
+  }
+
   return (
     <div className={`relative w-full h-full ${className || ''}`} style={{aspectRatio: '16/9'}}>
       <iframe
@@ -32,7 +41,7 @@ export const YouTubeEmbed: React.FC<YouTubeEmbedProps> = ({
         style={{width: '100%', height: '100%'}}
         allowFullScreen
         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-        title="YouTube Video"
+        title={isLive ? "Live Stream" : "YouTube Video"}
       />
     </div>
   );
