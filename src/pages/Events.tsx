@@ -64,7 +64,7 @@ const Events = () => {
 
   return (
     <div>
-      <section className="relative bg-eecfin-navy overflow-hidden">
+      <section className="relative bg-eecfin-navy overflow-hidden h-64">
         <div className="absolute inset-0 z-0">
           <img 
             src="/lovable-uploads/54e6cd73-6658-4990-b0c6-d369f39e1cb9.png" 
@@ -84,76 +84,92 @@ const Events = () => {
 
       <section className="py-12 bg-white">
         <div className="container-custom">
-          <div className="flex flex-col md:flex-row justify-between items-center mb-8">
-            <h2 className="section-title mb-4 md:mb-0">Upcoming Events</h2>
-            <ToggleGroup type="single" defaultValue="list" value={viewType} onValueChange={(value) => value && setViewType(value as ViewType)}>
-              <ToggleGroupItem value="list" aria-label="Toggle list view">
-                <List className="h-4 w-4 mr-2" />
-                List
-              </ToggleGroupItem>
-              <ToggleGroupItem value="calendar" aria-label="Toggle calendar view">
-                <CalendarDays className="h-4 w-4 mr-2" />
-                Calendar
-              </ToggleGroupItem>
-            </ToggleGroup>
-          </div>
-
-          {/* Loading Skeletons */}
-          {isLoading && (
-            <div className="space-y-6">
-              {[1, 2, 3].map(i => (
-                <div key={i} className="bg-white rounded-lg shadow-md overflow-hidden">
-                  <div className="md:flex">
-                    <Skeleton className="h-48 md:w-48" />
-                    <div className="p-6 w-full">
-                      <Skeleton className="h-8 w-3/4 mb-4" />
-                      <Skeleton className="h-4 w-1/2 mb-2" />
-                      <Skeleton className="h-4 w-2/3 mb-4" />
-                      <Skeleton className="h-20 w-full mb-4" />
-                      <Skeleton className="h-10 w-40" />
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-
-          {/* Error State */}
-          {(isError || status === 'error') && (
-            <div className="bg-red-50 p-8 rounded-lg text-center">
-              <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
-              <h3 className="text-xl font-medium mb-2">Error Loading Events</h3>
-              <p className="text-gray-700 mb-6">
-                {errorMessage || "There was a problem fetching events from Google Calendar. Please check your configuration and try again."}
-              </p>
-              <p className="text-sm text-gray-500 mb-4">
-                Make sure your Google Calendar API key and Calendar ID are properly set in Supabase secrets.
-              </p>
-            </div>
-          )}
-
-          {/* Content */}
-          {!isLoading && !isError && status !== 'error' && (
+          <div className="grid grid-cols-1 lg:grid-cols-[1fr_35%] gap-8">
+            {/* Main Content */}
             <div>
-              {viewType === "list" && (
-                <EventListView 
-                  events={paginatedEvents} 
-                  currentPage={currentPage}
-                  totalPages={totalPages}
-                  onPageChange={setCurrentPage}
-                  totalEvents={events.length}
-                />
+              <div className="flex flex-col md:flex-row justify-between items-center mb-8">
+                <h2 className="section-title mb-4 md:mb-0">Upcoming Events</h2>
+                <ToggleGroup type="single" defaultValue="list" value={viewType} onValueChange={(value) => value && setViewType(value as ViewType)}>
+                  <ToggleGroupItem value="list" aria-label="Toggle list view">
+                    <List className="h-4 w-4 mr-2" />
+                    List
+                  </ToggleGroupItem>
+                  <ToggleGroupItem value="calendar" aria-label="Toggle calendar view">
+                    <CalendarDays className="h-4 w-4 mr-2" />
+                    Calendar
+                  </ToggleGroupItem>
+                </ToggleGroup>
+              </div>
+
+              {/* Loading Skeletons */}
+              {isLoading && (
+                <div className="space-y-6">
+                  {[1, 2, 3].map(i => (
+                    <div key={i} className="bg-white rounded-lg shadow-md overflow-hidden">
+                      <div className="md:flex">
+                        <Skeleton className="h-48 md:w-48" />
+                        <div className="p-6 w-full">
+                          <Skeleton className="h-8 w-3/4 mb-4" />
+                          <Skeleton className="h-4 w-1/2 mb-2" />
+                          <Skeleton className="h-4 w-2/3 mb-4" />
+                          <Skeleton className="h-20 w-full mb-4" />
+                          <Skeleton className="h-10 w-40" />
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
               )}
-              {viewType === "calendar" && (
-                <EventCalendarView 
-                  events={events}
-                  selectedDate={selectedDate}
-                  setSelectedDate={setSelectedDate}
-                  filteredEvents={filteredEvents}
-                />
+
+              {/* Error State */}
+              {(isError || status === 'error') && (
+                <div className="bg-red-50 p-8 rounded-lg text-center">
+                  <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
+                  <h3 className="text-xl font-medium mb-2">Error Loading Events</h3>
+                  <p className="text-gray-700 mb-6">
+                    {errorMessage || "There was a problem fetching events from Google Calendar. Please check your configuration and try again."}
+                  </p>
+                  <p className="text-sm text-gray-500 mb-4">
+                    Make sure your Google Calendar API key and Calendar ID are properly set in Supabase secrets.
+                  </p>
+                </div>
+              )}
+
+              {/* Content */}
+              {!isLoading && !isError && status !== 'error' && (
+                <div>
+                  {viewType === "list" && (
+                    <EventListView 
+                      events={paginatedEvents} 
+                      currentPage={currentPage}
+                      totalPages={totalPages}
+                      onPageChange={setCurrentPage}
+                      totalEvents={events.length}
+                    />
+                  )}
+                  {viewType === "calendar" && (
+                    <EventCalendarView 
+                      events={events}
+                      selectedDate={selectedDate}
+                      setSelectedDate={setSelectedDate}
+                      filteredEvents={filteredEvents}
+                    />
+                  )}
+                </div>
               )}
             </div>
-          )}
+
+            {/* Right Side Image */}
+            <div className="hidden lg:block">
+              <div className="sticky top-4">
+                <img 
+                  src="/lovable-uploads/54e6cd73-6658-4990-b0c6-d369f39e1cb9.png" 
+                  alt="Church community gathering" 
+                  className="w-full h-[600px] object-cover rounded-lg shadow-lg"
+                />
+              </div>
+            </div>
+          </div>
         </div>
       </section>
       
