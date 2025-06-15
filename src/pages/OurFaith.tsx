@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { BookOpen, ChevronDown } from "lucide-react";
+import { BookOpen } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { 
   Accordion,
@@ -8,6 +8,14 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
 
 const OurFaith = () => {
   const faithStatements = [
@@ -72,7 +80,7 @@ const OurFaith = () => {
   return (
     <div>
       {/* Hero Section with the uploaded image */}
-      <section className="relative bg-eecfin-navy overflow-hidden">
+      <section className="relative bg-eecfin-navy overflow-hidden h-64">
         <div className="absolute inset-0 z-0">
           <img 
             src="/lovable-uploads/01e779b2-ee2a-4a84-a799-ad97fdc1319f.png" 
@@ -95,32 +103,66 @@ const OurFaith = () => {
         </div>
       </section>
 
-      {/* Faith Statements - Accordion View */}
-      <section className="py-12 bg-white">
+      {/* Breadcrumb */}
+      <div className="bg-gray-50 py-4">
         <div className="container-custom">
-          <div className="max-w-4xl mx-auto">
-            <h2 className="text-3xl font-bold text-eecfin-navy text-center mb-8">
-              Our Beliefs
-            </h2>
-            
-            <div className="bg-white rounded-lg shadow-md p-6">
-              <Accordion type="single" collapsible className="w-full">
-                {faithStatements.map((statement, index) => (
-                  <AccordionItem key={index} value={`item-${index}`}>
-                    <AccordionTrigger className="text-left font-medium text-eecfin-navy hover:text-eecfin-accent transition-colors py-4">
-                      <div className="flex items-center">
-                        <div className="w-8 h-8 mr-3 rounded-full bg-eecfin-navy/10 flex items-center justify-center text-eecfin-navy flex-shrink-0">
-                          <BookOpen size={16} />
+          <Breadcrumb>
+            <BreadcrumbList>
+              <BreadcrumbItem>
+                <BreadcrumbLink href="/">Home</BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem>
+                <BreadcrumbLink href="/who-we-are">Who We Are</BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem>
+                <BreadcrumbPage>Statement of Faith</BreadcrumbPage>
+              </BreadcrumbItem>
+            </BreadcrumbList>
+          </Breadcrumb>
+        </div>
+      </div>
+
+      {/* Main Content Section with Large Left Image */}
+      <section className="bg-white">
+        <div className="flex min-h-screen">
+          {/* Large Left Side Image */}
+          <div className="w-2/5 relative overflow-hidden">
+            <img 
+              src="https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=1200&h=800&fit=crop" 
+              alt="Bible study and faith community"
+              className="w-full h-full object-cover"
+            />
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent to-white/20"></div>
+          </div>
+          
+          {/* Right Content Area */}
+          <div className="w-3/5 py-12">
+            <div className="container-custom max-w-4xl">
+              <h2 className="text-3xl font-bold text-eecfin-navy text-center mb-8">
+                Our Beliefs
+              </h2>
+              
+              <div className="bg-white rounded-lg shadow-md p-6">
+                <Accordion type="single" collapsible className="w-full">
+                  {faithStatements.map((statement, index) => (
+                    <AccordionItem key={index} value={`item-${index}`}>
+                      <AccordionTrigger className="text-left font-medium text-eecfin-navy hover:text-eecfin-accent transition-colors py-4">
+                        <div className="flex items-center">
+                          <div className="w-8 h-8 mr-3 rounded-full bg-eecfin-navy/10 flex items-center justify-center text-eecfin-navy flex-shrink-0">
+                            <BookOpen size={16} />
+                          </div>
+                          {statement.title}
                         </div>
-                        {statement.title}
-                      </div>
-                    </AccordionTrigger>
-                    <AccordionContent className="text-gray-700 leading-relaxed pl-11">
-                      {statement.content}
-                    </AccordionContent>
-                  </AccordionItem>
-                ))}
-              </Accordion>
+                      </AccordionTrigger>
+                      <AccordionContent className="text-gray-700 leading-relaxed pl-11">
+                        {statement.content}
+                      </AccordionContent>
+                    </AccordionItem>
+                  ))}
+                </Accordion>
+              </div>
             </div>
           </div>
         </div>
