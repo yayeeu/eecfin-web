@@ -4,7 +4,7 @@ import { Separator } from "@/components/ui/separator";
 
 const WhoWeHero = () => {
   return (
-    <section className="relative bg-eecfin-navy overflow-hidden w-full">
+    <section className="relative bg-eecfin-navy overflow-hidden w-full h-64">
       <div className="absolute inset-0 z-0">
         <img 
           src="/lovable-uploads/54e6cd73-6658-4990-b0c6-d369f39e1cb9.png" 
