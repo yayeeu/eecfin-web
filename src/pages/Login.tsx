@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -19,12 +19,17 @@ const Login = () => {
   
   const { signIn, signUp, user } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // Get the intended destination from location state
+  const from = location.state?.from?.pathname || '/';
 
   useEffect(() => {
     if (user) {
-      navigate('/');
+      // Redirect to intended page or home
+      navigate(from, { replace: true });
     }
-  }, [user, navigate]);
+  }, [user, navigate, from]);
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -44,7 +49,7 @@ const Login = () => {
           title: "Welcome back!",
           description: "You have been signed in successfully.",
         });
-        navigate('/');
+        // Navigation will happen via useEffect when user state updates
       }
     } catch (error) {
       toast({

@@ -42,20 +42,6 @@ const PageLoader = () => (
   </div>
 );
 
-// Define public routes
-const publicRoutes = [
-  { path: "/", element: <Index /> },
-  { path: "/who-we-are", element: <WhoWeAre /> },
-  { path: "/our-faith", element: <OurFaith /> },
-  { path: "/our-leadership", element: <OurLeadership /> },
-  { path: "/events", element: <Events /> },
-  { path: "/contact", element: <Contact /> },
-  { path: "/get-involved", element: <GetInvolved /> },
-  { path: "/give", element: <Give /> },
-  { path: "/constitution", element: <Constitution /> },
-  { path: "/sermons", element: <Sermons /> }
-];
-
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
@@ -64,10 +50,10 @@ const App = () => (
       <BrowserRouter>
         <AuthProvider>
           <Routes>
-            {/* Login Route */}
+            {/* Login Route - Standalone */}
             <Route path="/login" element={<Login />} />
 
-            {/* Admin Route - Protected */}
+            {/* Admin Route - Protected and Standalone */}
             <Route 
               path="/admin" 
               element={
@@ -77,24 +63,81 @@ const App = () => (
               } 
             />
 
-            {/* Public Routes */}
-            {publicRoutes.map(route => (
-              <Route 
-                key={route.path} 
-                path={route.path} 
-                element={
-                  route.path === "/" ? (
-                    route.element
-                  ) : (
-                    <Layout>
-                      <Suspense fallback={<PageLoader />}>
-                        {route.element}
-                      </Suspense>
-                    </Layout>
-                  )
-                } 
-              />
-            ))}
+            {/* Home Route - Standalone */}
+            <Route path="/" element={<Index />} />
+
+            {/* Public Routes with Layout */}
+            <Route path="/who-we-are" element={
+              <Layout>
+                <Suspense fallback={<PageLoader />}>
+                  <WhoWeAre />
+                </Suspense>
+              </Layout>
+            } />
+            
+            <Route path="/our-faith" element={
+              <Layout>
+                <Suspense fallback={<PageLoader />}>
+                  <OurFaith />
+                </Suspense>
+              </Layout>
+            } />
+            
+            <Route path="/our-leadership" element={
+              <Layout>
+                <Suspense fallback={<PageLoader />}>
+                  <OurLeadership />
+                </Suspense>
+              </Layout>
+            } />
+            
+            <Route path="/events" element={
+              <Layout>
+                <Suspense fallback={<PageLoader />}>
+                  <Events />
+                </Suspense>
+              </Layout>
+            } />
+            
+            <Route path="/contact" element={
+              <Layout>
+                <Suspense fallback={<PageLoader />}>
+                  <Contact />
+                </Suspense>
+              </Layout>
+            } />
+            
+            <Route path="/get-involved" element={
+              <Layout>
+                <Suspense fallback={<PageLoader />}>
+                  <GetInvolved />
+                </Suspense>
+              </Layout>
+            } />
+            
+            <Route path="/give" element={
+              <Layout>
+                <Suspense fallback={<PageLoader />}>
+                  <Give />
+                </Suspense>
+              </Layout>
+            } />
+            
+            <Route path="/constitution" element={
+              <Layout>
+                <Suspense fallback={<PageLoader />}>
+                  <Constitution />
+                </Suspense>
+              </Layout>
+            } />
+            
+            <Route path="/sermons" element={
+              <Layout>
+                <Suspense fallback={<PageLoader />}>
+                  <Sermons />
+                </Suspense>
+              </Layout>
+            } />
 
             {/* 404 Route */}
             <Route path="*" element={<NotFound />} />
