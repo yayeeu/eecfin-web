@@ -56,13 +56,13 @@ const Footer = () => {
           <div>
             <h3 className="text-eecfin-gold text-xl font-semibold mb-4">Connect With Us</h3>
             <div className="flex space-x-4 mb-6">
-              <a href="#" className="text-white hover:text-eecfin-gold transition-colors" aria-label="Facebook">
+              <a href="https://www.facebook.com/eecfin.media" className="text-white hover:text-eecfin-gold transition-colors" aria-label="Facebook">
                 <Facebook size={24} />
               </a>
-              <a href="#" className="text-white hover:text-eecfin-gold transition-colors" aria-label="Instagram">
+              <a href="https://www.instagram.com/eecfin/" className="text-white hover:text-eecfin-gold transition-colors" aria-label="Instagram">
                 <Instagram size={24} />
               </a>
-              <a href="#" className="text-white hover:text-eecfin-gold transition-colors" aria-label="YouTube">
+              <a href="https://www.youtube.com/@eecfin" className="text-white hover:text-eecfin-gold transition-colors" aria-label="YouTube">
                 <Youtube size={24} />
               </a>
             </div>

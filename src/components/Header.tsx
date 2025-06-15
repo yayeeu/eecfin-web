@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Menu, X, Mail, Heart, Facebook, Instagram, Youtube } from 'lucide-react';
@@ -30,9 +29,9 @@ const Header = () => {
   ];
 
   const socialIcons = [
-    { icon: <Facebook size={16} />, url: "#", ariaLabel: "Facebook" },
-    { icon: <Instagram size={16} />, url: "#", ariaLabel: "Instagram" },
-    { icon: <Youtube size={16} />, url: "#", ariaLabel: "YouTube" },
+    { icon: <Facebook size={16} />, url: "https://www.facebook.com/eecfin.media", ariaLabel: "Facebook" },
+    { icon: <Instagram size={16} />, url: "https://www.instagram.com/eecfin/", ariaLabel: "Instagram" },
+    { icon: <Youtube size={16} />, url: "https://www.youtube.com/@eecfin", ariaLabel: "YouTube" },
   ];
 
   return (
