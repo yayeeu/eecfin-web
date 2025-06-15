@@ -36,13 +36,11 @@ const Header = () => {
         <div className="flex justify-between items-center py-4">
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-3">
-            <div className="w-12 h-12 bg-eecfin-navy rounded-full flex items-center justify-center">
-              <span className="text-white font-bold text-lg">E</span>
-            </div>
-            <div>
-              <h1 className="text-xl font-bold text-eecfin-navy">EECFIN</h1>
-              <p className="text-sm text-gray-600 hidden sm:block">Ethiopian Evangelical Church</p>
-            </div>
+            <img 
+              src="/lovable-uploads/0e9c7cce-3d10-47b6-ae05-506674613ae3.png" 
+              alt="Ethiopian Evangelical Church in Finland"
+              className="h-12 w-auto"
+            />
           </Link>
 
           {/* Desktop Navigation */}
