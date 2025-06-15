@@ -7,39 +7,27 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import MemberContactLogs from '@/components/members/MemberContactLogs';
 import MyMembersList from '@/components/MyMembersList';
-import { useAuth, UserRole } from '@/contexts/AuthContext';
 
 const MemberManager: React.FC = () => {
   const { toast } = useToast();
-  const { userProfile, userRole } = useAuth();
   const [selectedMemberId, setSelectedMemberId] = useState<string | null>(null);
 
   const handleMemberSelect = (memberId: string) => {
     setSelectedMemberId(memberId);
   };
 
-  const isElder = userRole === 'elder';
-  const isAdmin = userRole === 'admin';
-
-  // Determine which tabs to show based on the user's role
+  // Since we removed auth, show all tabs as public
   const tabs = [
-    { id: 'all-members', label: 'All Members', roles: ['admin', 'elder'] },
-    { id: 'my-members', label: 'My Members', roles: ['admin', 'elder'] },
-    { id: 'elders', label: 'Elders', roles: ['admin'] },
-    { id: 'contact-logs', label: 'Contact Logs', roles: ['admin', 'elder'], disabled: !selectedMemberId },
-  ].filter(tab => {
-    // Admin can see everything, elders see specific tabs
-    if (userRole === 'admin') return true;
-    return tab.roles.includes(userRole as UserRole);
-  });
-
-  // Determine default tab based on the user's role
-  const defaultTab = isElder ? 'my-members' : 'all-members';
+    { id: 'all-members', label: 'All Members' },
+    { id: 'my-members', label: 'My Members' },
+    { id: 'elders', label: 'Elders' },
+    { id: 'contact-logs', label: 'Contact Logs', disabled: !selectedMemberId },
+  ];
 
   return (
     <div className="space-y-6">
-      <Tabs defaultValue={defaultTab} className="w-full">
-        <TabsList className={`grid w-full ${tabs.length === 4 ? 'grid-cols-4' : `grid-cols-${tabs.length}`}`}>
+      <Tabs defaultValue="all-members" className="w-full">
+        <TabsList className="grid w-full grid-cols-4">
           {tabs.map(tab => (
             <TabsTrigger 
               key={tab.id} 
@@ -63,7 +51,7 @@ const MemberManager: React.FC = () => {
             <CardContent>
               <AllMembersList 
                 onMemberSelect={handleMemberSelect}
-                readOnly={isElder} // Elders can only view, not edit
+                readOnly={false}
               />
             </CardContent>
           </Card>
@@ -83,21 +71,19 @@ const MemberManager: React.FC = () => {
           </Card>
         </TabsContent>
         
-        {isAdmin && (
-          <TabsContent value="elders">
-            <Card>
-              <CardHeader>
-                <CardTitle>Church Elders</CardTitle>
-                <CardDescription>
-                  View and manage church elders. Elders are members with the role 'Elder'.
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <EldersList />
-              </CardContent>
-            </Card>
-          </TabsContent>
-        )}
+        <TabsContent value="elders">
+          <Card>
+            <CardHeader>
+              <CardTitle>Church Elders</CardTitle>
+              <CardDescription>
+                View and manage church elders. Elders are members with the role 'Elder'.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <EldersList />
+            </CardContent>
+          </Card>
+        </TabsContent>
 
         <TabsContent value="contact-logs">
           <Card>

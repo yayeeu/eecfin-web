@@ -1,9 +1,7 @@
-
 import React from 'react';
 import { Heart, Home, CreditCard } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Link } from 'react-router-dom';
-import AdminLink from '@/components/AdminLink';
 
 const Give = () => {
   return (
@@ -20,9 +18,6 @@ const Give = () => {
           <div className="absolute inset-0 bg-eecfin-accent/40"></div>
         </div>
         <div className="container-custom text-center relative z-10 py-12">
-          <div className="absolute top-2 right-2">
-            <AdminLink />
-          </div>
           <h1 className="text-4xl md:text-5xl font-bold mb-6 text-white">Give</h1>
           <p className="text-xl max-w-3xl mx-auto text-white/90">
             Support our mission and ministry

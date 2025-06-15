@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Member } from '@/types/database.types';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -11,7 +10,6 @@ import {
 import { format } from 'date-fns';
 import { Badge } from '@/components/ui/badge';
 import MemberMinistryAssignments from './MemberMinistryAssignments';
-import { useAuth } from '@/contexts/AuthContext';
 
 interface MemberDetailViewProps {
   member: Member;
@@ -19,8 +17,8 @@ interface MemberDetailViewProps {
 }
 
 const MemberDetailView: React.FC<MemberDetailViewProps> = ({ member, onClose }) => {
-  const { userRole } = useAuth();
-  const isReadOnly = userRole === 'elder';
+  // Since we removed auth, set readOnly to false by default
+  const isReadOnly = false;
   
   if (!member) return null;
 

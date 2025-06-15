@@ -20,7 +20,6 @@ import {
   DropdownMenuTrigger 
 } from '@/components/ui/dropdown-menu';
 import { Member } from '@/types/database.types';
-import { useAuth } from '@/contexts/AuthContext';
 import { Badge } from '@/components/ui/badge';
 import { getMembersByElderId } from '@/lib/memberService';
 
@@ -30,10 +29,10 @@ interface MyMembersListProps {
 
 const MyMembersList: React.FC<MyMembersListProps> = ({ onMemberSelect }) => {
   const { toast } = useToast();
-  const { userProfile } = useAuth();
   const [searchTerm, setSearchTerm] = useState('');
   
-  const elderId = userProfile?.id;
+  // Since we removed auth, we'll show a default empty state for now
+  const elderId = null;
 
   const { 
     data: members, 
@@ -71,102 +70,14 @@ const MyMembersList: React.FC<MyMembersListProps> = ({ onMemberSelect }) => {
     member.phone?.includes(searchTerm)
   ) || [];
 
-  if (filteredMembers.length === 0 && !searchTerm) {
-    return (
-      <div className="text-center py-10">
-        <UserCheck className="mx-auto h-12 w-12 text-gray-400" />
-        <h3 className="mt-2 text-sm font-semibold text-gray-900">No assigned members</h3>
-        <p className="mt-1 text-sm text-gray-500">
-          {userProfile?.role === 'elder' 
-            ? "You don't have any members assigned to you yet."
-            : "Only users with 'elder' role can have members assigned to them."}
-        </p>
-      </div>
-    );
-  }
-
+  // Show empty state since we removed authentication
   return (
-    <div className="space-y-4">
-      <div className="flex items-center gap-2">
-        <div className="relative flex-1">
-          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500" />
-          <Input
-            type="text"
-            placeholder="Search members..."
-            className="pl-8"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-        </div>
-        <Button variant="outline" onClick={() => refetch()}>
-          Refresh
-        </Button>
-      </div>
-
-      {filteredMembers.length === 0 ? (
-        <div className="text-center py-10">
-          <Search className="mx-auto h-12 w-12 text-gray-400" />
-          <h3 className="mt-2 text-sm font-semibold text-gray-900">No members found</h3>
-          <p className="mt-1 text-sm text-gray-500">
-            Try searching with a different term
-          </p>
-        </div>
-      ) : (
-        <div className="rounded-md border">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Name</TableHead>
-                <TableHead>Contact</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {filteredMembers.map((member) => (
-                <TableRow key={member.id}>
-                  <TableCell className="font-medium">{member.name}</TableCell>
-                  <TableCell>
-                    <div className="flex flex-col space-y-1">
-                      {member.phone && (
-                        <div className="flex items-center">
-                          <Phone className="h-4 w-4 mr-1" />
-                          <span className="text-sm">{member.phone}</span>
-                        </div>
-                      )}
-                      {member.email && (
-                        <div className="flex items-center">
-                          <Mail className="h-4 w-4 mr-1" />
-                          <span className="text-sm">{member.email}</span>
-                        </div>
-                      )}
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <Badge variant={member.status === 'active' ? 'default' : 'secondary'}>
-                      {member.status || 'Unknown'}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="sm">
-                          Actions
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem onClick={() => onMemberSelect(member.id)}>
-                          View Contact Logs
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
-      )}
+    <div className="text-center py-10">
+      <UserCheck className="mx-auto h-12 w-12 text-gray-400" />
+      <h3 className="mt-2 text-sm font-semibold text-gray-900">No assigned members</h3>
+      <p className="mt-1 text-sm text-gray-500">
+        Authentication system has been removed. This feature requires user authentication to function.
+      </p>
     </div>
   );
 };

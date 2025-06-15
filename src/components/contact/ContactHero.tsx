@@ -1,6 +1,5 @@
 
 import React from 'react';
-import AdminLink from '@/components/AdminLink';
 
 const ContactHero = () => {
   return (
@@ -14,9 +13,6 @@ const ContactHero = () => {
         <div className="absolute inset-0 bg-sky-800/50"></div>
       </div>
       <div className="max-w-[100rem] mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10 py-16">
-        <div className="absolute top-2 right-2">
-          <AdminLink />
-        </div>
         <h1 className="text-4xl md:text-5xl font-bold mb-6 text-white">Contact Us</h1>
         <p className="text-xl max-w-3xl mx-auto text-white/90">
           We'd love to hear from you! Reach out with any questions or prayer requests.
