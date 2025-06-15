@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Menu, X, Mail, Heart, Facebook, Instagram, Youtube } from 'lucide-react';
@@ -69,14 +68,14 @@ const Header = () => {
         </div>
       </div>
       
-      <div className="bg-eecfin-navy py-4 w-full">
+      <div className="bg-eecfin-navy py-6 w-full">
         <div className="container-custom">
           <div className="flex items-center justify-between">
             <Link to="/" className="flex items-center">
               <img 
                 src="/lovable-uploads/37a23e62-98e1-4990-b072-d002cd08d47e.png" 
                 alt="EECFIN Logo" 
-                className="h-8 md:h-10"
+                className="h-16 md:h-20"
               />
             </Link>
 
