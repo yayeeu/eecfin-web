@@ -21,6 +21,7 @@ export const getAllMembers = async () => {
       assigned_elder:member_under_elder!member_id(
         id,
         elder_id,
+        member_id,
         elder:members!member_under_elder_elder_id_fkey(id, name)
       )
     `)
@@ -31,12 +32,21 @@ export const getAllMembers = async () => {
     throw error;
   }
   
-  // Type-safe conversion
+  // Transform the data to match our Member type
   return (data || []).map(item => ({
     ...item,
+    status: (item.status === 'active' || item.status === 'inactive') ? item.status : 'active',
     roles: item.roles ? {
-      ...item.roles,
-      created_at: item.roles.created_at || new Date().toISOString()
+      id: item.roles.id,
+      name: item.roles.name as 'admin' | 'it' | 'member' | 'elder' | 'volunteer',
+      created_at: new Date().toISOString() // Provide default created_at
+    } : undefined,
+    assigned_elder: item.assigned_elder ? {
+      id: item.assigned_elder.id,
+      elder_id: item.assigned_elder.elder_id,
+      member_id: item.assigned_elder.member_id,
+      created_at: new Date().toISOString(),
+      elder: item.assigned_elder.elder
     } : undefined
   })) as Member[];
 };
@@ -60,6 +70,7 @@ export const getMember = async (id: string) => {
       assigned_elder:member_under_elder!member_id(
         id,
         elder_id,
+        member_id,
         elder:members!member_under_elder_elder_id_fkey(id, name)
       )
     `)
@@ -71,12 +82,21 @@ export const getMember = async (id: string) => {
     throw error;
   }
   
-  // Type-safe conversion
+  // Transform the data to match our Member type
   const result = {
     ...data,
+    status: (data.status === 'active' || data.status === 'inactive') ? data.status : 'active',
     roles: data.roles ? {
-      ...data.roles,
-      created_at: data.roles.created_at || new Date().toISOString()
+      id: data.roles.id,
+      name: data.roles.name as 'admin' | 'it' | 'member' | 'elder' | 'volunteer',
+      created_at: new Date().toISOString() // Provide default created_at
+    } : undefined,
+    assigned_elder: data.assigned_elder ? {
+      id: data.assigned_elder.id,
+      elder_id: data.assigned_elder.elder_id,
+      member_id: data.assigned_elder.member_id,
+      created_at: new Date().toISOString(),
+      elder: data.assigned_elder.elder
     } : undefined
   } as Member;
   

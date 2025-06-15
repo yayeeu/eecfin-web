@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Ministry, Member } from '@/types/database.types';
 import { Button } from "./ui/button";
@@ -49,7 +48,22 @@ const MinistryManager = () => {
       members?.find(m => m.id === ministry.contact_person_id) : 
       null;
     
-    setSelectedMember(contactPerson || null);
+    // Ensure proper typing by creating a complete Member object
+    if (contactPerson) {
+      const typedMember: Member = {
+        id: contactPerson.id,
+        name: contactPerson.name,
+        email: contactPerson.email,
+        phone: contactPerson.phone,
+        status: (contactPerson.status === 'active' || contactPerson.status === 'inactive') 
+          ? contactPerson.status 
+          : 'active',
+        created_at: contactPerson.created_at || new Date().toISOString()
+      };
+      setSelectedMember(typedMember);
+    } else {
+      setSelectedMember(null);
+    }
     setShowDialog(true);
   };
 
@@ -83,10 +97,14 @@ const MinistryManager = () => {
     // Create a properly typed Member object if found
     if (contactPerson) {
       const typedMember: Member = {
-        ...contactPerson,
+        id: contactPerson.id,
+        name: contactPerson.name,
+        email: contactPerson.email,
+        phone: contactPerson.phone,
         status: (contactPerson.status === 'active' || contactPerson.status === 'inactive') 
           ? contactPerson.status 
-          : 'active'
+          : 'active',
+        created_at: contactPerson.created_at || new Date().toISOString()
       };
       setSelectedMember(typedMember);
     } else {
@@ -125,12 +143,14 @@ const MinistryManager = () => {
   // Type-safe conversion for elders and members arrays
   const typedElders: Member[] = elders?.map(elder => ({
     ...elder,
-    status: (elder.status === 'active' || elder.status === 'inactive') ? elder.status : 'active'
+    status: (elder.status === 'active' || elder.status === 'inactive') ? elder.status : 'active',
+    created_at: elder.created_at || new Date().toISOString()
   })) || [];
 
   const typedMembers: Member[] = members?.map(member => ({
     ...member,
-    status: (member.status === 'active' || member.status === 'inactive') ? member.status : 'active'
+    status: (member.status === 'active' || member.status === 'inactive') ? member.status : 'active',
+    created_at: member.created_at || new Date().toISOString()
   })) || [];
 
   return (

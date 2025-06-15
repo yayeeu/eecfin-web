@@ -19,12 +19,14 @@ export const getElders = async () => {
     throw error;
   }
   
-  // Type-safe conversion
+  // Transform the data to match our Member type
   return (data || []).map(item => ({
     ...item,
+    status: (item.status === 'active' || item.status === 'inactive') ? item.status : 'active',
     roles: item.roles ? {
-      ...item.roles,
-      created_at: item.roles.created_at || new Date().toISOString()
+      id: item.roles.id,
+      name: item.roles.name as 'admin' | 'it' | 'member' | 'elder' | 'volunteer',
+      created_at: new Date().toISOString() // Provide default created_at
     } : undefined
   })) as Member[];
 };
@@ -46,12 +48,14 @@ export const getElder = async (id: string) => {
     throw error;
   }
   
-  // Type-safe conversion
+  // Transform the data to match our Member type
   const result = {
     ...data,
+    status: (data.status === 'active' || data.status === 'inactive') ? data.status : 'active',
     roles: data.roles ? {
-      ...data.roles,
-      created_at: data.roles.created_at || new Date().toISOString()
+      id: data.roles.id,
+      name: data.roles.name as 'admin' | 'it' | 'member' | 'elder' | 'volunteer',
+      created_at: new Date().toISOString() // Provide default created_at
     } : undefined
   } as Member;
   
