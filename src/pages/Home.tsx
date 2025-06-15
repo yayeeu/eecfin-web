@@ -4,7 +4,6 @@ import ImageSlider from '../components/ImageSlider';
 import MediaSection from '../components/home/MediaSection';
 import FeaturesSection from '../components/home/FeaturesSection';
 import WelcomeEventBanner from '../components/home/WelcomeEventBanner';
-import CommunityHighlights from '../components/home/CommunityHighlights';
 
 const Home = () => {
   return (
@@ -16,12 +15,6 @@ const Home = () => {
           <WelcomeEventBanner overlayStyle={true} />
         </div>
       </div>
-      
-      {/* Welcome Event Banner - Full Width */}
-      <WelcomeEventBanner overlayStyle={false} />
-
-      {/* Community Highlights Section */}
-      <CommunityHighlights />
       
       {/* Media Section with Mission Statement */}
       <MediaSection />

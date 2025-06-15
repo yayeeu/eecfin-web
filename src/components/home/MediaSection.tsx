@@ -24,10 +24,10 @@ const MediaSection = () => {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-stretch">
           {/* YouTube Video Section */}
           <div className="w-full">
-            <Card className="overflow-hidden border-0 shadow-2xl bg-white/80 backdrop-blur-sm">
+            <Card className="overflow-hidden border-0 shadow-2xl bg-white/80 backdrop-blur-sm h-full flex flex-col">
               <CardHeader className="bg-gradient-to-r from-eecfin-navy to-eecfin-navy/80 text-white">
                 <div className="flex items-center justify-between">
                   <CardTitle className="flex items-center gap-3 text-xl">
@@ -56,8 +56,8 @@ const MediaSection = () => {
                   {isLive ? "Join our live service now!" : "Watch our most recent service"}
                 </CardDescription>
               </CardHeader>
-              <CardContent className="p-0">
-                <div className="relative w-full">
+              <CardContent className="p-0 flex-grow">
+                <div className="relative w-full h-full">
                   {loading ? (
                     <div className="aspect-video flex items-center justify-center bg-gray-100">
                       <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-eecfin-navy"></div>
@@ -90,7 +90,7 @@ const MediaSection = () => {
 
           {/* Mission Statement Section */}
           <div className="w-full">
-            <Card className="h-full border-0 shadow-2xl bg-white/80 backdrop-blur-sm">
+            <Card className="h-full border-0 shadow-2xl bg-white/80 backdrop-blur-sm flex flex-col">
               <CardHeader className="bg-gradient-to-r from-eecfin-gold to-eecfin-accent text-eecfin-navy">
                 <CardTitle className="flex items-center gap-3 text-xl">
                   <div className="w-4 h-4 bg-eecfin-navy rounded-full"></div>
@@ -100,7 +100,7 @@ const MediaSection = () => {
                   Discover what drives our community
                 </CardDescription>
               </CardHeader>
-              <CardContent className="p-6">
+              <CardContent className="p-6 flex-grow">
                 <MissionSlider />
               </CardContent>
             </Card>

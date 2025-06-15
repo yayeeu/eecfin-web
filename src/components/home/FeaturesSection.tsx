@@ -60,7 +60,7 @@ const FeaturesSection = () => {
         <div className="grid lg:grid-cols-3 gap-8">
           {features.map((feature, index) => (
             <div key={index} className="group">
-              <div className="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 overflow-hidden transform hover:-translate-y-3 border border-gray-100">
+              <div className="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 overflow-hidden transform hover:-translate-y-3 border border-gray-100 h-full flex flex-col">
                 {/* Image Header */}
                 <div className="relative h-48 overflow-hidden">
                   <img 
@@ -77,11 +77,11 @@ const FeaturesSection = () => {
                 </div>
 
                 {/* Content */}
-                <div className="p-8">
+                <div className="p-8 flex-grow flex flex-col">
                   <h3 className="text-2xl font-bold text-eecfin-navy mb-4 group-hover:text-eecfin-gold transition-colors duration-300">
                     {feature.title}
                   </h3>
-                  <p className="text-gray-600 leading-relaxed mb-6 line-height-loose">
+                  <p className="text-gray-600 leading-relaxed mb-6 line-height-loose flex-grow">
                     {feature.description}
                   </p>
 
@@ -107,7 +107,7 @@ const FeaturesSection = () => {
 
                   <Button 
                     asChild 
-                    className="w-full bg-eecfin-navy hover:bg-eecfin-navy/90 text-white font-semibold py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 group-hover:bg-eecfin-gold group-hover:text-eecfin-navy"
+                    className="w-full bg-eecfin-navy hover:bg-eecfin-navy/90 text-white font-semibold py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 group-hover:bg-eecfin-gold group-hover:text-eecfin-navy mt-auto"
                   >
                     <Link to={feature.link} className="flex items-center justify-center gap-2">
                       {feature.cta}
@@ -118,26 +118,6 @@ const FeaturesSection = () => {
               </div>
             </div>
           ))}
-        </div>
-
-        {/* Additional Community Stats */}
-        <div className="mt-20 grid grid-cols-2 md:grid-cols-4 gap-6">
-          <div className="text-center">
-            <div className="text-3xl font-bold text-eecfin-navy mb-2">15+</div>
-            <div className="text-gray-600">Years Serving</div>
-          </div>
-          <div className="text-center">
-            <div className="text-3xl font-bold text-eecfin-navy mb-2">200+</div>
-            <div className="text-gray-600">Community Members</div>
-          </div>
-          <div className="text-center">
-            <div className="text-3xl font-bold text-eecfin-navy mb-2">8</div>
-            <div className="text-gray-600">Active Ministries</div>
-          </div>
-          <div className="text-center">
-            <div className="text-3xl font-bold text-eecfin-navy mb-2">52</div>
-            <div className="text-gray-600">Services Per Year</div>
-          </div>
         </div>
       </div>
     </section>
