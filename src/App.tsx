@@ -8,6 +8,10 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Layout from "@/components/Layout";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
+import Login from "./pages/Login";
+import Admin from "./pages/Admin";
+import ProtectedRoute from "./components/ProtectedRoute";
+import { AuthProvider } from "./contexts/AuthContext";
 
 // Lazy-loaded components for better initial loading performance
 const WhoWeAre = lazy(() => import("./pages/WhoWeAre"));
@@ -58,29 +62,44 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <Routes>
-          {/* Public Routes */}
-          {publicRoutes.map(route => (
+        <AuthProvider>
+          <Routes>
+            {/* Login Route */}
+            <Route path="/login" element={<Login />} />
+
+            {/* Admin Route - Protected */}
             <Route 
-              key={route.path} 
-              path={route.path} 
+              path="/admin" 
               element={
-                route.path === "/" ? (
-                  route.element
-                ) : (
-                  <Layout>
-                    <Suspense fallback={<PageLoader />}>
-                      {route.element}
-                    </Suspense>
-                  </Layout>
-                )
+                <ProtectedRoute requiredRole="it">
+                  <Admin />
+                </ProtectedRoute>
               } 
             />
-          ))}
 
-          {/* 404 Route */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
+            {/* Public Routes */}
+            {publicRoutes.map(route => (
+              <Route 
+                key={route.path} 
+                path={route.path} 
+                element={
+                  route.path === "/" ? (
+                    route.element
+                  ) : (
+                    <Layout>
+                      <Suspense fallback={<PageLoader />}>
+                        {route.element}
+                      </Suspense>
+                    </Layout>
+                  )
+                } 
+              />
+            ))}
+
+            {/* 404 Route */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
