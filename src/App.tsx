@@ -5,12 +5,9 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { AuthProvider } from "@/contexts/AuthContext";
-import { UserRole } from "@/types/auth.types";
 import Layout from "@/components/Layout";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
-import RoleGuard from "@/components/auth/RoleGuard";
 
 // Lazy-loaded components for better initial loading performance
 const WhoWeAre = lazy(() => import("./pages/WhoWeAre"));
@@ -21,9 +18,6 @@ const Contact = lazy(() => import("./pages/Contact"));
 const GetInvolved = lazy(() => import("./pages/GetInvolved"));
 const Give = lazy(() => import("./pages/Give"));
 const Constitution = lazy(() => import("./pages/Constitution"));
-const Admin = lazy(() => import("./pages/Admin"));
-const Auth = lazy(() => import("./pages/Auth"));
-const Profile = lazy(() => import("./pages/Profile"));
 const Sermons = lazy(() => import("./pages/Sermons"));
 
 // Configure the query client with performance optimizations
@@ -60,77 +54,35 @@ const publicRoutes = [
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <AuthProvider>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <Routes>
-            {/* Public Routes */}
-            {publicRoutes.map(route => (
-              <Route 
-                key={route.path} 
-                path={route.path} 
-                element={
-                  route.path === "/" ? (
-                    route.element
-                  ) : (
-                    <Layout>
-                      <Suspense fallback={<PageLoader />}>
-                        <RoleGuard isPublicRoute={true}>
-                          {route.element}
-                        </RoleGuard>
-                      </Suspense>
-                    </Layout>
-                  )
-                } 
-              />
-            ))}
-
-            {/* Auth Route */}
+    <TooltipProvider>
+      <Toaster />
+      <Sonner />
+      <BrowserRouter>
+        <Routes>
+          {/* Public Routes */}
+          {publicRoutes.map(route => (
             <Route 
-              path="/auth" 
+              key={route.path} 
+              path={route.path} 
               element={
-                <RoleGuard isPublicRoute={true}>
-                  <Suspense fallback={<PageLoader />}>
-                    <Auth />
-                  </Suspense>
-                </RoleGuard>
-              } 
-            />
-
-            {/* Admin Route - Without Layout component */}
-            <Route 
-              path="/admin" 
-              element={
-                <RoleGuard allowedRoles={['admin', 'elder', 'it', 'volunteer']}>
-                  <Suspense fallback={<PageLoader />}>
-                    <Admin />
-                  </Suspense>
-                </RoleGuard>
-              } 
-            />
-
-            {/* Profile Route */}
-            <Route 
-              path="/profile" 
-              element={
-                <RoleGuard allowedRoles={['admin', 'member', 'elder', 'it', 'volunteer']}>
+                route.path === "/" ? (
+                  route.element
+                ) : (
                   <Layout>
                     <Suspense fallback={<PageLoader />}>
-                      <Profile />
+                      {route.element}
                     </Suspense>
                   </Layout>
-                </RoleGuard>
+                )
               } 
             />
+          ))}
 
-            {/* 404 Route */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </BrowserRouter>
-      </TooltipProvider>
-    </AuthProvider>
+          {/* 404 Route */}
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </BrowserRouter>
+    </TooltipProvider>
   </QueryClientProvider>
 );
 

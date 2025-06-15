@@ -1,21 +1,12 @@
 
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Menu, X, Mail, Heart, Facebook, Instagram, Youtube, User, LogOut } from 'lucide-react';
+import { Menu, X, Mail, Heart, Facebook, Instagram, Youtube } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { useAuth } from '@/contexts/AuthContext';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const isMobile = useIsMobile();
-  const { user, signOut } = useAuth();
 
   useEffect(() => {
     if (!isMobile && isMenuOpen) {
@@ -28,7 +19,6 @@ const Header = () => {
   const navItems = [
     { title: 'Home', path: '/' },
     { title: 'Who We Are', path: '/who-we-are' },
-    // Removed "Our Faith" item
     { title: 'Events', path: '/events' },
     { title: 'Sermons', path: '/sermons' },
     { title: 'Get Involved', path: '/get-involved' },
@@ -74,24 +64,6 @@ const Header = () => {
                   {item.title}
                 </Link>
               ))}
-              
-              {user ? (
-                <button 
-                  onClick={signOut}
-                  className="flex items-center text-sm hover:text-eecfin-navy/70 transition-colors"
-                >
-                  <LogOut size={16} className="mr-1" />
-                  Sign Out
-                </button>
-              ) : (
-                <Link 
-                  to="/auth"
-                  className="flex items-center text-sm hover:text-eecfin-navy/70 transition-colors"
-                >
-                  <User size={16} className="mr-1" />
-                  Sign In
-                </Link>
-              )}
             </div>
           </div>
         </div>
@@ -148,27 +120,6 @@ const Header = () => {
                   {item.title}
                 </Link>
               ))}
-              {user ? (
-                <button 
-                  onClick={() => {
-                    signOut();
-                    setIsMenuOpen(false);
-                  }}
-                  className="nav-link px-4 py-2 flex items-center w-full text-left"
-                >
-                  <LogOut size={16} className="mr-2" />
-                  Sign Out
-                </button>
-              ) : (
-                <Link 
-                  to="/auth" 
-                  className="nav-link px-4 py-2 flex items-center"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  <User size={16} className="mr-2" />
-                  Sign In
-                </Link>
-              )}
               <div className="flex space-x-4 px-4 py-2">
                 {socialIcons.map((item, index) => (
                   <a 
