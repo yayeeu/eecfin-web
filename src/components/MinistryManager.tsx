@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Ministry, Member } from '@/types/database.types';
 import { Button } from "./ui/button";
@@ -48,7 +49,7 @@ const MinistryManager = () => {
       members?.find(m => m.id === ministry.contact_person_id) : 
       null;
     
-    // Ensure proper typing by creating a complete Member object
+    // Create a complete Member object with default created_at
     if (contactPerson) {
       const typedMember: Member = {
         id: contactPerson.id,
@@ -58,7 +59,7 @@ const MinistryManager = () => {
         status: (contactPerson.status === 'active' || contactPerson.status === 'inactive') 
           ? contactPerson.status 
           : 'active',
-        created_at: contactPerson.created_at || new Date().toISOString()
+        created_at: new Date().toISOString() // Always provide a default
       };
       setSelectedMember(typedMember);
     } else {
@@ -89,7 +90,7 @@ const MinistryManager = () => {
   };
 
   const handleContactPersonChange = (contactPersonId: string) => {
-    // Find the contact person and ensure proper typing
+    // Find the contact person and create a properly typed Member object
     const elder = elders?.find(e => e.id === contactPersonId);
     const member = members?.find(m => m.id === contactPersonId);
     const contactPerson = elder || member;
@@ -104,7 +105,7 @@ const MinistryManager = () => {
         status: (contactPerson.status === 'active' || contactPerson.status === 'inactive') 
           ? contactPerson.status 
           : 'active',
-        created_at: contactPerson.created_at || new Date().toISOString()
+        created_at: new Date().toISOString() // Always provide a default
       };
       setSelectedMember(typedMember);
     } else {
@@ -140,17 +141,17 @@ const MinistryManager = () => {
     return <div className="p-8 text-red-500">Error loading ministries: {ministriesError.message}</div>;
   }
 
-  // Type-safe conversion for elders and members arrays
+  // Convert elders and members to Member type with default created_at
   const typedElders: Member[] = elders?.map(elder => ({
     ...elder,
     status: (elder.status === 'active' || elder.status === 'inactive') ? elder.status : 'active',
-    created_at: elder.created_at || new Date().toISOString()
+    created_at: new Date().toISOString() // Always provide a default
   })) || [];
 
   const typedMembers: Member[] = members?.map(member => ({
     ...member,
     status: (member.status === 'active' || member.status === 'inactive') ? member.status : 'active',
-    created_at: member.created_at || new Date().toISOString()
+    created_at: new Date().toISOString() // Always provide a default
   })) || [];
 
   return (

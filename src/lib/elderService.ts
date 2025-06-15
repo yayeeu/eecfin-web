@@ -2,7 +2,7 @@
 import { supabase, isSupabaseConfigured } from '@/lib/supabaseClient';
 import { Member } from '@/types/database.types';
 
-export const getElders = async () => {
+export const getElders = async (): Promise<Member[]> => {
   if (!isSupabaseConfigured()) {
     console.error('Supabase is not configured.');
     throw new Error('Database connection not available');
@@ -26,12 +26,12 @@ export const getElders = async () => {
     roles: item.roles ? {
       id: item.roles.id,
       name: item.roles.name as 'admin' | 'it' | 'member' | 'elder' | 'volunteer',
-      created_at: new Date().toISOString() // Provide default created_at
+      created_at: new Date().toISOString()
     } : undefined
   })) as Member[];
 };
 
-export const getElder = async (id: string) => {
+export const getElder = async (id: string): Promise<Member> => {
   if (!isSupabaseConfigured()) {
     console.error('Supabase is not configured.');
     throw new Error('Database connection not available');
@@ -49,15 +49,15 @@ export const getElder = async (id: string) => {
   }
   
   // Transform the data to match our Member type
-  const result = {
+  const result: Member = {
     ...data,
     status: (data.status === 'active' || data.status === 'inactive') ? data.status : 'active',
     roles: data.roles ? {
       id: data.roles.id,
       name: data.roles.name as 'admin' | 'it' | 'member' | 'elder' | 'volunteer',
-      created_at: new Date().toISOString() // Provide default created_at
+      created_at: new Date().toISOString()
     } : undefined
-  } as Member;
+  };
   
   return result;
 };
