@@ -1,6 +1,5 @@
-
 import React from 'react';
-import { Users, Heart, Church, Hands } from 'lucide-react';
+import { Users, Heart, Church, Hand } from 'lucide-react';
 
 const CommunityHighlights = () => {
   const highlights = [
@@ -26,7 +25,7 @@ const CommunityHighlights = () => {
       imageAlt: "Community service and outreach activities"
     },
     {
-      icon: <Hands className="h-8 w-8" />,
+      icon: <Hand className="h-8 w-8" />,
       title: "Cultural Heritage",
       description: "Celebrating our Ethiopian heritage while embracing our Finnish home.",
       image: "https://images.unsplash.com/photo-1605810230434-7631ac76ec81?w=800&h=600&fit=crop",
