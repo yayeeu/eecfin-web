@@ -9,12 +9,21 @@ const MediaSection = () => {
   const { videoId, isLive, loading, fallbackUsed, useChannelEmbed } = useHomeLiveStream();
 
   return (
-    <section className="py-12 bg-gradient-to-br from-white via-gray-50 to-eecfin-gold/5 relative overflow-hidden">
+    <section className="py-20 bg-gradient-to-br from-white via-gray-50 to-eecfin-gold/5 relative overflow-hidden">
       {/* Background decorative elements */}
       <div className="absolute top-0 right-0 w-72 h-72 bg-eecfin-navy/5 rounded-full -translate-y-1/2 translate-x-1/2"></div>
       <div className="absolute bottom-0 left-0 w-96 h-96 bg-eecfin-gold/10 rounded-full translate-y-1/2 -translate-x-1/2"></div>
       
       <div className="container-custom relative z-10">
+        <div className="text-center mb-12">
+          <h2 className="text-4xl md:text-5xl font-bold text-eecfin-navy mb-4">
+            Watch & Learn
+          </h2>
+          <p className="text-xl text-gray-700 max-w-2xl mx-auto">
+            Join us online or catch up on our latest messages and community updates
+          </p>
+        </div>
+
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-stretch">
           {/* YouTube Video Section */}
           <div className="w-full">

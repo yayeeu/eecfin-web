@@ -49,22 +49,7 @@ const MinistryManager = () => {
       members?.find(m => m.id === ministry.contact_person_id) : 
       null;
     
-    // Create a complete Member object with default created_at
-    if (contactPerson) {
-      const typedMember: Member = {
-        id: contactPerson.id,
-        name: contactPerson.name,
-        email: contactPerson.email,
-        phone: contactPerson.phone,
-        status: (contactPerson.status === 'active' || contactPerson.status === 'inactive') 
-          ? contactPerson.status 
-          : 'active',
-        created_at: new Date().toISOString() // Always provide a default
-      };
-      setSelectedMember(typedMember);
-    } else {
-      setSelectedMember(null);
-    }
+    setSelectedMember(contactPerson || null);
     setShowDialog(true);
   };
 
@@ -90,27 +75,9 @@ const MinistryManager = () => {
   };
 
   const handleContactPersonChange = (contactPersonId: string) => {
-    // Find the contact person and create a properly typed Member object
     const elder = elders?.find(e => e.id === contactPersonId);
     const member = members?.find(m => m.id === contactPersonId);
-    const contactPerson = elder || member;
-    
-    // Create a properly typed Member object if found
-    if (contactPerson) {
-      const typedMember: Member = {
-        id: contactPerson.id,
-        name: contactPerson.name,
-        email: contactPerson.email,
-        phone: contactPerson.phone,
-        status: (contactPerson.status === 'active' || contactPerson.status === 'inactive') 
-          ? contactPerson.status 
-          : 'active',
-        created_at: new Date().toISOString() // Always provide a default
-      };
-      setSelectedMember(typedMember);
-    } else {
-      setSelectedMember(null);
-    }
+    setSelectedMember(elder || member || null);
   };
 
   const handleDeleteClick = (id: string) => {
@@ -141,19 +108,6 @@ const MinistryManager = () => {
     return <div className="p-8 text-red-500">Error loading ministries: {ministriesError.message}</div>;
   }
 
-  // Convert elders and members to Member type with default created_at
-  const typedElders: Member[] = elders?.map(elder => ({
-    ...elder,
-    status: (elder.status === 'active' || elder.status === 'inactive') ? elder.status : 'active',
-    created_at: new Date().toISOString() // Always provide a default
-  })) || [];
-
-  const typedMembers: Member[] = members?.map(member => ({
-    ...member,
-    status: (member.status === 'active' || member.status === 'inactive') ? member.status : 'active',
-    created_at: new Date().toISOString() // Always provide a default
-  })) || [];
-
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
@@ -166,8 +120,8 @@ const MinistryManager = () => {
 
       <MinistryList 
         ministries={ministries || []}
-        members={typedMembers}
-        elders={typedElders}
+        members={members}
+        elders={elders}
         onEdit={handleEditMinistry}
         onDelete={handleDeleteClick}
       />
@@ -186,8 +140,8 @@ const MinistryManager = () => {
           
           <MinistryForm 
             ministry={editingMinistry}
-            elders={typedElders}
-            members={typedMembers}
+            elders={elders || []}
+            members={members || []}
             onSubmit={handleSubmit}
             onCancel={handleDialogClose}
             onContactPersonChange={handleContactPersonChange}

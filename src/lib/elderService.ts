@@ -2,7 +2,7 @@
 import { supabase, isSupabaseConfigured } from '@/lib/supabaseClient';
 import { Member } from '@/types/database.types';
 
-export const getElders = async (): Promise<Member[]> => {
+export const getElders = async () => {
   if (!isSupabaseConfigured()) {
     console.error('Supabase is not configured.');
     throw new Error('Database connection not available');
@@ -19,49 +19,10 @@ export const getElders = async (): Promise<Member[]> => {
     throw error;
   }
   
-  // Transform the data to match our Member type with explicit typing
-  return (data || []).map(item => {
-    const member: Member = {
-      id: item.id,
-      name: item.name,
-      phone: item.phone,
-      email: item.email,
-      address: item.address,
-      city: item.city,
-      postal_code: item.postal_code,
-      image: item.image,
-      role: item.roles?.name as 'admin' | 'it' | 'member' | 'elder' | 'volunteer' || 'elder',
-      role_id: item.role_id,
-      ministry_id: item.ministry_id,
-      gender: item.gender,
-      marital_status: item.marital_status,
-      spouse_name: item.spouse_name,
-      children_names: item.children_names,
-      previous_church: item.previous_church,
-      role_in_previous_church: item.role_in_previous_church,
-      emergency_contact: item.emergency_contact,
-      has_letter_from_prev_church: item.has_letter_from_prev_church,
-      status: (item.status === 'active' || item.status === 'inactive') ? item.status : 'active',
-      is_baptised: item.is_baptised,
-      num_children: item.num_children,
-      latitude: item.latitude,
-      longitude: item.longitude,
-      created_at: item.created_at,
-      ministries: item.ministries ? {
-        id: item.ministries.id,
-        name: item.ministries.name
-      } : undefined,
-      roles: item.roles ? {
-        id: item.roles.id,
-        name: item.roles.name as 'admin' | 'it' | 'member' | 'elder' | 'volunteer',
-        created_at: new Date().toISOString()
-      } : undefined
-    };
-    return member;
-  });
+  return data as Member[];
 };
 
-export const getElder = async (id: string): Promise<Member> => {
+export const getElder = async (id: string) => {
   if (!isSupabaseConfigured()) {
     console.error('Supabase is not configured.');
     throw new Error('Database connection not available');
@@ -78,45 +39,7 @@ export const getElder = async (id: string): Promise<Member> => {
     throw error;
   }
   
-  // Transform the data to match our Member type with explicit construction
-  const result: Member = {
-    id: data.id,
-    name: data.name,
-    phone: data.phone,
-    email: data.email,
-    address: data.address,
-    city: data.city,
-    postal_code: data.postal_code,
-    image: data.image,
-    role: data.roles?.name as 'admin' | 'it' | 'member' | 'elder' | 'volunteer' || 'elder',
-    role_id: data.role_id,
-    ministry_id: data.ministry_id,
-    gender: data.gender,
-    marital_status: data.marital_status,
-    spouse_name: data.spouse_name,
-    children_names: data.children_names,
-    previous_church: data.previous_church,
-    role_in_previous_church: data.role_in_previous_church,
-    emergency_contact: data.emergency_contact,
-    has_letter_from_prev_church: data.has_letter_from_prev_church,
-    status: (data.status === 'active' || data.status === 'inactive') ? data.status : 'active',
-    is_baptised: data.is_baptised,
-    num_children: data.num_children,
-    latitude: data.latitude,
-    longitude: data.longitude,
-    created_at: data.created_at,
-    ministries: data.ministries ? {
-      id: data.ministries.id,
-      name: data.ministries.name
-    } : undefined,
-    roles: data.roles ? {
-      id: data.roles.id,
-      name: data.roles.name as 'admin' | 'it' | 'member' | 'elder' | 'volunteer',
-      created_at: new Date().toISOString()
-    } : undefined
-  };
-  
-  return result;
+  return data as Member;
 };
 
 export const createElder = async (elder: Omit<Member, 'id' | 'created_at'>) => {
@@ -137,23 +60,17 @@ export const createElder = async (elder: Omit<Member, 'id' | 'created_at'>) => {
     throw roleError;
   }
   
-  // Convert children_names to number if it's a string
-  const normalizedElder = {
+  // Add the role_id to the elder data
+  const elderWithRole = {
     ...elder,
     role: 'elder',
     role_id: roleData.id,
-    status: elder.status || 'active',
-    children_names: typeof elder.children_names === 'string' 
-      ? parseInt(elder.children_names, 10) || 0 
-      : elder.children_names || 0
+    status: elder.status || 'active'
   };
-  
-  // Remove properties that don't exist in the database schema
-  const { ministries, roles, assigned_elder, ministry_assignments, ...dbElder } = normalizedElder;
   
   const { data, error } = await supabase!
     .from('members')
-    .insert(dbElder)
+    .insert(elderWithRole)
     .select()
     .single();
   
@@ -188,20 +105,9 @@ export const updateElder = async (id: string, elder: Partial<Omit<Member, 'id' |
     elder.role_id = roleData.id;
   }
   
-  // Convert children_names to number if it's a string
-  const normalizedElder = {
-    ...elder,
-    children_names: typeof elder.children_names === 'string' 
-      ? parseInt(elder.children_names, 10) || 0 
-      : elder.children_names
-  };
-  
-  // Remove properties that don't exist in the database schema
-  const { ministries, roles, assigned_elder, ministry_assignments, ...dbElder } = normalizedElder;
-  
   const { data, error } = await supabase!
     .from('members')
-    .update(dbElder)
+    .update(elder)
     .eq('id', id)
     .select()
     .single();

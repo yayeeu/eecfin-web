@@ -12,7 +12,7 @@ export const getElderMembers = async () => {
   
   const { data, error } = await supabase!
     .from('members')
-    .select('*, roles!inner(id, name)')
+    .select('*, roles!inner(*)')
     .eq('roles.name', 'elder')
     .order('name');
   
@@ -21,16 +21,7 @@ export const getElderMembers = async () => {
     throw error;
   }
   
-  // Transform the data to match our Member type
-  return (data || []).map(item => ({
-    ...item,
-    status: (item.status === 'active' || item.status === 'inactive') ? item.status : 'active',
-    roles: item.roles ? {
-      id: item.roles.id,
-      name: item.roles.name as 'admin' | 'it' | 'member' | 'elder' | 'volunteer',
-      created_at: new Date().toISOString() // Provide default created_at
-    } : undefined
-  })) as Member[];
+  return data as Member[];
 };
 
 // Get elders for dropdown selects (used in ministry form)
@@ -45,14 +36,14 @@ export const getEldersForDropdown = async () => {
         name: m.name,
         email: m.email,
         phone: m.phone,
-        status: (m.status === 'active' || m.status === 'inactive') ? m.status : 'active'
+        status: m.status
       }))
     );
   }
   
   const { data, error } = await supabase!
     .from('members')
-    .select('id, name, email, phone, status, roles!inner(name)')
+    .select('id, name, email, phone, status')
     .eq('roles.name', 'elder')
     .eq('status', 'active')
     .order('name');
@@ -62,12 +53,5 @@ export const getEldersForDropdown = async () => {
     throw error;
   }
   
-  // Transform the data to ensure proper typing
-  return (data || []).map(item => ({
-    id: item.id,
-    name: item.name,
-    email: item.email,
-    phone: item.phone,
-    status: (item.status === 'active' || item.status === 'inactive') ? item.status : 'active'
-  }));
+  return data;
 };

@@ -21,7 +21,6 @@ export const getAllMembers = async () => {
       assigned_elder:member_under_elder!member_id(
         id,
         elder_id,
-        member_id,
         elder:members!member_under_elder_elder_id_fkey(id, name)
       )
     `)
@@ -32,23 +31,7 @@ export const getAllMembers = async () => {
     throw error;
   }
   
-  // Transform the data to match our Member type
-  return (data || []).map(item => ({
-    ...item,
-    status: (item.status === 'active' || item.status === 'inactive') ? item.status : 'active',
-    roles: item.roles ? {
-      id: item.roles.id,
-      name: item.roles.name as 'admin' | 'it' | 'member' | 'elder' | 'volunteer',
-      created_at: new Date().toISOString() // Provide default created_at
-    } : undefined,
-    assigned_elder: item.assigned_elder ? {
-      id: item.assigned_elder.id,
-      elder_id: item.assigned_elder.elder_id,
-      member_id: item.assigned_elder.member_id,
-      created_at: new Date().toISOString(),
-      elder: item.assigned_elder.elder
-    } : undefined
-  })) as Member[];
+  return data as Member[];
 };
 
 export const getMember = async (id: string) => {
@@ -70,7 +53,6 @@ export const getMember = async (id: string) => {
       assigned_elder:member_under_elder!member_id(
         id,
         elder_id,
-        member_id,
         elder:members!member_under_elder_elder_id_fkey(id, name)
       )
     `)
@@ -82,25 +64,7 @@ export const getMember = async (id: string) => {
     throw error;
   }
   
-  // Transform the data to match our Member type
-  const result = {
-    ...data,
-    status: (data.status === 'active' || data.status === 'inactive') ? data.status : 'active',
-    roles: data.roles ? {
-      id: data.roles.id,
-      name: data.roles.name as 'admin' | 'it' | 'member' | 'elder' | 'volunteer',
-      created_at: new Date().toISOString() // Provide default created_at
-    } : undefined,
-    assigned_elder: data.assigned_elder ? {
-      id: data.assigned_elder.id,
-      elder_id: data.assigned_elder.elder_id,
-      member_id: data.assigned_elder.member_id,
-      created_at: new Date().toISOString(),
-      elder: data.assigned_elder.elder
-    } : undefined
-  } as Member;
-  
-  return result;
+  return data as Member;
 };
 
 export const createMember = async (member: Omit<Member, 'id' | 'created_at'>) => {
@@ -115,20 +79,9 @@ export const createMember = async (member: Omit<Member, 'id' | 'created_at'>) =>
     return Promise.resolve(newMember);
   }
   
-  // Convert children_names to number if it's a string and remove non-db fields
-  const normalizedMember = {
-    ...member,
-    children_names: typeof member.children_names === 'string' 
-      ? parseInt(member.children_names, 10) || 0 
-      : member.children_names || 0
-  };
-  
-  // Remove properties that don't exist in the database schema
-  const { ministries, roles, assigned_elder, ministry_assignments, ...dbMember } = normalizedMember;
-  
   const { data, error } = await supabase!
     .from('members')
-    .insert(dbMember)
+    .insert(member)
     .select()
     .single();
   
@@ -156,20 +109,9 @@ export const updateMember = async (id: string, member: Partial<Omit<Member, 'id'
     return Promise.resolve(updatedMember);
   }
   
-  // Convert children_names to number if it's a string and remove non-db fields
-  const normalizedMember = {
-    ...member,
-    children_names: typeof member.children_names === 'string' 
-      ? parseInt(member.children_names, 10) || 0 
-      : member.children_names
-  };
-  
-  // Remove properties that don't exist in the database schema
-  const { ministries, roles, assigned_elder, ministry_assignments, ...dbMember } = normalizedMember;
-  
   const { data, error } = await supabase!
     .from('members')
-    .update(dbMember)
+    .update(member)
     .eq('id', id)
     .select()
     .single();

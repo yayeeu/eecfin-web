@@ -1,124 +1,195 @@
 
-import { supabase } from '@/lib/supabaseClient';
+import { format } from 'date-fns';
+import { supabase } from "@/lib/supabaseClient";
 
+// Type for the Google Calendar API response
+interface GoogleCalendarEvent {
+  id: string;
+  summary: string;
+  description?: string;
+  location?: string;
+  start: {
+    dateTime: string;
+    timeZone: string;
+  };
+  end: {
+    dateTime: string;
+    timeZone: string;
+  };
+  attachments?: {
+    fileUrl: string;
+    title: string;
+    mimeType: string;
+  }[];
+  colorId?: string;
+}
+
+// Type for our formatted event
 export interface Event {
   id: string;
   title: string;
   description: string;
-  startTime: string;
-  endTime: string;
   location: string;
-  day: string;
+  startTime: Date;
+  endTime: Date;
+  day: number;
   month: string;
-  year: string;
-  image?: string;
-  colorId?: string;
+  year: number;
+  image?: string; // Optional image property for event
+  colorId?: string; // Optional color ID from Google Calendar
 }
 
-export interface CalendarResponse {
-  events: Event[];
-  status: 'success' | 'error' | 'empty';
-  error?: string;
-}
+// Cache management for events 
+const CACHE_KEY = 'calendar_events_cache';
+const CACHE_EXPIRY = 5 * 60 * 1000; // 5 minutes
 
-// Cache for events to reduce API calls
-let cachedEvents: CalendarResponse | null = null;
-let cacheTimestamp: number = 0;
-const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
-
-export const fetchEvents = async (): Promise<CalendarResponse> => {
-  console.log("fetchEvents called - Attempting to fetch calendar events from edge function");
-
-  // Check cache first
-  const now = Date.now();
-  if (cachedEvents && (now - cacheTimestamp) < CACHE_DURATION) {
-    console.log("Cache hit - Using cached events");
-    return cachedEvents;
-  }
-
-  console.log("Cache miss - Fetching events from Supabase Edge Function");
-
+// Add a local caching layer for the events
+const getEventsFromCache = (): { events: Event[], timestamp: number } | null => {
   try {
-    const { data, error } = await supabase.functions.invoke('fetch-calendar-events', {
-      body: {}
-    });
-
-    if (error) {
-      console.error('Error calling edge function:', error);
-      const errorResponse: CalendarResponse = {
-        events: [],
-        status: 'error',
-        error: `Failed to fetch events: ${error.message}`
-      };
-      return errorResponse;
+    const cacheData = localStorage.getItem(CACHE_KEY);
+    if (!cacheData) return null;
+    
+    const { events, timestamp } = JSON.parse(cacheData);
+    
+    // Return the cache if it's still valid
+    if (Date.now() - timestamp < CACHE_EXPIRY) {
+      return { events, timestamp };
     }
+    
+    return null;
+  } catch (error) {
+    console.log('Error reading from cache', error);
+    return null;
+  }
+};
 
-    if (!data) {
-      console.error('No data returned from edge function');
-      const errorResponse: CalendarResponse = {
-        events: [],
-        status: 'error',
-        error: 'No data returned from calendar service'
-      };
-      return errorResponse;
-    }
-
-    // Handle different response formats
-    if (data.error) {
-      console.error('API Error:', data.error);
-      const errorResponse: CalendarResponse = {
-        events: [],
-        status: 'error',
-        error: data.error
-      };
-      return errorResponse;
-    }
-
-    // Process the events
-    const events: Event[] = data.items?.map((item: any) => {
-      const startDateTime = new Date(item.start?.dateTime || item.start?.date);
-      const endDateTime = new Date(item.end?.dateTime || item.end?.date);
-      
-      return {
-        id: item.id,
-        title: item.summary || 'Untitled Event',
-        description: item.description || '',
-        startTime: startDateTime.toISOString(),
-        endTime: endDateTime.toISOString(),
-        location: item.location || 'Location not specified',
-        day: startDateTime.getDate().toString(),
-        month: startDateTime.toLocaleString('en', { month: 'short' }),
-        year: startDateTime.getFullYear().toString(),
-        image: item.attachments?.[0]?.fileUrl || undefined,
-        colorId: item.colorId || undefined
-      };
-    }) || [];
-
-    const response: CalendarResponse = {
+const saveEventsToCache = (events: Event[]) => {
+  try {
+    localStorage.setItem(CACHE_KEY, JSON.stringify({
       events,
-      status: events.length > 0 ? 'success' : 'empty'
+      timestamp: Date.now()
+    }));
+  } catch (error) {
+    console.log('Error saving to cache', error);
+  }
+};
+
+/**
+ * Fetches events from Google Calendar API via Supabase Edge Function
+ * With a local cache layer for better performance
+ */
+export async function fetchEvents(): Promise<{ events: Event[], error: string | null, status: string }> {
+  try {
+    console.log('fetchEvents called - Attempting to fetch calendar events from edge function');
+    
+    // Try to get events from cache first
+    const cachedEvents = getEventsFromCache();
+    if (cachedEvents) {
+      console.log('Returning events from cache, count:', cachedEvents.events.length);
+      return { 
+        events: cachedEvents.events, 
+        error: null, 
+        status: 'success' 
+      };
+    }
+    
+    console.log('Cache miss - Fetching events from Supabase Edge Function');
+    
+    // Clear the cache to ensure a fresh call
+    localStorage.removeItem(CACHE_KEY);
+    
+    // Call the Supabase Edge Function to get calendar events
+    const { data, error } = await supabase.functions.invoke('fetch-calendar-events', {
+      method: 'GET'
+    });
+    
+    console.log('Edge function response received:', data, error);
+    
+    if (error) {
+      console.error('Error invoking Supabase Edge Function:', error);
+      return { 
+        events: [], 
+        error: `Failed to connect to calendar service: ${error.message}`, 
+        status: 'error'
+      };
+    }
+    
+    if (data.error) {
+      console.error('Error from Google Calendar API:', data.error, data.errorDetails || '');
+      return { 
+        events: [], 
+        error: data.message || data.error, 
+        status: 'error'
+      };
+    }
+    
+    // No errors, but check if we have any events
+    if (!data.items || data.items.length === 0) {
+      console.log('No events found in calendar');
+      return { 
+        events: [], 
+        error: null, 
+        status: 'empty'
+      };
+    }
+    
+    // Format the events returned from the edge function
+    const formattedEvents = formatEvents(data.items);
+    
+    // Save the events to the cache
+    saveEventsToCache(formattedEvents);
+    
+    console.log(`Successfully fetched ${formattedEvents.length} events from Google Calendar`);
+    
+    return { 
+      events: formattedEvents, 
+      error: null, 
+      status: 'success' 
     };
-
-    // Cache the successful response
-    cachedEvents = response;
-    cacheTimestamp = now;
-
-    console.log(`Successfully processed ${events.length} events`);
-    return response;
-
   } catch (error) {
     console.error('Unexpected error fetching events:', error);
-    const errorResponse: CalendarResponse = {
-      events: [],
-      status: 'error',
-      error: error instanceof Error ? error.message : 'Unknown error occurred'
+    return { 
+      events: [], 
+      error: `Unexpected error: ${error.message}`, 
+      status: 'error'
     };
-    return errorResponse;
   }
-};
+}
 
-// Function to clear cache (useful for debugging)
-export const clearEventsCache = () => {
-  cachedEvents = null;
-  cacheTimestamp = 0;
-};
+/**
+ * Formats the Google Calendar events into our application format
+ */
+function formatEvents(googleEvents: GoogleCalendarEvent[]): Event[] {
+  if (!googleEvents || googleEvents.length === 0) {
+    return [];
+  }
+  
+  return googleEvents.map(event => {
+    const startTime = new Date(event.start.dateTime);
+    
+    // Extract image from attachments if available
+    let eventImage: string | undefined = undefined;
+    if (event.attachments && event.attachments.length > 0) {
+      const imageAttachment = event.attachments.find(
+        attachment => attachment.mimeType.startsWith('image/')
+      );
+      if (imageAttachment) {
+        eventImage = imageAttachment.fileUrl;
+      }
+    }
+    
+    return {
+      id: event.id,
+      title: event.summary,
+      description: event.description || 'No description available',
+      location: event.location || 'Location not specified',
+      startTime: startTime,
+      endTime: new Date(event.end.dateTime),
+      day: startTime.getDate(),
+      month: format(startTime, 'MMMM'),
+      year: startTime.getFullYear(),
+      image: eventImage,
+      colorId: event.colorId // Store the colorId from Google
+    };
+  });
+}
