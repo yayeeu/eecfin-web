@@ -31,15 +31,15 @@ const Header = () => {
   };
 
   return (
-    <header className="bg-white shadow-sm relative z-50">
+    <header className="bg-gradient-to-r from-slate-700 to-slate-800 shadow-sm relative z-50">
       <div className="container-custom">
         <div className="flex justify-between items-center py-4">
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-3">
             <img 
-              src="/lovable-uploads/0e9c7cce-3d10-47b6-ae05-506674613ae3.png" 
+              src="/lovable-uploads/5dda826a-06fd-4b4a-bcbe-98b19a84d27f.png" 
               alt="Ethiopian Evangelical Church in Finland"
-              className="h-12 w-auto"
+              className="h-auto max-h-16 w-auto"
             />
           </Link>
 
@@ -52,7 +52,7 @@ const Header = () => {
                 className={`text-sm font-medium transition-colors hover:text-eecfin-gold ${
                   isActivePath(item.href) 
                     ? 'text-eecfin-gold border-b-2 border-eecfin-gold pb-1' 
-                    : 'text-gray-700'
+                    : 'text-white'
                 }`}
               >
                 {item.name}
@@ -60,15 +60,15 @@ const Header = () => {
             ))}
             
             {/* Auth Section */}
-            <div className="flex items-center space-x-4 ml-8 pl-8 border-l border-gray-200">
+            <div className="flex items-center space-x-4 ml-8 pl-8 border-l border-gray-300">
               {user ? (
                 <div className="flex items-center space-x-3">
                   <div className="flex items-center space-x-2 text-sm">
-                    <User className="h-4 w-4 text-gray-600" />
-                    <span className="text-gray-700">{profile?.name}</span>
+                    <User className="h-4 w-4 text-gray-300" />
+                    <span className="text-white">{profile?.name}</span>
                     {profile?.role === 'it' && (
                       <Link to="/admin">
-                        <Button variant="outline" size="sm">
+                        <Button variant="outline" size="sm" className="bg-white/10 border-white/20 text-white hover:bg-white/20">
                           Admin
                         </Button>
                       </Link>
@@ -78,14 +78,14 @@ const Header = () => {
                     variant="ghost" 
                     size="sm" 
                     onClick={handleSignOut}
-                    className="text-gray-600 hover:text-gray-800"
+                    className="text-gray-300 hover:text-white hover:bg-white/10"
                   >
                     <LogOut className="h-4 w-4" />
                   </Button>
                 </div>
               ) : (
                 <Link to="/login">
-                  <Button variant="outline" size="sm">
+                  <Button variant="outline" size="sm" className="bg-white/10 border-white/20 text-white hover:bg-white/20">
                     Sign In
                   </Button>
                 </Link>
@@ -96,7 +96,7 @@ const Header = () => {
           {/* Mobile menu button */}
           <button
             onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className="lg:hidden p-2 rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-100"
+            className="lg:hidden p-2 rounded-md text-gray-300 hover:text-white hover:bg-white/10"
           >
             {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
           </button>
@@ -105,7 +105,7 @@ const Header = () => {
         {/* Mobile Navigation */}
         {isMenuOpen && (
           <div className="lg:hidden">
-            <div className="px-2 pt-2 pb-3 space-y-1 bg-white border-t border-gray-200">
+            <div className="px-2 pt-2 pb-3 space-y-1 bg-slate-800/95 border-t border-gray-600">
               {navigationItems.map((item) => (
                 <Link
                   key={item.name}
@@ -113,7 +113,7 @@ const Header = () => {
                   className={`block px-3 py-2 rounded-md text-base font-medium transition-colors ${
                     isActivePath(item.href)
                       ? 'text-eecfin-gold bg-eecfin-gold/10'
-                      : 'text-gray-700 hover:text-eecfin-gold hover:bg-gray-50'
+                      : 'text-white hover:text-eecfin-gold hover:bg-white/10'
                   }`}
                   onClick={() => setIsMenuOpen(false)}
                 >
@@ -122,16 +122,16 @@ const Header = () => {
               ))}
               
               {/* Mobile Auth Section */}
-              <div className="pt-4 border-t border-gray-200">
+              <div className="pt-4 border-t border-gray-600">
                 {user ? (
                   <div className="space-y-2">
-                    <div className="px-3 py-2 text-sm text-gray-600">
+                    <div className="px-3 py-2 text-sm text-gray-300">
                       Signed in as {profile?.name}
                     </div>
                     {profile?.role === 'it' && (
                       <Link
                         to="/admin"
-                        className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-eecfin-gold hover:bg-gray-50 rounded-md"
+                        className="block px-3 py-2 text-base font-medium text-white hover:text-eecfin-gold hover:bg-white/10 rounded-md"
                         onClick={() => setIsMenuOpen(false)}
                       >
                         Admin Dashboard
@@ -139,7 +139,7 @@ const Header = () => {
                     )}
                     <button
                       onClick={handleSignOut}
-                      className="block w-full text-left px-3 py-2 text-base font-medium text-gray-700 hover:text-eecfin-gold hover:bg-gray-50 rounded-md"
+                      className="block w-full text-left px-3 py-2 text-base font-medium text-white hover:text-eecfin-gold hover:bg-white/10 rounded-md"
                     >
                       Sign Out
                     </button>
@@ -147,7 +147,7 @@ const Header = () => {
                 ) : (
                   <Link
                     to="/login"
-                    className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-eecfin-gold hover:bg-gray-50 rounded-md"
+                    className="block px-3 py-2 text-base font-medium text-white hover:text-eecfin-gold hover:bg-white/10 rounded-md"
                     onClick={() => setIsMenuOpen(false)}
                   >
                     Sign In
