@@ -1,6 +1,6 @@
 services:
   akuwebsite:
-    container_name: akuwebsite
+    container_name: akuwebsite-dev
     build:
       context: .
     restart: no #unless-stopped
@@ -8,6 +8,12 @@ services:
     #  - "8080"
     environment:
       - HOST=0.0.0.0
+      #- PORT=8081
+      - VIRTUAL_HOST=eecfin.local
+      - VIRTUAL_PORT=8081
+      - LETSENCRYPT_HOST=eecfin.local 
+      - LETSENCRYPT_EMAIL=admin@eecfin.com 
+     # - CHOKIDAR_USEPOLLING=true
     networks:
       - nginx_proxy
     volumes:

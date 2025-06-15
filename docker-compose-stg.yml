@@ -1,13 +1,17 @@
 services:
   akuwebsite:
-    container_name: akuwebsite
+    container_name: akuwebsite-stg
     build:
       context: .
     restart: no #unless-stopped
    # ports:
     #  - "8080"
     environment:
-      - HOST=0.0.0.0
+      - VIRTUAL_HOST=stg.eecfin.com
+      - VIRTUAL_PORT=8081
+      - LETSENCRYPT_HOST=stg.eecfin.com 
+      - LETSENCRYPT_EMAIL=admin@eecfin.com 
+     # - CHOKIDAR_USEPOLLING=true
     networks:
       - nginx_proxy
     volumes:

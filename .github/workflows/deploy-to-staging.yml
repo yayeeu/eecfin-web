@@ -1,0 +1,40 @@
+name: Deploy Website to Staging
+
+on:
+  push:
+    branches:
+      - staging # or custom dev branch
+
+jobs:
+  deploy-staging:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Connect and deploy to server
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.STG_IP }}
+          username: ${{ secrets.STG_USER }}
+          key: ${{ secrets.STG_SSH_KEY }}
+          port: 22
+          script: |
+            cd ~/stg/we
+
+            # OPTION A: Clean directory
+            #rm -rf *
+            #git clone -b staging git@github.com:yayeeu/eecfin-web.git .
+            
+            # OPTION B (if you want to keep repo initialized):
+            git fetch origin
+            git reset --hard origin/staging
+
+            # Generate .env file
+            rm .env
+            echo "VITE_AKU_API_URL=${{ secrets.STG_AKU_API_URL }}" >> .env
+            echo "VITE_CONTACT_EMAIL=${{ secrets.CONTACT_EMAIL }}" >> .env
+
+            # Build and deploy with docker compose
+            #docker compose -f docker-compose.yml -f docker-compose.stg.yml up -d --build
+            docker compose down web-stg
+            docker compose -p web-stg -f docker-compose.yml -f docker-compose.stg.yml up -d --build
+
