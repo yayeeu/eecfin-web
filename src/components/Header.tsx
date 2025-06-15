@@ -31,15 +31,15 @@ const Header = () => {
   };
 
   return (
-    <header className="bg-gradient-to-r from-slate-700 to-slate-800 shadow-sm relative z-50">
+    <header className="bg-gradient-to-r from-gray-800 via-gray-700 to-gray-800 shadow-sm relative z-50">
       <div className="container-custom">
-        <div className="flex justify-between items-center py-4">
+        <div className="flex justify-between items-center py-3">
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-3">
             <img 
               src="/lovable-uploads/5dda826a-06fd-4b4a-bcbe-98b19a84d27f.png" 
               alt="Ethiopian Evangelical Church in Finland"
-              className="h-auto max-h-16 w-auto"
+              className="h-20 w-auto max-w-[300px] object-contain"
             />
           </Link>
 
