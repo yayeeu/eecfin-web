@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
@@ -41,7 +40,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       const { data, error } = await supabase
         .from('members')
-        .select('id, email, name, role')
+        .select(`
+          id, 
+          email, 
+          name,
+          roles:role_id (name)
+        `)
         .eq('id', userId)
         .single();
 
@@ -51,7 +55,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         id: data.id,
         email: data.email || '',
         name: data.name || '',
-        role: data.role as Profile['role'] || 'member'
+        role: (data.roles?.name as Profile['role']) || 'member'
       };
       
       setProfile(profileData);
