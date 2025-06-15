@@ -19,7 +19,14 @@ export const getElders = async () => {
     throw error;
   }
   
-  return data as Member[];
+  // Type-safe conversion
+  return (data || []).map(item => ({
+    ...item,
+    roles: item.roles ? {
+      ...item.roles,
+      created_at: item.roles.created_at || new Date().toISOString()
+    } : undefined
+  })) as Member[];
 };
 
 export const getElder = async (id: string) => {
@@ -39,7 +46,16 @@ export const getElder = async (id: string) => {
     throw error;
   }
   
-  return data as Member;
+  // Type-safe conversion
+  const result = {
+    ...data,
+    roles: data.roles ? {
+      ...data.roles,
+      created_at: data.roles.created_at || new Date().toISOString()
+    } : undefined
+  } as Member;
+  
+  return result;
 };
 
 export const createElder = async (elder: Omit<Member, 'id' | 'created_at'>) => {
@@ -60,17 +76,23 @@ export const createElder = async (elder: Omit<Member, 'id' | 'created_at'>) => {
     throw roleError;
   }
   
-  // Add the role_id to the elder data
-  const elderWithRole = {
+  // Convert children_names to number if it's a string
+  const normalizedElder = {
     ...elder,
     role: 'elder',
     role_id: roleData.id,
-    status: elder.status || 'active'
+    status: elder.status || 'active',
+    children_names: typeof elder.children_names === 'string' 
+      ? parseInt(elder.children_names, 10) || 0 
+      : elder.children_names || 0
   };
+  
+  // Remove properties that don't exist in the database schema
+  const { ministries, roles, assigned_elder, ministry_assignments, ...dbElder } = normalizedElder;
   
   const { data, error } = await supabase!
     .from('members')
-    .insert(elderWithRole)
+    .insert(dbElder)
     .select()
     .single();
   
@@ -105,9 +127,20 @@ export const updateElder = async (id: string, elder: Partial<Omit<Member, 'id' |
     elder.role_id = roleData.id;
   }
   
+  // Convert children_names to number if it's a string
+  const normalizedElder = {
+    ...elder,
+    children_names: typeof elder.children_names === 'string' 
+      ? parseInt(elder.children_names, 10) || 0 
+      : elder.children_names
+  };
+  
+  // Remove properties that don't exist in the database schema
+  const { ministries, roles, assigned_elder, ministry_assignments, ...dbElder } = normalizedElder;
+  
   const { data, error } = await supabase!
     .from('members')
-    .update(elder)
+    .update(dbElder)
     .eq('id', id)
     .select()
     .single();

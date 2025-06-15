@@ -75,9 +75,23 @@ const MinistryManager = () => {
   };
 
   const handleContactPersonChange = (contactPersonId: string) => {
+    // Find the contact person and ensure proper typing
     const elder = elders?.find(e => e.id === contactPersonId);
     const member = members?.find(m => m.id === contactPersonId);
-    setSelectedMember(elder || member || null);
+    const contactPerson = elder || member;
+    
+    // Create a properly typed Member object if found
+    if (contactPerson) {
+      const typedMember: Member = {
+        ...contactPerson,
+        status: (contactPerson.status === 'active' || contactPerson.status === 'inactive') 
+          ? contactPerson.status 
+          : 'active'
+      };
+      setSelectedMember(typedMember);
+    } else {
+      setSelectedMember(null);
+    }
   };
 
   const handleDeleteClick = (id: string) => {
@@ -108,6 +122,17 @@ const MinistryManager = () => {
     return <div className="p-8 text-red-500">Error loading ministries: {ministriesError.message}</div>;
   }
 
+  // Type-safe conversion for elders and members arrays
+  const typedElders: Member[] = elders?.map(elder => ({
+    ...elder,
+    status: (elder.status === 'active' || elder.status === 'inactive') ? elder.status : 'active'
+  })) || [];
+
+  const typedMembers: Member[] = members?.map(member => ({
+    ...member,
+    status: (member.status === 'active' || member.status === 'inactive') ? member.status : 'active'
+  })) || [];
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
@@ -120,8 +145,8 @@ const MinistryManager = () => {
 
       <MinistryList 
         ministries={ministries || []}
-        members={members}
-        elders={elders}
+        members={typedMembers}
+        elders={typedElders}
         onEdit={handleEditMinistry}
         onDelete={handleDeleteClick}
       />
@@ -140,8 +165,8 @@ const MinistryManager = () => {
           
           <MinistryForm 
             ministry={editingMinistry}
-            elders={elders || []}
-            members={members || []}
+            elders={typedElders}
+            members={typedMembers}
             onSubmit={handleSubmit}
             onCancel={handleDialogClose}
             onContactPersonChange={handleContactPersonChange}

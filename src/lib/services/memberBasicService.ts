@@ -31,7 +31,14 @@ export const getAllMembers = async () => {
     throw error;
   }
   
-  return data as Member[];
+  // Type-safe conversion
+  return (data || []).map(item => ({
+    ...item,
+    roles: item.roles ? {
+      ...item.roles,
+      created_at: item.roles.created_at || new Date().toISOString()
+    } : undefined
+  })) as Member[];
 };
 
 export const getMember = async (id: string) => {
@@ -64,7 +71,16 @@ export const getMember = async (id: string) => {
     throw error;
   }
   
-  return data as Member;
+  // Type-safe conversion
+  const result = {
+    ...data,
+    roles: data.roles ? {
+      ...data.roles,
+      created_at: data.roles.created_at || new Date().toISOString()
+    } : undefined
+  } as Member;
+  
+  return result;
 };
 
 export const createMember = async (member: Omit<Member, 'id' | 'created_at'>) => {
@@ -79,9 +95,20 @@ export const createMember = async (member: Omit<Member, 'id' | 'created_at'>) =>
     return Promise.resolve(newMember);
   }
   
+  // Convert children_names to number if it's a string and remove non-db fields
+  const normalizedMember = {
+    ...member,
+    children_names: typeof member.children_names === 'string' 
+      ? parseInt(member.children_names, 10) || 0 
+      : member.children_names || 0
+  };
+  
+  // Remove properties that don't exist in the database schema
+  const { ministries, roles, assigned_elder, ministry_assignments, ...dbMember } = normalizedMember;
+  
   const { data, error } = await supabase!
     .from('members')
-    .insert(member)
+    .insert(dbMember)
     .select()
     .single();
   
@@ -109,9 +136,20 @@ export const updateMember = async (id: string, member: Partial<Omit<Member, 'id'
     return Promise.resolve(updatedMember);
   }
   
+  // Convert children_names to number if it's a string and remove non-db fields
+  const normalizedMember = {
+    ...member,
+    children_names: typeof member.children_names === 'string' 
+      ? parseInt(member.children_names, 10) || 0 
+      : member.children_names
+  };
+  
+  // Remove properties that don't exist in the database schema
+  const { ministries, roles, assigned_elder, ministry_assignments, ...dbMember } = normalizedMember;
+  
   const { data, error } = await supabase!
     .from('members')
-    .update(member)
+    .update(dbMember)
     .eq('id', id)
     .select()
     .single();

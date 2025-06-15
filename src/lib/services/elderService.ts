@@ -21,7 +21,14 @@ export const getElderMembers = async () => {
     throw error;
   }
   
-  return data as Member[];
+  // Type-safe conversion
+  return (data || []).map(item => ({
+    ...item,
+    roles: item.roles ? {
+      ...item.roles,
+      created_at: item.roles.created_at || new Date().toISOString()
+    } : undefined
+  })) as Member[];
 };
 
 // Get elders for dropdown selects (used in ministry form)
@@ -36,7 +43,7 @@ export const getEldersForDropdown = async () => {
         name: m.name,
         email: m.email,
         phone: m.phone,
-        status: m.status
+        status: m.status as 'active' | 'inactive' // Type assertion for safety
       }))
     );
   }
@@ -53,5 +60,5 @@ export const getEldersForDropdown = async () => {
     throw error;
   }
   
-  return data;
+  return data || [];
 };
