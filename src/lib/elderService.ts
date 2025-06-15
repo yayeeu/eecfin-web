@@ -19,16 +19,46 @@ export const getElders = async (): Promise<Member[]> => {
     throw error;
   }
   
-  // Transform the data to match our Member type
-  return (data || []).map(item => ({
-    ...item,
-    status: (item.status === 'active' || item.status === 'inactive') ? item.status : 'active',
-    roles: item.roles ? {
-      id: item.roles.id,
-      name: item.roles.name as 'admin' | 'it' | 'member' | 'elder' | 'volunteer',
-      created_at: new Date().toISOString()
-    } : undefined
-  })) as Member[];
+  // Transform the data to match our Member type with explicit typing
+  return (data || []).map(item => {
+    const member: Member = {
+      id: item.id,
+      name: item.name,
+      phone: item.phone,
+      email: item.email,
+      address: item.address,
+      city: item.city,
+      postal_code: item.postal_code,
+      image: item.image,
+      role: item.role as 'admin' | 'it' | 'member' | 'elder' | 'volunteer',
+      role_id: item.role_id,
+      ministry_id: item.ministry_id,
+      gender: item.gender,
+      marital_status: item.marital_status,
+      spouse_name: item.spouse_name,
+      children_names: item.children_names,
+      previous_church: item.previous_church,
+      role_in_previous_church: item.role_in_previous_church,
+      emergency_contact: item.emergency_contact,
+      has_letter_from_prev_church: item.has_letter_from_prev_church,
+      status: (item.status === 'active' || item.status === 'inactive') ? item.status : 'active',
+      is_baptised: item.is_baptised,
+      num_children: item.num_children,
+      latitude: item.latitude,
+      longitude: item.longitude,
+      created_at: item.created_at,
+      ministries: item.ministries ? {
+        id: item.ministries.id,
+        name: item.ministries.name
+      } : undefined,
+      roles: item.roles ? {
+        id: item.roles.id,
+        name: item.roles.name as 'admin' | 'it' | 'member' | 'elder' | 'volunteer',
+        created_at: new Date().toISOString()
+      } : undefined
+    };
+    return member;
+  });
 };
 
 export const getElder = async (id: string): Promise<Member> => {
@@ -48,10 +78,37 @@ export const getElder = async (id: string): Promise<Member> => {
     throw error;
   }
   
-  // Transform the data to match our Member type
+  // Transform the data to match our Member type with explicit construction
   const result: Member = {
-    ...data,
+    id: data.id,
+    name: data.name,
+    phone: data.phone,
+    email: data.email,
+    address: data.address,
+    city: data.city,
+    postal_code: data.postal_code,
+    image: data.image,
+    role: data.role as 'admin' | 'it' | 'member' | 'elder' | 'volunteer',
+    role_id: data.role_id,
+    ministry_id: data.ministry_id,
+    gender: data.gender,
+    marital_status: data.marital_status,
+    spouse_name: data.spouse_name,
+    children_names: data.children_names,
+    previous_church: data.previous_church,
+    role_in_previous_church: data.role_in_previous_church,
+    emergency_contact: data.emergency_contact,
+    has_letter_from_prev_church: data.has_letter_from_prev_church,
     status: (data.status === 'active' || data.status === 'inactive') ? data.status : 'active',
+    is_baptised: data.is_baptised,
+    num_children: data.num_children,
+    latitude: data.latitude,
+    longitude: data.longitude,
+    created_at: data.created_at,
+    ministries: data.ministries ? {
+      id: data.ministries.id,
+      name: data.ministries.name
+    } : undefined,
     roles: data.roles ? {
       id: data.roles.id,
       name: data.roles.name as 'admin' | 'it' | 'member' | 'elder' | 'volunteer',
