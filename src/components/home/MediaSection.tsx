@@ -4,95 +4,104 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import MissionSlider from './MissionSlider';
 import { useHomeLiveStream } from '@/hooks/useHomeLiveStream';
 import { YouTubeEmbed } from '../YouTubeEmbed';
-import LiveIndicator from './LiveIndicator';
 
 const MediaSection = () => {
   const { videoId, isLive, loading, fallbackUsed, useChannelEmbed } = useHomeLiveStream();
 
   return (
-    <section className="py-10 bg-gradient-to-b from-white to-gray-50">
-      <div className="container-custom">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+    <section className="py-20 bg-gradient-to-br from-white via-gray-50 to-eecfin-gold/5 relative overflow-hidden">
+      {/* Background decorative elements */}
+      <div className="absolute top-0 right-0 w-72 h-72 bg-eecfin-navy/5 rounded-full -translate-y-1/2 translate-x-1/2"></div>
+      <div className="absolute bottom-0 left-0 w-96 h-96 bg-eecfin-gold/10 rounded-full translate-y-1/2 -translate-x-1/2"></div>
+      
+      <div className="container-custom relative z-10">
+        <div className="text-center mb-12">
+          <h2 className="text-4xl md:text-5xl font-bold text-eecfin-navy mb-4">
+            Watch & Learn
+          </h2>
+          <p className="text-xl text-gray-700 max-w-2xl mx-auto">
+            Join us online or catch up on our latest messages and community updates
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
           {/* YouTube Video Section */}
-          <div className="w-full h-full">
-            <Card className="h-full flex flex-col overflow-hidden">
-              <CardHeader className="space-y-1">
+          <div className="w-full">
+            <Card className="overflow-hidden border-0 shadow-2xl bg-white/80 backdrop-blur-sm">
+              <CardHeader className="bg-gradient-to-r from-eecfin-navy to-eecfin-navy/80 text-white">
                 <div className="flex items-center justify-between">
-                  <CardTitle className="flex items-center gap-2">
+                  <CardTitle className="flex items-center gap-3 text-xl">
                     {isLive ? (
                       <>
-                        <span className="relative flex h-3 w-3">
-                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                          <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
-                        </span>
-                        LIVE NOW
+                        <div className="relative">
+                          <span className="animate-ping absolute inline-flex h-4 w-4 rounded-full bg-red-400 opacity-75"></span>
+                          <span className="relative inline-flex rounded-full h-4 w-4 bg-red-500"></span>
+                        </div>
+                        <span className="font-bold">LIVE NOW</span>
                       </>
                     ) : (
-                      "Watch Now"
+                      <>
+                        <div className="w-4 h-4 bg-eecfin-gold rounded-full"></div>
+                        <span>Latest Service</span>
+                      </>
                     )}
                   </CardTitle>
                   {isLive && (
-                    <div className="bg-red-500 text-white px-3 py-1 rounded-full text-sm font-bold animate-pulse">
+                    <div className="bg-red-500 text-white px-4 py-2 rounded-full text-sm font-bold animate-pulse shadow-lg">
                       LIVE
                     </div>
                   )}
                 </div>
-                <CardDescription>
-                  {isLive ? "Join us live now!" : "Watch our latest service"}
+                <CardDescription className="text-white/90 text-base">
+                  {isLive ? "Join our live service now!" : "Watch our most recent service"}
                 </CardDescription>
               </CardHeader>
-              <CardContent className="flex-grow flex flex-col p-6">
-                <div className="w-full h-full flex-grow relative">
-                  {/* Modern rounded video container */}
-                  <div className="relative w-full h-full rounded-2xl overflow-hidden shadow-2xl bg-gray-100">
-                    {loading ? (
-                      <div className="absolute inset-0 flex items-center justify-center bg-gray-100 rounded-2xl">
-                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-500"></div>
-                      </div>
-                    ) : (
-                      <>
-                        <YouTubeEmbed 
-                          videoId={videoId} 
-                          className="w-full h-full rounded-2xl"
-                          autoplay={isLive}
-                          isLive={isLive}
-                        />
-                        {isLive && (
-                          <div className="absolute top-4 left-4 z-20">
-                            <div className="bg-red-500 text-white px-4 py-2 rounded-full text-sm font-bold flex items-center gap-2 shadow-lg">
-                              <span className="relative flex h-2 w-2">
-                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
-                                <span className="relative inline-flex rounded-full h-2 w-2 bg-white"></span>
-                              </span>
-                              LIVE
-                            </div>
+              <CardContent className="p-0">
+                <div className="relative w-full">
+                  {loading ? (
+                    <div className="aspect-video flex items-center justify-center bg-gray-100">
+                      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-eecfin-navy"></div>
+                    </div>
+                  ) : (
+                    <div className="relative">
+                      <YouTubeEmbed 
+                        videoId={videoId} 
+                        className="w-full aspect-video"
+                        autoplay={isLive}
+                        isLive={isLive}
+                      />
+                      {isLive && (
+                        <div className="absolute top-4 left-4 z-20">
+                          <div className="bg-red-500 text-white px-4 py-2 rounded-full text-sm font-bold flex items-center gap-2 shadow-xl">
+                            <span className="relative flex h-2 w-2">
+                              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
+                              <span className="relative inline-flex rounded-full h-2 w-2 bg-white"></span>
+                            </span>
+                            LIVE
                           </div>
-                        )}
-                        {/* Gradient overlay for modern look */}
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent pointer-events-none rounded-2xl"></div>
-                      </>
-                    )}
-                  </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
               </CardContent>
             </Card>
           </div>
 
-          {/* Our Mission with language slider */}
-          <div className="w-full h-full">
-            <Card className="h-full">
-              <CardHeader className="space-y-1">
-                <div className="flex items-center justify-between">
-                  <CardTitle>Our Mission</CardTitle>
-                </div>
-                <CardDescription>
-                  Learn about our church's core mission
+          {/* Mission Statement Section */}
+          <div className="w-full">
+            <Card className="h-full border-0 shadow-2xl bg-white/80 backdrop-blur-sm">
+              <CardHeader className="bg-gradient-to-r from-eecfin-gold to-eecfin-accent text-eecfin-navy">
+                <CardTitle className="flex items-center gap-3 text-xl">
+                  <div className="w-4 h-4 bg-eecfin-navy rounded-full"></div>
+                  Our Mission
+                </CardTitle>
+                <CardDescription className="text-eecfin-navy/80 text-base">
+                  Discover what drives our community
                 </CardDescription>
               </CardHeader>
-              <CardContent className="flex-grow">
-                <div className="h-full">
-                  <MissionSlider />
-                </div>
+              <CardContent className="p-6">
+                <MissionSlider />
               </CardContent>
             </Card>
           </div>
