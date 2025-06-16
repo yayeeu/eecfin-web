@@ -1,14 +1,67 @@
-
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card } from "@/components/ui/card";
 import { YouTubeEmbed } from "@/components/YouTubeEmbed";
 import { MessageSquare, Video, ListVideo, Calendar, Info } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { VideoLibrary } from "@/components/VideoLibrary";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { useYouTubeVideos } from '@/hooks/useYouTubeVideos';
 
 const Sermons = () => {
-  const playlistId = 'PL827hn5fOPy27cTOXAdkdqO70eoUzKNIQ';
+  const [selectedVideoId, setSelectedVideoId] = useState<string | null>(null);
+  const PLAYLIST_ID = import.meta.env.VITE_YOUTUBE_PLAYLIST_ID;
+  const { videos: sermons, loading: sermonsLoading } = useYouTubeVideos('sermon');
+  const { videos: livestreams, loading: livestreamsLoading } = useYouTubeVideos('live');
+
+  // Set the most recent sermon as the default video when sermons are loaded
+  useEffect(() => {
+    if (sermons.length > 0 && !selectedVideoId) {
+      setSelectedVideoId(sermons[0].id);
+    }
+  }, [sermons, selectedVideoId]);
+
+  const VideoGrid = ({ videos, loading }: { videos: any[], loading: boolean }) => {
+    if (loading) {
+      return (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {[...Array(6)].map((_, i) => (
+            <Card key={i} className="animate-pulse">
+              <div className="aspect-video bg-gray-200" />
+              <div className="p-4 space-y-2">
+                <div className="h-4 bg-gray-200 rounded w-3/4" />
+                <div className="h-4 bg-gray-200 rounded w-1/2" />
+              </div>
+            </Card>
+          ))}
+        </div>
+      );
+    }
+
+    return (
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {videos.map((video) => (
+          <Card 
+            key={video.id} 
+            className="cursor-pointer hover:shadow-lg transition-shadow"
+            onClick={() => setSelectedVideoId(video.id)}
+          >
+            <div className="aspect-video relative">
+              <img 
+                src={video.thumbnailUrl} 
+                alt={video.title}
+                className="w-full h-full object-cover"
+              />
+            </div>
+            <div className="p-4">
+              <h3 className="font-semibold line-clamp-2">{video.title}</h3>
+              <p className="text-sm text-gray-500 mt-1">
+                {new Date(video.publishedAt).toLocaleDateString()}
+              </p>
+            </div>
+          </Card>
+        ))}
+      </div>
+    );
+  };
 
   return (
     <div className="container-custom py-8 space-y-12">
@@ -16,7 +69,11 @@ const Sermons = () => {
         <div className="w-full lg:w-[60%] max-w-full">
           <Card className="overflow-hidden w-full">
             <div className="w-full">
-              <YouTubeEmbed playlistId={playlistId} />
+              {selectedVideoId ? (
+                <YouTubeEmbed videoId={selectedVideoId} />
+              ) : (
+                <YouTubeEmbed playlistId={PLAYLIST_ID} />
+              )}
             </div>
           </Card>
         </div>
@@ -42,7 +99,7 @@ const Sermons = () => {
           </Alert>
 
           <a 
-            href={`https://www.youtube.com/playlist?list=${playlistId}`} 
+            href={`https://www.youtube.com/playlist?list=${PLAYLIST_ID}`} 
             target="_blank" 
             rel="noopener noreferrer"
             className="inline-flex items-center gap-2 px-6 py-3 bg-eecfin-navy text-white rounded-lg hover:bg-eecfin-navy/90 transition-colors"
@@ -74,11 +131,11 @@ const Sermons = () => {
           </TabsList>
           
           <TabsContent value="sermons" className="mt-0">
-            <VideoLibrary type="sermon" />
+            <VideoGrid videos={sermons} loading={sermonsLoading} />
           </TabsContent>
           
           <TabsContent value="livestreams" className="mt-0">
-            <VideoLibrary type="live" />
+            <VideoGrid videos={livestreams} loading={livestreamsLoading} />
           </TabsContent>
         </Tabs>
       </div>

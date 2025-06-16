@@ -15,14 +15,7 @@ const MediaSection = () => {
       <div className="absolute bottom-0 left-0 w-96 h-96 bg-eecfin-gold/10 rounded-full translate-y-1/2 -translate-x-1/2"></div>
       
       <div className="container-custom relative z-10">
-        <div className="text-center mb-12">
-          <h2 className="text-4xl md:text-5xl font-bold text-eecfin-navy mb-4">
-            Watch & Learn
-          </h2>
-          <p className="text-xl text-gray-700 max-w-2xl mx-auto">
-            Join us online or catch up on our latest messages and community updates
-          </p>
-        </div>
+       
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-stretch">
           {/* YouTube Video Section */}
@@ -94,10 +87,10 @@ const MediaSection = () => {
               <CardHeader className="bg-gradient-to-r from-eecfin-gold to-eecfin-accent text-eecfin-navy">
                 <CardTitle className="flex items-center gap-3 text-xl">
                   <div className="w-4 h-4 bg-eecfin-navy rounded-full"></div>
-                  Our Mission
+                  Welcome
                 </CardTitle>
                 <CardDescription className="text-eecfin-navy/80 text-base">
-                  Discover what drives our community
+                    Welcome to the Ethiopian Evangelical Church in Finland website!
                 </CardDescription>
               </CardHeader>
               <CardContent className="p-6 flex-grow">

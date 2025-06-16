@@ -73,7 +73,7 @@ const Header = () => {
           <div className="flex items-center justify-between">
             <Link to="/" className="flex items-center">
               <img 
-                src="/lovable-uploads/37a23e62-98e1-4990-b072-d002cd08d47e.png" 
+                src="/images/eecfin-logo-header.png" 
                 alt="EECFIN Logo" 
                 className="h-16 md:h-20"
               />

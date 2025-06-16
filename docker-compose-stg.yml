@@ -1,6 +1,6 @@
 services:
-  akuwebsite:
-    container_name: akuwebsite-stg
+  eecfin:
+    container_name: eecfin-web-stg
     build:
       context: .
     restart: no #unless-stopped
@@ -19,7 +19,7 @@ services:
       - /app/node_modules   # Prevent overwriting container's node_modules
    
     
-
+git 
 networks:
   nginx_proxy:
     external: true 

@@ -1,5 +1,4 @@
-
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   Carousel,
   CarouselContent,
@@ -8,89 +7,89 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import Autoplay from "embla-carousel-autoplay";
-import { fetchSlides } from '@/lib/sliderService';
-import type { SlideImage } from '@/lib/sliderService';
-import { Loader2 } from 'lucide-react';
+import { fetchSlides, type SlideImage } from '@/lib/sliderService';
 
-const ImageSlider = () => {
+export default function ImageSlider() {
   const [slides, setSlides] = useState<SlideImage[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  const plugin = React.useRef(
-    Autoplay({ delay: 5000, stopOnInteraction: true })
-  );
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const loadSlides = async () => {
       try {
-        setLoading(true);
-        const data = await fetchSlides();
-        setSlides(data);
-        setError(null);
-      } catch (err) {
-        console.error("Error loading slides:", err);
-        setError("Failed to load slider images");
+        const loadedSlides = await fetchSlides();
+        setSlides(loadedSlides);
+      } catch (error) {
+        console.error('Error loading slides:', error);
       } finally {
-        setLoading(false);
+        setIsLoading(false);
       }
     };
 
     loadSlides();
   }, []);
 
-  if (loading) {
+  // Initialize autoplay plugin
+  const autoplayPlugin = useRef(
+    Autoplay({
+      delay: 3000,
+      stopOnInteraction: false,
+      stopOnMouseEnter: true,
+      rootNode: (emblaRoot) => emblaRoot.parentElement,
+    })
+  );
+
+  if (isLoading) {
     return (
-      <div className="relative w-full h-[324px] bg-gray-100 flex items-center justify-center">
-        <Loader2 className="h-10 w-10 text-eecfin-navy animate-spin" />
+      <div className="relative w-full h-[500px] bg-gray-100 animate-pulse">
+        <div className="absolute inset-0 flex items-center justify-center">
+          <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+        </div>
       </div>
     );
   }
 
-  if (error || slides.length === 0) {
+  if (slides.length === 0) {
     return (
-      <div className="relative w-full h-[324px] bg-gray-200 flex items-center justify-center">
-        <div className="text-center">
-          <h2 className="text-2xl font-bold text-gray-500 mb-2">
-            {error || "No slider images available"}
-          </h2>
-          {!error && slides.length === 0 && (
-            <p className="text-gray-400">Please add slides in the admin panel</p>
-          )}
+      <div className="relative w-full h-[500px] bg-gray-100">
+        <div className="absolute inset-0 flex items-center justify-center text-gray-500">
+          No slides available
         </div>
       </div>
     );
   }
 
   return (
-    <div className="relative w-full max-h-[324px] overflow-hidden">
+    <div className="relative w-full h-[500px] overflow-hidden">
       <Carousel
-        plugins={[plugin.current]}
-        className="w-full"
+        plugins={[autoplayPlugin.current]}
+        className="w-full h-full"
         opts={{
           align: "start",
           loop: true,
+          skipSnaps: false,
         }}
       >
         <CarouselContent>
-          {slides.map((slide, index) => (
-            <CarouselItem key={slide.id || index} className="relative">
-              <div className="aspect-[16/9] w-full relative">
+          {slides.map((slide) => (
+            <CarouselItem key={slide.id} className="h-[500px]">
+              <div className="relative w-full h-full">
                 <img
                   src={slide.src}
                   alt={slide.alt}
                   className="w-full h-full object-cover"
                 />
-                <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center">
-                  <div className="text-center">
-                    <h2 className="text-5xl md:text-7xl font-bold text-white mb-4 font-serif tracking-wider">
-                      {slide.title || "Welcome"}
-                    </h2>
-                    <p className="text-xl md:text-2xl text-eecfin-gold font-medium max-w-3xl mx-auto">
-                      {slide.subtitle || "to Ethiopian Evangelical Church in Finland"}
-                    </p>
+                {slide.overlay && (
+                  <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+                    <div className="text-center px-4 max-w-5xl">
+                      <h2 className="text-5xl md:text-6xl lg:text-7xl font-bold text-[#fdfbca] mb-6 font-serif tracking-wide drop-shadow-lg">
+                        {slide.overlay.title}
+                      </h2>
+                      <p className="text-2xl md:text-3xl text-[#fdfbca]/90 font-semibold tracking-wide drop-shadow-md">
+                        {slide.overlay.subtitle}
+                      </p>
+                    </div>
                   </div>
-                </div>
+                )}
               </div>
             </CarouselItem>
           ))}
@@ -100,6 +99,4 @@ const ImageSlider = () => {
       </Carousel>
     </div>
   );
-};
-
-export default ImageSlider;
+}

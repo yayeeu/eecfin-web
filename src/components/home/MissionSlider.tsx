@@ -18,18 +18,18 @@ interface MissionSlide {
 const missionSlides: MissionSlide[] = [
   {
     language: "English",
-    title: "Our Mission",
-    content: "We are a vibrant Ethiopian Christian community dedicated to spreading the Gospel, nurturing spiritual growth, and providing a place of belonging for Ethiopians and friends in Finland. Our church serves as a bridge between Ethiopian Christian heritage and life in Finland."
+    title: "Welcome",
+    content: "Welcome to the Ethiopian Evangelical Church in Finland website!"
   },
   {
     language: "Amharic",
-    title: "ተልዕኮአችን",
-    content: "የኢትዮጵያ ወንጌላዊ ቤተክርስቲያን በፊንላንድ ወንጌልን ለማሰራጨት፣ መንፈሳዊ እድገትን ለማዳበርና በፊንላንድ ለሚኖሩ ኢትዮጵያውያንና ወዳጆቻቸው መቀመጫ ለመሆን የተሰጠው ተልዕኮ ነው፡፡ ቤተክርስቲያናችን በኢትዮጵያ የክርስትና ቅርስና በፊንላንድ ሕይወት መካከል ድልድይ ሆኖ ያገለግላል፡፡"
+    title: "እንኳን ደና መጡ ",
+    content: "በፊንላንድ ወደምትገኘው የኢትዮጵያ ወንጌላዊት ቤተ ክርስቲያን ድረገጽ እንኳን ደህና መጣችሁ!፡"
   },
   {
     language: "Finnish",
-    title: "Tehtävämme",
-    content: "Olemme eloisa etiopialainen kristillinen yhteisö, joka on omistautunut evankeliumin levittämiseen, hengellisen kasvun edistämiseen ja tarjoamaan yhteenkuuluvuuden paikan etiopialaisille ja ystäville Suomessa. Kirkkomme toimii siltana etiopialaisen kristillisen perinnön ja Suomen elämän välillä."
+    title: "Tervetuloa",
+    content: "Tervetuloa Etiopian evankelisen kirkon sivuille Suomessa!"
   }
 ];
 

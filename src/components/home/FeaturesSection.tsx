@@ -8,9 +8,9 @@ const FeaturesSection = () => {
   const features = [
     {
       icon: <Calendar className="h-8 w-8" />,
-      title: "Weekly Services",
+      title: "Sunday Worship Service",
       description: "Join us every Sunday for inspiring worship, fellowship, and spiritual growth in a welcoming environment.",
-      image: "https://images.unsplash.com/photo-1605810230434-7631ac76ec81?w=600&h=400&fit=crop",
+      image: "/images/sunday_worship.jpg?w=600&h=400&fit=crop",
       imageAlt: "Sunday worship service with congregation",
       cta: "View Schedule",
       link: "/events",
@@ -19,20 +19,20 @@ const FeaturesSection = () => {
     },
     {
       icon: <Users className="h-8 w-8" />,
-      title: "Community Groups",
-      description: "Connect with others through small groups, Bible studies, and fellowship activities for all ages and life stages.",
-      image: "https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=600&h=400&fit=crop",
-      imageAlt: "Small group Bible study gathering",
-      cta: "Find a Group",
-      link: "/get-involved",
+      title: "Weekly Prayer Meeting",
+      description: "Join us every Thursday for a time of prayer and fellowship.",
+      image: "/images/weekly_prayer.png?w=600&h=400&fit=crop",
+      imageAlt: "Weekly prayer meeting with congregation",
+      cta: "View Schedule",
+      link: "/events",
       bgColor: "from-green-500/10 to-green-600/5",
       iconColor: "text-green-600"
     },
     {
       icon: <Heart className="h-8 w-8" />,
-      title: "Outreach & Support",
-      description: "Make a difference through community outreach, support networks, and service opportunities for newcomers.",
-      image: "https://images.unsplash.com/photo-1721322800607-8c38375eef04?w=600&h=400&fit=crop",
+      title: "Ministry Groups",
+      description: "Join us for a variety of ministries and activities that are designed to help you grow in your faith and serve the community.",
+      image: "/images/chruch_groups.png?w=600&h=400&fit=crop",
       imageAlt: "Community outreach and service activities",
       cta: "Get Involved",
       link: "/get-involved",
@@ -95,11 +95,12 @@ const FeaturesSection = () => {
                       <div className="space-y-1 text-sm text-gray-700">
                         <div className="flex items-center gap-2">
                           <Mic className="h-3 w-3" />
-                          <span>Sunday Worship: 10:00 AM</span>
+                          <span>Sunday Worship: 16:00 </span>
                         </div>
                         <div className="flex items-center gap-2">
                           <MapPin className="h-3 w-3" />
-                          <span>Helsinki, Finland</span>
+                          <span>Keinulaudankuja 4 B</span>
+                          <span>00790 Helsinki, Finland</span>
                         </div>
                       </div>
                     </div>

@@ -1,6 +1,6 @@
 services:
-  akuwebsite:
-    container_name: akuwebsite
+  eecfin:
+    container_name: eecfin-web
     build:
       context: .
     restart: no #unless-stopped
