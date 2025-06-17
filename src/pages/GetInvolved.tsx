@@ -9,7 +9,6 @@ const GetInvolved = () => {
   return (
     <div>
       <InvolvedHero />
-      <SupportSection />
       <MinistriesContainer />
       <CTASection />
     </div>

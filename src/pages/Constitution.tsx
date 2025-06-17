@@ -1,9 +1,16 @@
-
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { FileText } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
 
 const Constitution = () => {
   return (
@@ -28,6 +35,27 @@ const Constitution = () => {
           </div>
         </div>
       </section>
+
+      {/* Breadcrumb */}
+      <div className="bg-gray-50 py-4">
+        <div className="container-custom">
+          <Breadcrumb>
+            <BreadcrumbList>
+              <BreadcrumbItem>
+                <BreadcrumbLink href="/">Home</BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem>
+                <BreadcrumbLink href="/who-we-are">Who We Are</BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem>
+                <BreadcrumbPage>Constitution</BreadcrumbPage>
+              </BreadcrumbItem>
+            </BreadcrumbList>
+          </Breadcrumb>
+        </div>
+      </div>
 
       {/* Constitution Text Section */}
       <section className="py-16 bg-white">
@@ -94,7 +122,7 @@ const Constitution = () => {
                 size="lg"
               >
                 <a 
-                  href="/constitution.pdf" 
+                  href="/EECFIN_Constitution_2025.pdf" 
                   target="_blank" 
                   rel="noopener noreferrer"
                   className="inline-flex items-center"

@@ -32,10 +32,7 @@ const Footer = () => {
               <MapPin size={18} className="mr-2 text-eecfin-gold" />
               <span>Keinulaudankuja 4 B, 00940 Helsinki, Finland</span>
             </p>
-            <p className="mb-2 flex items-center">
-              <Phone size={18} className="mr-2 text-eecfin-gold" />
-              <span>+358 XX XXX XXXX</span>
-            </p>
+           
             <p className="flex items-center">
               <Mail size={18} className="mr-2 text-eecfin-gold" />
               <span>info@eecfin.org</span>
@@ -48,8 +45,10 @@ const Footer = () => {
               <li><Link to="/" className="hover:text-eecfin-gold transition-colors">Home</Link></li>
               <li><Link to="/who-we-are" className="hover:text-eecfin-gold transition-colors">Who We Are</Link></li>
               <li><Link to="/events" className="hover:text-eecfin-gold transition-colors">Events</Link></li>
-              <li><Link to="/contact" className="hover:text-eecfin-gold transition-colors">Contact</Link></li>
+              <li><Link to="/sermons" className="hover:text-eecfin-gold transition-colors">Sermons</Link></li>
               <li><Link to="/get-involved" className="hover:text-eecfin-gold transition-colors">Get Involved</Link></li>
+              <li><Link to="/contact" className="hover:text-eecfin-gold transition-colors">Contact</Link></li>
+              
             </ul>
           </div>
 
@@ -67,7 +66,7 @@ const Footer = () => {
               </a>
             </div>
             <p className="text-sm">
-              Join us for worship every Sunday at 10:00 AM.
+              Join us for worship every Sunday at 16:00 !
             </p>
           </div>
         </div>

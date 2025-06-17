@@ -1,6 +1,4 @@
-
 import { format } from 'date-fns';
-import { supabase } from "@/lib/supabaseClient";
 
 // Type for the Google Calendar API response
 interface GoogleCalendarEvent {
@@ -75,12 +73,12 @@ const saveEventsToCache = (events: Event[]) => {
 };
 
 /**
- * Fetches events from Google Calendar API via Supabase Edge Function
+ * Fetches events from Google Calendar API directly
  * With a local cache layer for better performance
  */
 export async function fetchEvents(): Promise<{ events: Event[], error: string | null, status: string }> {
   try {
-    console.log('fetchEvents called - Attempting to fetch calendar events from edge function');
+    console.log('fetchEvents called - Attempting to fetch calendar events directly');
     
     // Try to get events from cache first
     const cachedEvents = getEventsFromCache();
@@ -93,39 +91,54 @@ export async function fetchEvents(): Promise<{ events: Event[], error: string | 
       };
     }
     
-    console.log('Cache miss - Fetching events from Supabase Edge Function');
+    console.log('Cache miss - Fetching events from Google Calendar API');
     
     // Clear the cache to ensure a fresh call
     localStorage.removeItem(CACHE_KEY);
+
+    const API_KEY = import.meta.env.VITE_CALENDAR_API_KEY;
+    const CALENDAR_ID = import.meta.env.VITE_CALENDAR_ID;
+
+    if (!API_KEY || !CALENDAR_ID) {
+      throw new Error('Missing Google Calendar API configuration');
+    }
+
+    // Get current date for API request
+    const now = new Date();
+    const timeMin = now.toISOString();
     
-    // Call the Supabase Edge Function to get calendar events
-    const { data, error } = await supabase.functions.invoke('fetch-calendar-events', {
-      method: 'GET'
-    });
+    // Calculate timeMax - 3 months from now
+    const threeMonthsLater = new Date(now);
+    threeMonthsLater.setMonth(threeMonthsLater.getMonth() + 3);
+    const timeMax = threeMonthsLater.toISOString();
     
-    console.log('Edge function response received:', data, error);
+    console.log(`Fetching events from ${timeMin} to ${timeMax} for calendar ID: ${CALENDAR_ID}`);
     
-    if (error) {
-      console.error('Error invoking Supabase Edge Function:', error);
+    // Build URL with proper encoding and parameters
+    const url = `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(
+      CALENDAR_ID
+    )}/events?key=${API_KEY}&timeMin=${timeMin}&timeMax=${timeMax}&maxResults=100&singleEvents=true&orderBy=startTime&colorRgbFormat=true`;
+
+    console.log(`Calling Google Calendar API: ${url.replace(API_KEY, "[REDACTED]")}`);
+    
+    const response = await fetch(url);
+    
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error(`Google Calendar API error (${response.status}): ${errorText}`);
+      
       return { 
         events: [], 
-        error: `Failed to connect to calendar service: ${error.message}`, 
+        error: `Failed to fetch events: ${response.statusText} (${response.status})`, 
         status: 'error'
       };
     }
+
+    const data = await response.json();
+    console.log(`Events fetched successfully. Total events: ${data.items ? data.items.length : 0}`);
     
-    if (data.error) {
-      console.error('Error from Google Calendar API:', data.error, data.errorDetails || '');
-      return { 
-        events: [], 
-        error: data.message || data.error, 
-        status: 'error'
-      };
-    }
-    
-    // No errors, but check if we have any events
     if (!data.items || data.items.length === 0) {
-      console.log('No events found in calendar');
+      console.log("No events found in the calendar for the next 3 months");
       return { 
         events: [], 
         error: null, 
@@ -133,7 +146,7 @@ export async function fetchEvents(): Promise<{ events: Event[], error: string | 
       };
     }
     
-    // Format the events returned from the edge function
+    // Format the events
     const formattedEvents = formatEvents(data.items);
     
     // Save the events to the cache
@@ -189,7 +202,7 @@ function formatEvents(googleEvents: GoogleCalendarEvent[]): Event[] {
       month: format(startTime, 'MMMM'),
       year: startTime.getFullYear(),
       image: eventImage,
-      colorId: event.colorId // Store the colorId from Google
+      colorId: event.colorId
     };
   });
 }

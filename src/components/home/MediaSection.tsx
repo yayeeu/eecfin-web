@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import MissionSlider from './MissionSlider';
@@ -6,7 +5,7 @@ import { useHomeLiveStream } from '@/hooks/useHomeLiveStream';
 import { YouTubeEmbed } from '../YouTubeEmbed';
 
 const MediaSection = () => {
-  const { videoId, isLive, loading, fallbackUsed, useChannelEmbed } = useHomeLiveStream();
+  const { videoId, isLive, loading, channelId } = useHomeLiveStream();
 
   return (
     <section className="py-20 bg-gradient-to-br from-white via-gray-50 to-eecfin-gold/5 relative overflow-hidden">
@@ -59,6 +58,7 @@ const MediaSection = () => {
                     <div className="relative">
                       <YouTubeEmbed 
                         videoId={videoId} 
+                        channelId={channelId}
                         className="w-full aspect-video"
                         autoplay={isLive}
                         isLive={isLive}

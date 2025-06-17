@@ -83,7 +83,7 @@ const OurFaith = () => {
       <section className="relative bg-eecfin-navy overflow-hidden h-64">
         <div className="absolute inset-0 z-0">
           <img 
-            src="/lovable-uploads/01e779b2-ee2a-4a84-a799-ad97fdc1319f.png" 
+            src="/images/our-faith-hero.png" 
             alt="Statement of Faith" 
             className="w-full h-full object-cover opacity-30"
           />
@@ -130,7 +130,7 @@ const OurFaith = () => {
           {/* Large Left Side Image */}
           <div className="w-2/5 relative overflow-hidden">
             <img 
-              src="https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=1200&h=800&fit=crop" 
+              src="/images/our-faith-hero.png?w=1200&h=800&fit=crop" 
               alt="Bible study and faith community"
               className="w-full h-full object-cover"
             />

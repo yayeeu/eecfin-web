@@ -71,7 +71,7 @@ const OurLeadership = () => {
             {/* Large Left Side Image */}
             <div className="w-2/5 relative overflow-hidden">
               <img 
-                src="https://images.unsplash.com/photo-1581090464777-f3220bbe1b8b?w=1200&h=800&fit=crop" 
+                src="/images/our-leadership-hero.jpg?w=1200&h=800&fit=crop" 
                 alt="Leadership and guidance"
                 className="w-full h-full object-cover"
               />

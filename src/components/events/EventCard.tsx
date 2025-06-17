@@ -63,7 +63,7 @@ const EventCard: React.FC<EventCardProps> = ({ event }) => {
           style={{ backgroundColor: getBackgroundColor() }}
         >
           <div className="absolute top-2 right-2">
-            <Users className="h-4 w-4 opacity-60" />
+           
           </div>
           <div className={`text-2xl font-bold ${getTextColor()}`}>{event.day}</div>
           <div className={`text-sm ${getTextColor()} opacity-90 font-medium`}>{formatDateLabel()}</div>
@@ -114,20 +114,6 @@ const EventCard: React.FC<EventCardProps> = ({ event }) => {
             )}
           </div>
 
-          {/* Community engagement indicator */}
-          <div className="mt-4 pt-4 border-t border-gray-100">
-            <div className="flex items-center justify-between">
-              <div className="flex -space-x-2">
-                <div className="w-6 h-6 bg-gradient-to-br from-eecfin-navy to-eecfin-gold rounded-full border-2 border-white"></div>
-                <div className="w-6 h-6 bg-gradient-to-br from-eecfin-gold to-eecfin-accent rounded-full border-2 border-white"></div>
-                <div className="w-6 h-6 bg-gradient-to-br from-eecfin-accent to-eecfin-navy rounded-full border-2 border-white"></div>
-                <div className="w-6 h-6 bg-gray-200 rounded-full border-2 border-white flex items-center justify-center">
-                  <span className="text-xs text-gray-600 font-medium">+</span>
-                </div>
-              </div>
-              <span className="text-xs text-gray-500 font-medium">Community Event</span>
-            </div>
-          </div>
         </div>
       </div>
     </div>

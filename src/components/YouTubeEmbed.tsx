@@ -1,7 +1,7 @@
 import React from 'react';
 
 interface YouTubeEmbedProps {
-  playlistId?: string;
+  channelId?: string;
   videoId?: string;
   className?: string;
   autoplay?: boolean;
@@ -9,22 +9,23 @@ interface YouTubeEmbedProps {
 }
 
 export const YouTubeEmbed: React.FC<YouTubeEmbedProps> = ({ 
-  playlistId,
+  channelId,
   videoId,
   className,
+  playlistId,
   autoplay = false,
   isLive = false
 }) => {
   // Determine the correct embed URL
   let embedUrl = '';
   
-  if (playlistId) {
-    embedUrl = `https://www.youtube.com/embed/videoseries?list=${playlistId}`;
-  } else if (videoId) {
-    embedUrl = `https://www.youtube.com/embed/${videoId}`;
+ if (channelId) {
+    embedUrl = `https://www.youtube-nocookie.com/embed?listType=user_uploads&amp;list=eecfin`;
+  } else if (playlistId) {
+    embedUrl = `https://www.youtube-nocookie.com/embed?listType=playlist&amp;list=${playlistId}`;
   } else {
     // Fallback to channel - using the channel handle for EECFIN
-    embedUrl = 'https://www.youtube.com/embed?listType=user_uploads&list=UU8X8X8X8X8X8X8X8X8X8X8X8';
+    embedUrl = 'https://www.youtube-nocookie.com/embed?listType=user_uploads&amp;list=eecfin';
   }
 
   // Add parameters for better experience

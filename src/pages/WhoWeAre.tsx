@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import WhoWeHero from '@/components/who-we-are/WhoWeHero';
@@ -47,7 +46,7 @@ const WhoWeAre = () => {
             {/* Large Left Side Image - Reduced from w-1/2 to w-2/5 (35% width) */}
             <div className="w-2/5 relative overflow-hidden">
               <img 
-                src="https://images.unsplash.com/photo-1605810230434-7631ac76ec81?w=1200&h=800&fit=crop" 
+                src="/images/who-we-are-collage.jpg?w=1200&h=800&fit=crop" 
                 alt="Church community gathering"
                 className="w-full h-full object-cover"
               />
@@ -56,7 +55,7 @@ const WhoWeAre = () => {
             
             {/* Right Content Area - Adjusted from w-1/2 to w-3/5 (65% width) */}
             <div className="w-3/5 py-16">
-              <div className="container-custom max-w-4xl">
+              <div className="container-custom px-8">
                 <div className="flex flex-col md:flex-row md:space-x-8">
                   {/* Main Content */}
                   <div className="flex-1">

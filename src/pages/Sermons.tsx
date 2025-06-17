@@ -1,13 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { Card } from "@/components/ui/card";
 import { YouTubeEmbed } from "@/components/YouTubeEmbed";
-import { MessageSquare, Video, ListVideo, Calendar, Info } from "lucide-react";
+import { MessageSquare, Video, ListVideo, Calendar, Info, ChevronLeft, ChevronRight } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useYouTubeVideos } from '@/hooks/useYouTubeVideos';
+import { Button } from "@/components/ui/button";
 
 const Sermons = () => {
   const [selectedVideoId, setSelectedVideoId] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const VIDEOS_PER_PAGE = 6;
   const PLAYLIST_ID = import.meta.env.VITE_YOUTUBE_PLAYLIST_ID;
   const { videos: sermons, loading: sermonsLoading } = useYouTubeVideos('sermon');
   const { videos: livestreams, loading: livestreamsLoading } = useYouTubeVideos('live');
@@ -18,6 +21,11 @@ const Sermons = () => {
       setSelectedVideoId(sermons[0].id);
     }
   }, [sermons, selectedVideoId]);
+
+  // Reset to first page when switching tabs
+  const handleTabChange = () => {
+    setCurrentPage(1);
+  };
 
   const VideoGrid = ({ videos, loading }: { videos: any[], loading: boolean }) => {
     if (loading) {
@@ -36,29 +44,73 @@ const Sermons = () => {
       );
     }
 
+    // Calculate pagination
+    const totalPages = Math.ceil(videos.length / VIDEOS_PER_PAGE);
+    const startIndex = (currentPage - 1) * VIDEOS_PER_PAGE;
+    const endIndex = startIndex + VIDEOS_PER_PAGE;
+    const currentVideos = videos.slice(startIndex, endIndex);
+
     return (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {videos.map((video) => (
-          <Card 
-            key={video.id} 
-            className="cursor-pointer hover:shadow-lg transition-shadow"
-            onClick={() => setSelectedVideoId(video.id)}
-          >
-            <div className="aspect-video relative">
-              <img 
-                src={video.thumbnailUrl} 
-                alt={video.title}
-                className="w-full h-full object-cover"
-              />
+      <div className="space-y-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {currentVideos.map((video) => (
+            <Card 
+              key={video.id} 
+              className="cursor-pointer hover:shadow-lg transition-shadow"
+              onClick={() => window.open(`https://www.youtube.com/watch?v=${video.id}`, '_blank')}
+            >
+              <div className="aspect-video relative">
+                <img 
+                  src={video.thumbnailUrl} 
+                  alt={video.title}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <div className="p-4">
+                <h3 className="font-semibold line-clamp-2">{video.title}</h3>
+                <p className="text-sm text-gray-500 mt-1">
+                  {new Date(video.publishedAt).toLocaleDateString()}
+                </p>
+              </div>
+            </Card>
+          ))}
+        </div>
+
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <div className="flex items-center justify-center gap-2 mt-8">
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+              disabled={currentPage === 1}
+            >
+              <ChevronLeft className="h-4 w-4" />
+            </Button>
+            
+            <div className="flex items-center gap-1">
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                <Button
+                  key={page}
+                  variant={currentPage === page ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => setCurrentPage(page)}
+                >
+                  {page}
+                </Button>
+              ))}
             </div>
-            <div className="p-4">
-              <h3 className="font-semibold line-clamp-2">{video.title}</h3>
-              <p className="text-sm text-gray-500 mt-1">
-                {new Date(video.publishedAt).toLocaleDateString()}
-              </p>
-            </div>
-          </Card>
-        ))}
+
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+              disabled={currentPage === totalPages}
+            >
+              <ChevronRight className="h-4 w-4" />
+            </Button>
+          </div>
+        )}
       </div>
     );
   };
@@ -69,11 +121,7 @@ const Sermons = () => {
         <div className="w-full lg:w-[60%] max-w-full">
           <Card className="overflow-hidden w-full">
             <div className="w-full">
-              {selectedVideoId ? (
-                <YouTubeEmbed videoId={selectedVideoId} />
-              ) : (
-                <YouTubeEmbed playlistId={PLAYLIST_ID} />
-              )}
+              <YouTubeEmbed playlistId={PLAYLIST_ID} />
             </div>
           </Card>
         </div>
@@ -94,7 +142,7 @@ const Sermons = () => {
           <Alert className="bg-blue-50 border-blue-100">
             <Info className="h-4 w-4 text-blue-500" />
             <AlertDescription className="text-blue-700">
-              Our service times: <strong>Sunday 10:00 AM</strong> • Live streaming available
+              Our service times: <strong>Sunday 16:00</strong> • Live streaming available
             </AlertDescription>
           </Alert>
 
@@ -112,13 +160,12 @@ const Sermons = () => {
 
           <div className="flex items-center gap-2 text-gray-600">
             <Calendar className="w-5 h-5" />
-            <span>New sermons uploaded every Tuesday</span>
           </div>
         </div>
       </div>
 
       <div className="w-full">
-        <Tabs defaultValue="sermons">
+        <Tabs defaultValue="sermons" onValueChange={handleTabChange}>
           <TabsList className="mb-4">
             <TabsTrigger value="sermons" className="gap-2">
               <Video className="h-4 w-4" />
