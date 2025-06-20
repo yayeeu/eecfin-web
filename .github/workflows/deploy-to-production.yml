@@ -3,14 +3,31 @@ name: Deploy EECFIN Web to Production
 on:
   push:
     branches:
-      - main  # or custom dev branch
+      - main
 
 jobs:
   deploy-production:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Connect and deploy to server
+      - name: Set up SSH key and connect
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.STG_SSH_KEY }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan ${{ secrets.STG_IP }} >> ~/.ssh/known_hosts
+          ssh -i ~/.ssh/id_ed25519 ${{ secrets.STG_USER }}@${{ secrets.STG_IP }} "echo ✅ Connected to server"
+
+      - name: Add server to known_hosts
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan ${{secrets.STG_IP}} >> ~/.ssh/known_hosts
+
+      #- name: Test SSH connection
+      #  run: ssh -vvv ${{secrets.STG_USER}}@${{secrets.STG_IP}}
+
+      # Connect to server and run deployment commands
+      - name: Deploy to Staging via SSH
         uses: appleboy/ssh-action@v1.0.0
         with:
           host: ${{ secrets.STG_IP }}
@@ -19,24 +36,33 @@ jobs:
           port: 22
           script: |
             cd ~/prd/eecfin-web
-
+           
             # OPTION A: Clean directory
             #rm -rf *
-            git clone -b main git@github.com:yayeeu/eecfin-web.git .
-            
+            #git clone -b staging git@github.com:yayeeu/eecfin-web.git .
+            #git clone -b main git@github.com:yayeeu/eecfin-web.git .
+            #cd eecfin-web
+
             # OPTION B (if you want to keep repo initialized):
-            #git fetch origin
-            #git reset --hard origin/staging
+            git fetch origin
+            git reset --hard origin/main
 
             # Generate .env file
             rm .env
-            echo "VITE_SUPABASE_URL=${{ secrets.STG_SUPABASE_URL }}" >> .env
-            echo "VITE_SUPABASE_ANON_KEY=${{ secrets.STG_SUPABASE_ANON_KEY }}" >> .env
-            echo "VITE_SUPABASE_SERVICE_ROLE_KEY=${{ secrets.STG_SUPABASE_SERVICE_ROLE_KEY }}" >> .env
-
+            echo "VITE_SUPABASE_URL=${{secrets.STG_SUPABASE_URL }}" >> .env
+            echo "VITE_SUPABASE_ANON_KEY=${{secrets.STG_SUPABASE_ANON_KEY }}" >> .env
+            echo "VITE_SUPABASE_SERVICE_ROLE_KEY=${{secrets.STG_SUPABASE_SERVICE_ROLE_KEY }}" >> .env
+            
+            #youtube api key
+            echo "VITE_YOUTUBE_API_KEY=${{secrets.STG_YOUTUBE_API_KEY }}" >> .env
+            echo "VITE_CALENDAR_API_KEY=${{secrets.STG_CALENDAR_API_KEY }}" >> .env
+            echo "VITE_YOUTUBE_CHANNEL_ID=${{secrets.STG_YOUTUBE_CHANNEL_ID }}" >> .env
+            echo "VITE_YOUTUBE_PLAYLIST_ID=${{secrets.STG_YOUTUBE_PLAYLIST_ID }}" >> .env
+            echo "VITE_YOUTUBE_SERMON_PLAYLIST_ID=${{secrets.STG_YOUTUBE_SERMON_PLAYLIST_ID }}" >> .env
+            echo "VITE_YOUTUBE_LIVE_PLAYLIST_ID=${{secrets.STG_YOUTUBE_LIVE_PLAYLIST_ID }}" >> .env
+            echo "VITE_YOUTUBE_FALLBACK_VIDEO_ID=${{secrets.STG_YOUTUBE_FALLBACK_VIDEO_ID }}" >> .env
+            echo "VITE_CALENDAR_ID=${{secrets.STG_CALENDAR_ID }}" >> .env
 
             # Build and deploy with docker compose
-            #docker compose -f docker-compose.yml -f docker-compose.stg.yml up -d --build
-            docker compose down web-prd
+            docker compose -p web-prd down
             docker compose -p web-prd -f docker-compose.yml -f docker-compose.prd.yml up -d --build
-
