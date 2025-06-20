@@ -22,44 +22,59 @@ export const useYouTubeVideos = (type: 'sermon' | 'live') => {
         setLoading(true);
         setError(null);
 
-        // Use RSS feed URL based on type
-        const youtubeUrl = type === 'sermon' 
+        if (!PLAYLIST_ID || !CHANNEL_ID) {
+          throw new Error('YouTube playlist or channel ID not configured');
+        }
+
+        // Use a different approach - fetch RSS via JSONP or use a public RSS reader
+        const rssUrl = type === 'sermon' 
           ? `https://www.youtube.com/feeds/videos.xml?playlist_id=${PLAYLIST_ID}`
           : `https://www.youtube.com/feeds/videos.xml?channel_id=${CHANNEL_ID}`;
 
-        // Use a CORS proxy
-        const corsProxy = 'https://api.allorigins.win/raw?url=';
-        const response = await fetch(corsProxy + encodeURIComponent(youtubeUrl));
-        const xmlText = await response.text();
+        // Use RSS2JSON service which handles CORS
+        const rss2jsonUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(rssUrl)}`;
         
-        // Parse XML text
-        const parser = new DOMParser();
-        const xmlDoc = parser.parseFromString(xmlText, "text/xml");
+        const response = await fetch(rss2jsonUrl);
         
-        // Get all video entries
-        const entries = xmlDoc.getElementsByTagName("entry");
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
         
-        const formattedVideos = Array.from(entries).map(entry => {
-          const videoId = entry.getElementsByTagName("yt:videoId")[0]?.textContent || '';
-          const title = entry.getElementsByTagName("title")[0]?.textContent || '';
-          const publishedAt = entry.getElementsByTagName("published")[0]?.textContent || '';
-          
-          // Extract thumbnail URL from media:group
-          const mediaGroup = entry.getElementsByTagName("media:group")[0];
-          const thumbnailUrl = mediaGroup?.getElementsByTagName("media:thumbnail")[0]?.getAttribute("url") || '';
+        const data = await response.json();
+        
+        if (data.status !== 'ok') {
+          throw new Error(data.message || 'Failed to fetch RSS feed');
+        }
 
-          return {
-            id: videoId,
-            title: title,
-            thumbnailUrl: thumbnailUrl,
-            publishedAt: publishedAt,
-          };
-        });
+        const formattedVideos = data.items.map((item: any) => ({
+          id: item.link.split('v=')[1] || item.guid,
+          title: item.title,
+          thumbnailUrl: item.thumbnail || `https://img.youtube.com/vi/${item.link.split('v=')[1]}/mqdefault.jpg`,
+          publishedAt: item.pubDate,
+        })).filter((video: any) => video.id && video.title);
 
         setVideos(formattedVideos);
       } catch (err) {
         console.error('Error fetching videos:', err);
         setError(err instanceof Error ? err.message : 'Failed to fetch videos');
+        
+        // Fallback to sample data for development
+        const fallbackVideos = [
+          {
+            id: 'dQw4w9WgXcQ',
+            title: 'Sample Sermon - Faith and Community',
+            thumbnailUrl: 'https://img.youtube.com/vi/dQw4w9WgXcQ/mqdefault.jpg',
+            publishedAt: new Date().toISOString(),
+          },
+          {
+            id: '9bZkp7q19f0',
+            title: 'Sample Live Stream - Sunday Service',
+            thumbnailUrl: 'https://img.youtube.com/vi/9bZkp7q19f0/mqdefault.jpg',
+            publishedAt: new Date(Date.now() - 86400000).toISOString(),
+          }
+        ];
+        
+        setVideos(fallbackVideos);
       } finally {
         setLoading(false);
       }
