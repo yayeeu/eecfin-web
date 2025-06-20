@@ -14,7 +14,7 @@ jobs:
       - name: Add server to known_hosts
         run: |
           mkdir -p ~/.ssh
-          ssh-keyscan -H ${{secrets.STG_IP}} >> ~/.ssh/known_hosts
+          ssh-keyscan ${{secrets.STG_IP}} >> ~/.ssh/known_hosts
 
       - name: Test SSH connection
         run: ssh -vvv ${{secrets.STG_USER}}@${{secrets.STG_IP}}
