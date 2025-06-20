@@ -13,26 +13,26 @@ jobs:
       - name: Connect and deploy to server
         uses: appleboy/ssh-action@v1.0.0
         with:
-          host: ${{ secrets.STG_IP }}
-          username: ${{ secrets.STG_USER }}
-          key: ${{ secrets.STG_SSH_KEY }}
+          host: ${{secrets.STG_IP }}
+          username: ${{secrets.STG_USER }}
+          key: ${{secrets.STG_SSH_KEY }}
           port: 22
           script: |
-            cd ~/stg/eecfin-web
+            cd ~/stg/
 
             # OPTION A: Clean directory
             #rm -rf *
-            #git clone -b staging git@github.com:yayeeu/eecfin-web.git .
+            git clone -b staging git@github.com:yayeeu/eecfin-web.git .
             
             # OPTION B (if you want to keep repo initialized):
-            git fetch origin
-            git reset --hard origin/staging
+            #git fetch origin
+            #git reset --hard origin/staging
 
             # Generate .env file
             rm .env
-            echo "VITE_SUPABASE_URL=${{ secrets.STG_SUPABASE_URL }}" >> .env
-            echo "VITE_SUPABASE_ANON_KEY=${{ secrets.STG_SUPABASE_ANON_KEY }}" >> .env
-            echo "VITE_SUPABASE_SERVICE_ROLE_KEY=${{ secrets.STG_SUPABASE_SERVICE_ROLE_KEY }}" >> .env
+            echo "VITE_SUPABASE_URL=${{secrets.STG_SUPABASE_URL }}" >> .env
+            echo "VITE_SUPABASE_ANON_KEY=${{secrets.STG_SUPABASE_ANON_KEY }}" >> .env
+            echo "VITE_SUPABASE_SERVICE_ROLE_KEY=${{secrets.STG_SUPABASE_SERVICE_ROLE_KEY }}" >> .env
 
 
             # Build and deploy with docker compose
