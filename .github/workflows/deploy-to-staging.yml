@@ -10,13 +10,14 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Test SSH connection
-        run: ssh -vvv ${{secrets.STG_USER}}@${{secrets.STG_IP}}
-
+ 
       - name: Add server to known_hosts
         run: |
           mkdir -p ~/.ssh
           ssh-keyscan -H ${{secrets.STG_IP}} >> ~/.ssh/known_hosts
+
+      - name: Test SSH connection
+        run: ssh -vvv ${{secrets.STG_USER}}@${{secrets.STG_IP}}
 
       # Connect to server and run deployment commands
       - name: Deploy to Staging via SSH
