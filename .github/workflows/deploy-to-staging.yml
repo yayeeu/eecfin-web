@@ -15,6 +15,9 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.STG_SSH_KEY }}
 
+      - name: Test SSH connection
+        run: ssh -vvv ${{secrets.STG_USER}}@${{secrets.STG_IP}}
+        
       - name: Connect to server 
         uses: appleboy/ssh-action@v1.0.0
         with:
