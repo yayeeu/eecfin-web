@@ -35,17 +35,17 @@ jobs:
           key: ${{ secrets.STG_SSH_KEY }}
           port: 22
           script: |
-            cd ~/stg/eecfin-web
+            cd ~/stg/
            
             # OPTION A: Clean directory
             #rm -rf *
             #git clone -b staging git@github.com:yayeeu/eecfin-web.git .
-            #git clone -b staging git@github.com:yayeeu/eecfin-web.git
-            #cd eecfin-web
+            git clone -b staging git@github.com:yayeeu/eecfin-web.git
+            cd eecfin-web
 
             # OPTION B (if you want to keep repo initialized):
-            sudo git fetch origin
-            sudo git reset --hard origin/staging
+            #sudo git fetch origin
+            #sudo git reset --hard origin/staging
 
             # Generate .env file
             rm .env
