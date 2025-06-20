@@ -6,9 +6,20 @@ import { componentTagger } from "lovable-tagger";
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
   server: {
-    host: "::",
+    host: "0.0.0.0",
     port: 8080,
-  },
+    allowedHosts: [
+      'web-stg.eecfin.com',
+      'eecfin.com',
+      'eecfinweb.localhost',
+      '.eecfin.com', // allows all subdomains of aku.education
+    ],
+    hmr: {
+      overlay: false,
+    },
+
+
+  },,
   plugins: [
     react(),
     mode === 'development' &&
