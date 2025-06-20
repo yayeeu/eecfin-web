@@ -10,8 +10,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
- 
-      # Add the server to known_hosts to avoid SSH prompt
+      - name: Test SSH connection
+        run: ssh -vvv ${{secrets.STG_USER}}@${{secrets.STG_IP}}
+
       - name: Add server to known_hosts
         run: |
           mkdir -p ~/.ssh
