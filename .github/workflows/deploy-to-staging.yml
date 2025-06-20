@@ -35,26 +35,26 @@ jobs:
           key: ${{ secrets.STG_SSH_KEY }}
           port: 22
           script: |
-            cd ~/stg/
+            cd ~/stg/eecfin-web
            
             # OPTION A: Clean directory
             #rm -rf *
             #git clone -b staging git@github.com:yayeeu/eecfin-web.git .
-            git clone -b staging git@github.com:yayeeu/eecfin-web.git
-            cd eecfin-web
+            #git clone -b staging git@github.com:yayeeu/eecfin-web.git
+            #cd eecfin-web
 
             # OPTION B (if you want to keep repo initialized):
-            #sudo git fetch origin
-            #sudo git reset --hard origin/staging
+            git fetch origin
+            git reset --hard origin/staging
 
             # Generate .env file
             rm .env
-            #echo "VITE_SUPABASE_URL=${{secrets.STG_SUPABASE_URL }}" >> .env
-            #echo "VITE_SUPABASE_ANON_KEY=${{secrets.STG_SUPABASE_ANON_KEY }}" >> .env
-            #echo "VITE_SUPABASE_SERVICE_ROLE_KEY=${{secrets.STG_SUPABASE_SERVICE_ROLE_KEY }}" >> .env
+            echo "VITE_SUPABASE_URL=${{secrets.STG_SUPABASE_URL }}" >> .env
+            echo "VITE_SUPABASE_ANON_KEY=${{secrets.STG_SUPABASE_ANON_KEY }}" >> .env
+            echo "VITE_SUPABASE_SERVICE_ROLE_KEY=${{secrets.STG_SUPABASE_SERVICE_ROLE_KEY }}" >> .env
 
             # Build and deploy with docker compose
             #docker compose -f docker-compose.yml -f docker-compose.stg.yml up -d --build
             #docker compose down web-stg
-            #docker compose -p web-stg -f docker-compose.yml -f docker-compose.stg.yml up -d --build
+            docker compose -p web-stg -f docker-compose.yml -f docker-compose.stg.yml up -d --build
 
