@@ -8,10 +8,10 @@ services:
       - "8080:8080"
     environment:
       - HOST=0.0.0.0
-      - VIRTUAL_HOST=stg.eecfin.com
+      - VIRTUAL_HOST=stg.eecfin.org
       - VIRTUAL_PORT=8080
-      - LETSENCRYPT_HOST=stg.eecfin.com 
-      - LETSENCRYPT_EMAIL=eecfinadmin@eecfin.com 
+      - LETSENCRYPT_HOST=stg.eecfin.org 
+      - LETSENCRYPT_EMAIL=eecfin.admin@eecfin.org 
      # - CHOKIDAR_USEPOLLING=true
     networks:
       - nginx_proxy

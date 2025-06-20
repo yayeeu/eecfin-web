@@ -73,6 +73,7 @@ const Footer = () => {
 
         <div className="mt-8 pt-8 border-t border-gray-700 text-center text-sm">
           <p>&copy; {currentYear} Ethiopian Evangelical Church in Finland. All rights reserved.</p>
+          <p>Fundraising permission: RA/2025/336 </p>
         </div>
       </div>
     </footer>
