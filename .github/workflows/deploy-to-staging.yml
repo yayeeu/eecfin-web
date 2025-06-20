@@ -10,6 +10,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Set up SSH agent
+        uses: webfactory/ssh-agent@v0.8.1
+        with:
+          ssh-private-key: ${{ secrets.STG_SSH_KEY }}
+
       - name: Connect and deploy to server
         uses: appleboy/ssh-action@v1.0.0
         with:
@@ -30,17 +35,11 @@ jobs:
             #sudo git fetch origin
             #sudo git reset --hard origin/staging
 
-            # - name: Set up SSH key
-            # uses: webfactory/ssh-agent@v0.8.1
-            # with:
-            #     ssh-private-key: ${{ secrets.STG_SSH_KEY }}
-
             # Generate .env file
             rm .env
             echo "VITE_SUPABASE_URL=${{secrets.STG_SUPABASE_URL }}" >> .env
             echo "VITE_SUPABASE_ANON_KEY=${{secrets.STG_SUPABASE_ANON_KEY }}" >> .env
             echo "VITE_SUPABASE_SERVICE_ROLE_KEY=${{secrets.STG_SUPABASE_SERVICE_ROLE_KEY }}" >> .env
-
 
             # Build and deploy with docker compose
             #docker compose -f docker-compose.yml -f docker-compose.stg.yml up -d --build
