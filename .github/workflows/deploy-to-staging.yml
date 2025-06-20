@@ -10,11 +10,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Set up SSH agent
-        uses: webfactory/ssh-agent@v0.8.0
-        with:
-          ssh-private-key: ${{ secrets.STG_SSH_KEY }}
-
       - name: Test SSH connection
         run: ssh -vvv ${{secrets.STG_USER}}@${{secrets.STG_IP}}
         
