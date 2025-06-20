@@ -27,8 +27,8 @@ jobs:
             #cd eecfin-web
 
             # OPTION B (if you want to keep repo initialized):
-            jgit fetch origin
-            git reset --hard origin/staging
+            sudo git fetch origin
+            sudo git reset --hard origin/staging
 
             # - name: Set up SSH key
             # uses: webfactory/ssh-agent@v0.8.1
