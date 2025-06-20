@@ -55,5 +55,5 @@ jobs:
 
             # Build and deploy with docker compose
             #docker compose -f docker-compose.yml -f docker-compose.stg.yml up -d --build
-            #docker compose down web-stg
+            docker compose down web-stg
             docker compose -p web-stg -f docker-compose.yml -f docker-compose.stg.yml up -d --build
