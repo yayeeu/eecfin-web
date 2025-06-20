@@ -15,17 +15,14 @@ const OurStoryTab = () => {
         <div className="space-y-4">
           <p>
             The Ethiopian Evangelical Church in Finland (EECFIN) was established to serve the spiritual
-            needs of Ethiopian Christians living in Finland. What began as a small gathering of believers
-            has grown into a vibrant church community.
+            needs of Ethiopian Christians living in Finland. Over the years, we have grown in numbers and impact, serving both the Ethiopian community and reaching out to others.
+         
           </p>
-          <p>
-            Our church was founded on the principles of providing a spiritual home that preserves Ethiopian
-            Christian traditions while helping members integrate into Finnish society. Over the years,
-            we have grown in numbers and impact, serving both the Ethiopian community and reaching out to others.
-          </p>
+         
+            
           <p>
             Today, EECFIN continues to be a place of worship, fellowship, and community service,
-            welcoming all who seek to grow in their faith journey.
+            welcoming all who seek to grow in their faith and serve the community.
           </p>
         </div>
       </div>

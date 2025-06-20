@@ -27,7 +27,7 @@ const ContactInfo = () => {
           <div>
             <h3 className="text-lg font-semibold mb-1">Email Us</h3>
             <p className="text-gray-600">info@eecfin.org</p>
-            <p className="text-gray-600">pastor@eecfin.org</p>
+            <p className="text-gray-600">elders@eecfin.org</p>
           </div>
         </div>
 
@@ -37,7 +37,7 @@ const ContactInfo = () => {
           </div>
           <div>
             <h3 className="text-lg font-semibold mb-1">Call Us</h3>
-            <p className="text-gray-600">+358 XX XXX XXXX</p>
+            <p className="text-gray-600"><a href="/our-leadership">Elders' Contact</a></p>
           </div>
         </div>
 
@@ -48,8 +48,7 @@ const ContactInfo = () => {
           <div>
             <h3 className="text-lg font-semibold mb-1">Service Times</h3>
             <p className="text-gray-600">
-              Sunday: 10:00 AM - 12:00 PM<br />
-              Wednesday: 6:30 PM - 8:00 PM
+              Weekly Sunday: 16:00 <br />
             </p>
           </div>
         </div>

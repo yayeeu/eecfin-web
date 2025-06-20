@@ -1,4 +1,4 @@
-name: Deploy Website to Production
+name: Deploy EECFIN Web to Production
 
 on:
   push:
@@ -18,21 +18,25 @@ jobs:
           key: ${{ secrets.STG_SSH_KEY }}
           port: 22
           script: |
-            cd ~/aku/prd/website
+            cd ~/prd/eecfin-web
 
             # OPTION A: Clean directory
             #rm -rf *
-            #git clone git@github.com:yayeeu/akuwebsite.git .
+            git clone -b main git@github.com:yayeeu/eecfin-web.git .
             
             # OPTION B (if you want to keep repo initialized):
-             git fetch origin
-             git reset --hard origin/main
+            #git fetch origin
+            #git reset --hard origin/staging
 
             # Generate .env file
-            echo "VITE_AKU_API_URL=${{ secrets.PRD_AKU_API_URL }}" >> .env
-            echo "VITE_CONTACT_EMAIL=${{ secrets.CONTACT_EMAIL }}" >> .env
+            rm .env
+            echo "VITE_SUPABASE_URL=${{ secrets.STG_SUPABASE_URL }}" >> .env
+            echo "VITE_SUPABASE_ANON_KEY=${{ secrets.STG_SUPABASE_ANON_KEY }}" >> .env
+            echo "VITE_SUPABASE_SERVICE_ROLE_KEY=${{ secrets.STG_SUPABASE_SERVICE_ROLE_KEY }}" >> .env
+
 
             # Build and deploy with docker compose
-            #docker compose -f docker-compose.yml -f docker-compose.prd.yml up -d --build
+            #docker compose -f docker-compose.yml -f docker-compose.stg.yml up -d --build
             docker compose down web-prd
-            docker compose -p web-prod -f docker-compose.yml -f docker-compose.prd.yml up -d --build
+            docker compose -p web-prd -f docker-compose.yml -f docker-compose.prd.yml up -d --build
+

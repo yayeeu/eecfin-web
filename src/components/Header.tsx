@@ -68,7 +68,7 @@ const Header = () => {
         </div>
       </div>
       
-      <div className="bg-eecfin-navy py-6 w-full">
+      <div className="bg-[#1a374f] py-6 w-full">
         <div className="container-custom">
           <div className="flex items-center justify-between">
             <Link to="/" className="flex items-center">
@@ -97,7 +97,7 @@ const Header = () => {
           </div>
 
           {isMenuOpen && (
-            <nav className="md:hidden bg-eecfin-navy py-4 flex flex-col space-y-4">
+            <nav className="md:hidden bg-[#1a374f] py-4 flex flex-col space-y-4">
               {navItems.map((item) => (
                 <Link 
                   key={item.path} 

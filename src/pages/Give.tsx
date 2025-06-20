@@ -69,12 +69,7 @@ const Give = () => {
                 Bank account (Nordea):<br />
                 IBAN FI60122030 00177960
               </p>
-              <Button className="bg-eecfin-navy hover:bg-eecfin-navy/80" onClick={() => {
-                navigator.clipboard.writeText("FI60122030 00177960");
-                alert("IBAN copied to clipboard");
-              }}>
-                Copy IBAN
-              </Button>
+            
             </div>
 
             {/* Building Fund */}
@@ -89,12 +84,7 @@ const Give = () => {
                 Building Fund Account:<br />
                 IBAN FI4815553000115783
               </p>
-              <Button className="bg-eecfin-navy hover:bg-eecfin-navy/80" onClick={() => {
-                navigator.clipboard.writeText("FI4815553000115783");
-                alert("IBAN copied to clipboard");
-              }}>
-                Copy IBAN
-              </Button>
+         
             </div>
           </div>
         </div>
@@ -105,11 +95,10 @@ const Give = () => {
         <div className="container-custom max-w-3xl mx-auto text-center">
           <h2 className="section-title mb-6">Thank You for Your Support</h2>
           <p className="text-lg mb-8">
-            Your generous gifts help us continue our mission of serving the Ethiopian community
-            in Finland and reaching out to those in need.
+            Your generous gifts help us continue our mission of spreading the gospel and reaching out to those in need.
           </p>
           <Button asChild className="bg-eecfin-navy hover:bg-eecfin-navy/80">
-            <Link to="/contact">Contact Us For More Information</Link>
+            <Link to="/contact">Fundraising permission: RA/2025/336.  Contact Us For More Information. </Link>
           </Button>
         </div>
       </section>
