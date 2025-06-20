@@ -18,8 +18,6 @@ services:
       - ./:/app       # Mount your code from host
       - /app/node_modules   # Prevent overwriting container's node_modules
    
-    
-git 
 networks:
   nginx_proxy:
     external: true 
