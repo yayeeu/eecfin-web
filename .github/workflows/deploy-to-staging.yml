@@ -3,26 +3,32 @@ name: Deploy EECFIN Web to Staging
 on:
   push:
     branches:
-      - staging # or custom dev branch
+      - staging
 
 jobs:
   deploy-staging:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Test SSH connection
-        run: ssh -vvv ${{secrets.STG_USER}}@${{secrets.STG_IP}}
-        
-      - name: Connect to server 
+ 
+      # Add the server to known_hosts to avoid SSH prompt
+      - name: Add server to known_hosts
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan -H ${{secrets.STG_IP}} >> ~/.ssh/known_hosts
+
+      # Connect to server and run deployment commands
+      - name: Deploy to Staging via SSH
         uses: appleboy/ssh-action@v1.0.0
         with:
-          host: ${{secrets.STG_IP}}
-          username: ${{secrets.STG_USER}}
-          key: ${{secrets.STG_SSH_KEY}}
+          host: ${{ secrets.STG_IP }}
+          username: ${{ secrets.STG_USER }}
+          key: ${{ secrets.STG_SSH_KEY }}
           port: 22
           script: |
+            set -e  # stop on first error
             cd ~/stg/
-
+           
             # OPTION A: Clean directory
             #rm -rf *
             #git clone -b staging git@github.com:yayeeu/eecfin-web.git .
