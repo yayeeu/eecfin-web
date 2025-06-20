@@ -18,22 +18,22 @@ jobs:
           key: ${{secrets.STG_SSH_KEY}}
           port: 22
           script: |
-            cd ~/stg/
+            cd ~/stg/eecfin-web
 
             # OPTION A: Clean directory
             #rm -rf *
             #git clone -b staging git@github.com:yayeeu/eecfin-web.git .
-            git clone -b staging git@github.com:yayeeu/eecfin-web.git
-            cd eecfin-web
+            #git clone -b staging git@github.com:yayeeu/eecfin-web.git
+            #cd eecfin-web
 
             # OPTION B (if you want to keep repo initialized):
-            #git fetch origin
-            #git reset --hard origin/staging
+            jgit fetch origin
+            git reset --hard origin/staging
 
-            - name: Set up SSH key
-            uses: webfactory/ssh-agent@v0.8.1
-            with:
-                ssh-private-key: ${{ secrets.STG_SSH_KEY }}
+            # - name: Set up SSH key
+            # uses: webfactory/ssh-agent@v0.8.1
+            # with:
+            #     ssh-private-key: ${{ secrets.STG_SSH_KEY }}
 
             # Generate .env file
             rm .env
