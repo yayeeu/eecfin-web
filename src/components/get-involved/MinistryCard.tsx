@@ -19,7 +19,7 @@ const MinistryCard: React.FC<MinistryCardProps> = ({ ministry }) => {
           <div>
             <h3 className="font-semibold text-eecfin-navy leading-tight">{ministry.name}</h3>
             <Badge variant="outline" className="mt-1 text-xs">
-              {ministry.status === 'active' ? 'Active' : 'Inactive'}
+             
             </Badge>
           </div>
         </div>
