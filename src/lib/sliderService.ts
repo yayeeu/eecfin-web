@@ -33,8 +33,8 @@ export const fetchSlides = async (): Promise<SlideImage[]> => {
       {
         fileName: 'focus_on_Jesus.png',
         overlay: {
-          title: "Focus on Jesus 2025",
-          subtitle: " @ Ethiopian Evangelical Church in Finland"
+          title: "",
+          subtitle: ""
         }
       },
       {
