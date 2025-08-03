@@ -25,7 +25,7 @@ const WhoWeAre = () => {
 
         {/* Breadcrumb */}
         <div className="bg-gray-50 py-4">
-          <div className="container-custom">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <Breadcrumb>
               <BreadcrumbList>
                 <BreadcrumbItem>
@@ -40,38 +40,23 @@ const WhoWeAre = () => {
           </div>
         </div>
 
-        {/* Main Content Section with Large Left Image */}
-        <section className="bg-white">
-          <div className="flex min-h-screen">
-            {/* Large Left Side Image - Reduced from w-1/2 to w-2/5 (35% width) */}
-            <div className="w-2/5 relative overflow-hidden">
-              <img 
-                src="/images/who-we-are-collage.jpg?w=1200&h=800&fit=crop" 
-                alt="Church community gathering"
-                className="w-full h-full object-cover"
-              />
-              <div className="absolute inset-0 bg-gradient-to-r from-transparent to-white/20"></div>
-            </div>
-            
-            {/* Right Content Area - Adjusted from w-1/2 to w-3/5 (65% width) */}
-            <div className="w-3/5 py-16">
-              <div className="container-custom px-8">
-                <div className="flex flex-col md:flex-row md:space-x-8">
-                  {/* Main Content */}
-                  <div className="flex-1">
-                    <AboutContent />
-                    
-                    {/* CTA Section - Moved here from the bottom */}
-                    <div className="mt-12">
-                      <CtaSection />
-                    </div>
-                  </div>
-                  
-                  {/* Right Side Navigation */}
-                  <div className="w-full md:w-64 mt-8 md:mt-0">
-                    <SideNavigation />
-                  </div>
+        {/* Main Content Section - Mobile Responsive */}
+        <section className="bg-white py-8 sm:py-12 lg:py-16">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex flex-col lg:flex-row lg:space-x-8 space-y-8 lg:space-y-0">
+              {/* Main Content */}
+              <div className="flex-1">
+                <AboutContent />
+                
+                {/* CTA Section */}
+                <div className="mt-8 sm:mt-12">
+                  <CtaSection />
                 </div>
+              </div>
+              
+              {/* Side Navigation */}
+              <div className="w-full lg:w-64 order-first lg:order-last">
+                <SideNavigation />
               </div>
             </div>
           </div>
