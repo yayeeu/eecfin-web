@@ -31,7 +31,7 @@ export const fetchSlides = async (): Promise<SlideImage[]> => {
     // we'll use a predefined list of images from the public folder
     const slides = [
       {
-        fileName: 'focus_on_jesus.png',
+        fileName: 'focus_on_Jesus.png',
         overlay: {
           title: "Focus on Jesus 2025",
           subtitle: " @ Ethiopian Evangelical Church in Finland"
