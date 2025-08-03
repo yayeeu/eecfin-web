@@ -79,8 +79,8 @@ const OurFaith = () => {
 
   return (
     <div>
-      {/* Hero Section with the uploaded image */}
-      <section className="relative bg-eecfin-navy overflow-hidden h-64">
+      {/* Hero Section with responsive height */}
+      <section className="relative bg-eecfin-navy overflow-hidden h-48 sm:h-56 md:h-64">
         <div className="absolute inset-0 z-0">
           <img 
             src="/images/our-faith-hero.png" 
@@ -89,23 +89,23 @@ const OurFaith = () => {
           />
           <div className="absolute inset-0 bg-eecfin-navy/50"></div>
         </div>
-        <div className="container-custom text-center relative z-10 py-16">
-          <h1 className="text-4xl md:text-5xl font-bold mb-6 text-white">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10 py-8 sm:py-12 md:py-16">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-4 sm:mb-6 text-white">
             Statement of Faith
           </h1>
-          <p className="text-xl max-w-3xl mx-auto text-white/90 mb-4">
+          <p className="text-base sm:text-lg md:text-xl max-w-3xl mx-auto text-white/90 mb-3 sm:mb-4 px-4">
             Our statement of faith is rooted in the Holy Scriptures, the infallible and inspired Word of God. 
             We hold these truths as foundational to our Christian walk and practice.
           </p>
-          <div className="flex items-center justify-center mt-6">
-            <Separator className="w-24 bg-eecfin-gold h-0.5" />
+          <div className="flex items-center justify-center mt-4 sm:mt-6">
+            <Separator className="w-16 sm:w-20 md:w-24 bg-eecfin-gold h-0.5" />
           </div>
         </div>
       </section>
 
       {/* Breadcrumb */}
       <div className="bg-gray-50 py-4">
-        <div className="container-custom">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <Breadcrumb>
             <BreadcrumbList>
               <BreadcrumbItem>
@@ -124,45 +124,33 @@ const OurFaith = () => {
         </div>
       </div>
 
-      {/* Main Content Section with Large Left Image */}
-      <section className="bg-white">
-        <div className="flex min-h-screen">
-          {/* Large Left Side Image */}
-          <div className="w-2/5 relative overflow-hidden">
-            <img 
-              src="/images/our-faith-hero.png?w=1200&h=800&fit=crop" 
-              alt="Bible study and faith community"
-              className="w-full h-full object-cover"
-            />
-            <div className="absolute inset-0 bg-gradient-to-r from-transparent to-white/20"></div>
-          </div>
-          
-          {/* Right Content Area */}
-          <div className="w-3/5 py-12">
-            <div className="container-custom max-w-4xl">
-              <h2 className="text-3xl font-bold text-eecfin-navy text-center mb-8">
-                Our Beliefs
-              </h2>
-              
-              <div className="bg-white rounded-lg shadow-md p-6">
-                <Accordion type="single" collapsible className="w-full">
-                  {faithStatements.map((statement, index) => (
-                    <AccordionItem key={index} value={`item-${index}`}>
-                      <AccordionTrigger className="text-left font-medium text-eecfin-navy hover:text-eecfin-accent transition-colors py-4">
-                        <div className="flex items-center">
-                          <div className="w-8 h-8 mr-3 rounded-full bg-eecfin-navy/10 flex items-center justify-center text-eecfin-navy flex-shrink-0">
-                            <BookOpen size={16} />
-                          </div>
-                          {statement.title}
+      {/* Main Content Section - Mobile Responsive */}
+      <section className="bg-white py-8 sm:py-12 lg:py-16">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="max-w-4xl mx-auto">
+            <h2 className="text-2xl sm:text-3xl font-bold text-eecfin-navy text-center mb-6 sm:mb-8">
+              Our Beliefs
+            </h2>
+            
+            <div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
+              <Accordion type="single" collapsible className="w-full">
+                {faithStatements.map((statement, index) => (
+                  <AccordionItem key={index} value={`item-${index}`}>
+                    <AccordionTrigger className="text-left font-medium text-eecfin-navy hover:text-eecfin-accent transition-colors py-3 sm:py-4">
+                      <div className="flex items-center">
+                        <div className="w-6 h-6 sm:w-8 sm:h-8 mr-2 sm:mr-3 rounded-full bg-eecfin-navy/10 flex items-center justify-center text-eecfin-navy flex-shrink-0">
+                          <BookOpen size={14} className="sm:hidden" />
+                          <BookOpen size={16} className="hidden sm:block" />
                         </div>
-                      </AccordionTrigger>
-                      <AccordionContent className="text-gray-700 leading-relaxed pl-11">
-                        {statement.content}
-                      </AccordionContent>
-                    </AccordionItem>
-                  ))}
-                </Accordion>
-              </div>
+                        <span className="text-sm sm:text-base">{statement.title}</span>
+                      </div>
+                    </AccordionTrigger>
+                    <AccordionContent className="text-gray-700 leading-relaxed pl-8 sm:pl-11 text-sm sm:text-base">
+                      {statement.content}
+                    </AccordionContent>
+                  </AccordionItem>
+                ))}
+              </Accordion>
             </div>
           </div>
         </div>
