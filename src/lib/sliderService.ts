@@ -30,13 +30,7 @@ export const fetchSlides = async (): Promise<SlideImage[]> => {
     // Since we can't directly read the directory in the browser,
     // we'll use a predefined list of images from the public folder
     const slides = [
-      {
-        fileName: 'focus_on_Jesus.png',
-        overlay: {
-          title: "",
-          subtitle: ""
-        }
-      },
+    
       {
         fileName: 'slide1.jpg',
         overlay: {
