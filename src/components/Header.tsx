@@ -19,7 +19,7 @@ const Header = () => {
     { title: 'Home', path: '/' },
     { title: 'Who We Are', path: '/who-we-are' },
     { title: 'Events', path: '/events' },
-    { title: 'Sermons', path: '/sermons' },
+    { title: 'Sermons & Teaching', path: '/sermons' },
     { title: 'Get Involved', path: '/get-involved' },
   ];
 

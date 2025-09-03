@@ -19,6 +19,8 @@ export const useYouTubeVideos = (type: 'sermon' | 'live') => {
 
   useEffect(() => {
     const fetchVideos = async () => {
+      let sermonVideoIds: string[] = [];
+      
       try {
         setLoading(true);
         setError(null);
@@ -27,19 +29,41 @@ export const useYouTubeVideos = (type: 'sermon' | 'live') => {
           throw new Error('YouTube playlist or channel ID not configured');
         }
 
+        // For live streams: first get sermon playlist IDs to exclude them
+        if (type === 'live') {
+          console.log('Fetching sermon playlist to exclude those videos from live streams...');
+          try {
+            const sermonRssUrl = `https://www.youtube.com/feeds/videos.xml?playlist_id=${PLAYLIST_ID}`;
+            const sermonCorsUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(sermonRssUrl)}`;
+            
+            const sermonResponse = await fetch(sermonCorsUrl);
+            if (sermonResponse.ok) {
+              const sermonProxyData = await sermonResponse.json();
+              if (sermonProxyData.contents) {
+                const sermonParser = new DOMParser();
+                const sermonXmlDoc = sermonParser.parseFromString(sermonProxyData.contents, 'text/xml');
+                const sermonEntries = Array.from(sermonXmlDoc.querySelectorAll('entry'));
+                
+                sermonVideoIds = sermonEntries.map(entry => 
+                  entry.querySelector('videoId')?.textContent || 
+                  entry.querySelector('id')?.textContent?.split(':').pop() || ''
+                ).filter(id => id);
+                
+                console.log(`Found ${sermonVideoIds.length} sermon videos to exclude from live streams`);
+              }
+            }
+          } catch (sermonErr) {
+            console.warn('Could not fetch sermon playlist for exclusion:', sermonErr);
+          }
+        }
+
         // Use YouTube's RSS feeds directly with CORS proxy
         const youtubeRssUrl = type === 'sermon' 
           ? `https://www.youtube.com/feeds/videos.xml?playlist_id=${PLAYLIST_ID}`
           : `https://www.youtube.com/feeds/videos.xml?channel_id=${CHANNEL_ID}`;
 
-        console.log(`Fetching ${type} videos using DIRECT YouTube RSS approach`);
-        console.log(`YouTube RSS URL: ${youtubeRssUrl}`);
-        console.log(`Playlist ID being used: ${PLAYLIST_ID}`);
-
         // Use CORS proxy to fetch YouTube RSS feed directly
         const corsProxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(youtubeRssUrl)}`;
-        
-        console.log(`Fetching ${type} videos via CORS proxy:`, corsProxyUrl);
         
         const response = await fetch(corsProxyUrl);
         
@@ -52,8 +76,6 @@ export const useYouTubeVideos = (type: 'sermon' | 'live') => {
         if (!proxyData.contents) {
           throw new Error('No RSS content received from proxy');
         }
-
-        console.log(`Successfully fetched YouTube RSS XML for ${type}`);
         
         // Parse the XML directly
         const parser = new DOMParser();
@@ -67,19 +89,10 @@ export const useYouTubeVideos = (type: 'sermon' | 'live') => {
 
         // Extract video data from XML
         const entries = Array.from(xmlDoc.querySelectorAll('entry'));
-        console.log(`Found ${entries.length} video entries in YouTube RSS`);
 
         if (entries.length === 0) {
-          console.warn(`No video entries found in YouTube RSS for ${type}`);
           throw new Error('No videos found in YouTube RSS feed');
         }
-
-        // Log sample of what we're parsing
-        console.log(`Sample YouTube RSS entries:`, entries.slice(0, 3).map(entry => ({
-          title: entry.querySelector('title')?.textContent || '',
-          published: entry.querySelector('published')?.textContent || '',
-          videoId: entry.querySelector('videoId')?.textContent || ''
-        })));
 
         const formattedVideos = entries
           .map((entry) => {
@@ -100,44 +113,45 @@ export const useYouTubeVideos = (type: 'sermon' | 'live') => {
               publishedAt: published,
             };
           })
-          .filter((video: any) => video.id && video.title)
+          .filter((video: any) => {
+            if (!video.id || !video.title) return false;
+            
+            // Filter logic for live streams
+            if (type === 'live') {
+              // Exclude videos that are in the sermon playlist
+              if (sermonVideoIds.includes(video.id)) {
+                return false;
+              }
+              
+              // Only include videos that appear to be live streams
+              const title = video.title.toLowerCase();
+              const liveKeywords = [
+                'live', 'stream', 'streaming', 'broadcast', 'broadcasting',
+                'sunday service', 'worship service', 'church service',
+                'online service', 'virtual service', 'የእሁድ አገልግሎት'
+              ];
+              
+              return liveKeywords.some(keyword => title.includes(keyword));
+            }
+            
+            // For sermons, accept all (already filtered by playlist)
+            return true;
+          })
           .sort((a: any, b: any) => {
             // Sort by most recent first
             return new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime();
           });
 
-        console.log(`Successfully formatted ${formattedVideos.length} ${type} videos`);
-        console.log(`Final ${type} videos with dates:`, formattedVideos.map(v => ({
-          title: v.title.substring(0, 50) + '...',
-          publishedAt: v.publishedAt,
-          parsedDate: new Date(v.publishedAt).toISOString().split('T')[0], // YYYY-MM-DD format
-          id: v.id
-        })));
-
-        // Check if we have exactly 5 videos (the problem number)
-        if (formattedVideos.length === 5) {
-          console.warn(`⚠️ Got exactly 5 ${type} videos - this might indicate a limitation!`);
-          console.log('Date range:', {
-            oldest: formattedVideos[formattedVideos.length - 1]?.publishedAt,
-            newest: formattedVideos[0]?.publishedAt
-          });
-        }
-
         setVideos(formattedVideos);
       } catch (err) {
-        console.error(`Error fetching ${type} videos:`, err);
-        
         // Try alternative CORS proxy as fallback
         try {
-          console.log(`Trying alternative CORS proxy for ${type}...`);
-          
           const fallbackYoutubeRssUrl = type === 'sermon' 
             ? `https://www.youtube.com/feeds/videos.xml?playlist_id=${PLAYLIST_ID}`
             : `https://www.youtube.com/feeds/videos.xml?channel_id=${CHANNEL_ID}`;
           
           // Try different CORS proxy as fallback
           const fallbackCorsUrl = `https://corsproxy.io/?${encodeURIComponent(fallbackYoutubeRssUrl)}`;
-          console.log(`Fallback CORS proxy URL: ${fallbackCorsUrl}`);
           
           const alternativeResponse = await fetch(fallbackCorsUrl);
           
@@ -151,7 +165,6 @@ export const useYouTubeVideos = (type: 'sermon' | 'live') => {
             const parseError = xmlDoc.querySelector('parsererror');
             if (!parseError) {
               const fallbackEntries = Array.from(xmlDoc.querySelectorAll('entry'));
-              console.log(`Fallback: Found ${fallbackEntries.length} video entries`);
               
               if (fallbackEntries.length > 0) {
                 const fallbackVideos = fallbackEntries
@@ -170,7 +183,29 @@ export const useYouTubeVideos = (type: 'sermon' | 'live') => {
                       publishedAt: published,
                     };
                   })
-                  .filter((video: any) => video.id && video.title)
+                  .filter((video: any) => {
+                    if (!video.id || !video.title) return false;
+                    
+                    // Apply same filtering logic for live streams in fallback
+                    if (type === 'live') {
+                      // Exclude sermon playlist videos
+                      if (sermonVideoIds.includes(video.id)) {
+                        return false;
+                      }
+                      
+                      // Only include live stream content
+                      const title = video.title.toLowerCase();
+                      const liveKeywords = [
+                        'live', 'stream', 'streaming', 'broadcast', 'broadcasting',
+                        'sunday service', 'worship service', 'church service',
+                        'online service', 'virtual service', 'የእሁድ አገልግሎት'
+                      ];
+                      
+                      return liveKeywords.some(keyword => title.includes(keyword));
+                    }
+                    
+                    return true;
+                  })
                   .sort((a: any, b: any) => {
                     return new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime();
                   });
@@ -182,7 +217,7 @@ export const useYouTubeVideos = (type: 'sermon' | 'live') => {
             }
           }
         } catch (fallbackErr) {
-          console.error('Alternative CORS proxy also failed:', fallbackErr);
+          // Fallback also failed, will use sample data
         }
         
         setError(err instanceof Error ? err.message : 'Failed to fetch videos');
@@ -191,7 +226,7 @@ export const useYouTubeVideos = (type: 'sermon' | 'live') => {
         const fallbackVideos = [
           {
             id: 'dQw4w9WgXcQ',
-            title: `Sample ${type === 'sermon' ? 'Sermon' : 'Live Stream'} - Please check configuration`,
+            title: `Sample ${type === 'sermon' ? 'Sermon & Teaching' : 'Live Stream'} - Please check configuration`,
             thumbnailUrl: 'https://img.youtube.com/vi/dQw4w9WgXcQ/mqdefault.jpg',
             publishedAt: new Date().toISOString(),
           },

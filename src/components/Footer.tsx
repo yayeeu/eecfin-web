@@ -45,7 +45,7 @@ const Footer = () => {
               <li><Link to="/" className="hover:text-eecfin-gold transition-colors">Home</Link></li>
               <li><Link to="/who-we-are" className="hover:text-eecfin-gold transition-colors">Who We Are</Link></li>
               <li><Link to="/events" className="hover:text-eecfin-gold transition-colors">Events</Link></li>
-              <li><Link to="/sermons" className="hover:text-eecfin-gold transition-colors">Sermons</Link></li>
+              <li><Link to="/sermons" className="hover:text-eecfin-gold transition-colors">Sermons & Teaching</Link></li>
               <li><Link to="/get-involved" className="hover:text-eecfin-gold transition-colors">Get Involved</Link></li>
               <li><Link to="/contact" className="hover:text-eecfin-gold transition-colors">Contact</Link></li>
               

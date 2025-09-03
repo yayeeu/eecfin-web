@@ -15,17 +15,6 @@ const Sermons = () => {
   const { videos: sermons, loading: sermonsLoading } = useYouTubeVideos('sermon');
   const { videos: livestreams, loading: livestreamsLoading } = useYouTubeVideos('live');
 
-  // Debug: Log sermon data when it changes
-  useEffect(() => {
-    if (sermons.length > 0) {
-      console.log(`📺 Sermons page received ${sermons.length} sermons`);
-      console.log('First 3 sermons:', sermons.slice(0, 3).map(s => ({
-        title: s.title.substring(0, 40) + '...',
-        date: new Date(s.publishedAt).toLocaleDateString()
-      })));
-    }
-  }, [sermons]);
-
   // Set the most recent sermon as the default video when sermons are loaded
   useEffect(() => {
     if (sermons.length > 0 && !selectedVideoId) {
@@ -60,9 +49,6 @@ const Sermons = () => {
     const startIndex = (currentPage - 1) * VIDEOS_PER_PAGE;
     const endIndex = startIndex + VIDEOS_PER_PAGE;
     const currentVideos = videos.slice(startIndex, endIndex);
-
-    // Debug pagination
-    console.log(`VideoGrid: total=${videos.length}, page=${currentPage}, showing=${currentVideos.length} (${startIndex}-${endIndex})`);
 
     return (
       <div className="space-y-6">
@@ -143,13 +129,13 @@ const Sermons = () => {
         <div className="w-full lg:w-[40%] space-y-6">
           <div className="flex items-center gap-3">
             <MessageSquare className="w-8 h-8 text-eecfin-navy" />
-            <h1 className="text-3xl font-bold text-eecfin-navy">EECFIN Media</h1>
+            <h1 className="text-3xl font-bold text-eecfin-navy">EECFIN Sermons & Teaching</h1>
           </div>
           
-          <h2 className="text-2xl font-semibold">Access our complete sermon library</h2>
+          <h2 className="text-2xl font-semibold">Access our complete sermons & teaching library</h2>
           
           <p className="text-lg text-gray-700 leading-relaxed">
-            Stay connected with our church through our broadcasts, sermons, and special 
+            Stay connected with our church through our broadcasts, sermons, teachings, and special 
             events. Watch our services live or catch up on past messages.
           </p>
 
@@ -183,7 +169,7 @@ const Sermons = () => {
           <TabsList className="mb-4">
             <TabsTrigger value="sermons" className="gap-2">
               <Video className="h-4 w-4" />
-              Sermons
+              Sermons & Teaching
             </TabsTrigger>
             <TabsTrigger value="livestreams" className="gap-2">
               <ListVideo className="h-4 w-4" />
