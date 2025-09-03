@@ -4,19 +4,19 @@ import { YouTubeEmbed } from "@/components/YouTubeEmbed";
 import { MessageSquare, Video, ListVideo, Calendar, Info, ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { useYouTubeVideos } from '@/hooks/useYouTubeVideos';
+import { useYouTubeVideosFromCSV } from '@/hooks/useYouTubeVideosFromCSV';
 import { Button } from "@/components/ui/button";
 
 const Sermons = () => {
   const [selectedVideoId, setSelectedVideoId] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [activeTab, setActiveTab] = useState('sermons');
-  const VIDEOS_PER_PAGE = 6;
+  const VIDEOS_PER_PAGE = 12;
   const PLAYLIST_ID = 'PL827hn5fOPy0ds95bHKNDLcXCWgOO_DuO';
   
-  // Load data for both tabs but optimize UI feedback
-  const { videos: sermons, loading: sermonsLoading, error: sermonsError } = useYouTubeVideos('sermon');
-  const { videos: livestreams, loading: livestreamsLoading, error: livestreamsError } = useYouTubeVideos('live');
+  // Load data from CSV files (pre-fetched by cronjob)
+  const { videos: sermons, loading: sermonsLoading, error: sermonsError } = useYouTubeVideosFromCSV('sermon');
+  const { videos: livestreams, loading: livestreamsLoading, error: livestreamsError } = useYouTubeVideosFromCSV('live');
 
   // Set the most recent sermon as the default video when sermons are loaded
   useEffect(() => {
@@ -49,13 +49,13 @@ const Sermons = () => {
           </div>
           
           {/* Skeleton Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[...Array(6)].map((_, i) => (
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-4">
+            {[...Array(12)].map((_, i) => (
               <Card key={i} className="animate-pulse">
                 <div className="aspect-video bg-gray-200" />
-                <div className="p-4 space-y-2">
-                  <div className="h-4 bg-gray-200 rounded w-3/4" />
-                  <div className="h-4 bg-gray-200 rounded w-1/2" />
+                <div className="p-3 space-y-2">
+                  <div className="h-3 bg-gray-200 rounded w-3/4" />
+                  <div className="h-3 bg-gray-200 rounded w-1/2" />
                 </div>
               </Card>
             ))}
@@ -93,7 +93,7 @@ const Sermons = () => {
 
     return (
       <div className="space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-4">
           {currentVideos.map((video) => (
             <Card 
               key={video.id} 
@@ -107,9 +107,9 @@ const Sermons = () => {
                   className="w-full h-full object-cover"
                 />
               </div>
-              <div className="p-4">
-                <h3 className="font-semibold line-clamp-2">{video.title}</h3>
-                <p className="text-sm text-gray-500 mt-1">
+              <div className="p-3">
+                <h3 className="font-medium text-sm line-clamp-2 leading-tight">{video.title}</h3>
+                <p className="text-xs text-gray-500 mt-1">
                   {new Date(video.publishedAt).toLocaleDateString()}
                 </p>
               </div>
