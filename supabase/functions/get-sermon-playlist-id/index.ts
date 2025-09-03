@@ -12,7 +12,7 @@ export const onRequest = async (req: Request): Promise<Response> => {
 
   // Get the playlist ID from the environment or use the default one
   // Use SERMONS_PLAYLIST_ID environment variable if available
-  const playlistId = 'PL827hn5fOPy27cTOXAdkdqO70eoUzKNIQ';
+  const playlistId = 'PL827hn5fOPy0ds95bHKNDLcXCWgOO_DuO';
   
   return new Response(JSON.stringify({ playlistId }), {
     status: 200,

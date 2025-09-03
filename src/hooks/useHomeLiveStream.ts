@@ -13,8 +13,8 @@ const useHomeLiveStream = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const PLAYLIST_ID = import.meta.env.VITE_YOUTUBE_PLAYLIST_ID || 'PL827hn5fOPy27cTOXAdkdqO70eoUzKNIQ';
-  const CHANNEL_ID = import.meta.env.VITE_YOUTUBE_CHANNEL_ID;
+  const PLAYLIST_ID = 'PL827hn5fOPy0ds95bHKNDLcXCWgOO_DuO';
+  const CHANNEL_ID = import.meta.env.VITE_YOUTUBE_CHANNEL_ID || '3DPL827hn5fOPy0ds95bHKNDLcXCWgOO_DuO';
 
   const fallbackToChannel = useCallback(() => {
     // Set videoId to null to trigger the channel embed
@@ -118,7 +118,7 @@ const useHomeLiveStream = () => {
       const liveKeywords = [
         'live', 'stream', 'streaming', 'broadcast', 'broadcasting',
         'sunday service', 'worship service', 'church service',
-        'online service', 'virtual service', 'የእሁድ አገልግሎት'
+        'online service', 'virtual service', 'Focus on Jesus', 'የእሁድ አገልግሎት'
       ];
 
       const liveStreams = nonSermonVideos.filter((video) => {

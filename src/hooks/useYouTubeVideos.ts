@@ -13,9 +13,9 @@ export const useYouTubeVideos = (type: 'sermon' | 'live') => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Use the confirmed sermon playlist ID
-  const PLAYLIST_ID = import.meta.env.VITE_YOUTUBE_PLAYLIST_ID || 'PL827hn5fOPy27cTOXAdkdqO70eoUzKNIQ';
-  const CHANNEL_ID = import.meta.env.VITE_YOUTUBE_CHANNEL_ID;
+  // Use the confirmed sermon playlist ID - force the correct one
+  const PLAYLIST_ID = 'PL827hn5fOPy0ds95bHKNDLcXCWgOO_DuO';
+  const CHANNEL_ID = import.meta.env.VITE_YOUTUBE_CHANNEL_ID || '3DPL827hn5fOPy0ds95bHKNDLcXCWgOO_DuO';
 
   useEffect(() => {
     const fetchVideos = async () => {
@@ -25,13 +25,16 @@ export const useYouTubeVideos = (type: 'sermon' | 'live') => {
         setLoading(true);
         setError(null);
 
-        if (!PLAYLIST_ID || !CHANNEL_ID) {
-          throw new Error('YouTube playlist or channel ID not configured');
+        if (!PLAYLIST_ID) {
+          throw new Error('YouTube playlist ID not configured');
+        }
+        
+        if (type === 'live' && !CHANNEL_ID) {
+          throw new Error('YouTube channel ID not configured for live streams');
         }
 
         // For live streams: first get sermon playlist IDs to exclude them
         if (type === 'live') {
-          console.log('Fetching sermon playlist to exclude those videos from live streams...');
           try {
             const sermonRssUrl = `https://www.youtube.com/feeds/videos.xml?playlist_id=${PLAYLIST_ID}`;
             const sermonCorsUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(sermonRssUrl)}`;
@@ -48,12 +51,10 @@ export const useYouTubeVideos = (type: 'sermon' | 'live') => {
                   entry.querySelector('videoId')?.textContent || 
                   entry.querySelector('id')?.textContent?.split(':').pop() || ''
                 ).filter(id => id);
-                
-                console.log(`Found ${sermonVideoIds.length} sermon videos to exclude from live streams`);
               }
             }
           } catch (sermonErr) {
-            console.warn('Could not fetch sermon playlist for exclusion:', sermonErr);
+            // Silently continue if sermon playlist fetch fails
           }
         }
 
@@ -62,19 +63,54 @@ export const useYouTubeVideos = (type: 'sermon' | 'live') => {
           ? `https://www.youtube.com/feeds/videos.xml?playlist_id=${PLAYLIST_ID}`
           : `https://www.youtube.com/feeds/videos.xml?channel_id=${CHANNEL_ID}`;
 
-        // Use CORS proxy to fetch YouTube RSS feed directly
-        const corsProxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(youtubeRssUrl)}`;
+        // Try multiple CORS proxy services
+        const corsProxyUrls = [
+          `https://api.allorigins.win/get?url=${encodeURIComponent(youtubeRssUrl)}`,
+          `https://jsonp.afeld.me/?url=${encodeURIComponent(youtubeRssUrl)}`,
+          `https://cors-anywhere.herokuapp.com/${youtubeRssUrl}`,
+          `https://thingproxy.freeboard.io/fetch/${youtubeRssUrl}`
+        ];
         
-        const response = await fetch(corsProxyUrl);
+        console.log(`Fetching ${type} videos from:`, youtubeRssUrl);
         
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
+        let proxyData = null;
+        let lastError = null;
+        
+        for (const corsProxyUrl of corsProxyUrls) {
+          try {
+            console.log(`Trying CORS proxy: ${corsProxyUrl}`);
+            const response = await fetch(corsProxyUrl);
+            
+            if (!response.ok) {
+              lastError = new Error(`HTTP error! status: ${response.status} for ${corsProxyUrl}`);
+              console.warn(`CORS proxy failed:`, lastError.message);
+              continue;
+            }
+            
+            if (corsProxyUrl.includes('allorigins')) {
+              const data = await response.json();
+              if (data.contents) {
+                console.log(`✅ Success with allorigins proxy`);
+                proxyData = { contents: data.contents };
+                break;
+              }
+            } else {
+              const xmlText = await response.text();
+              if (xmlText && xmlText.includes('<?xml')) {
+                console.log(`✅ Success with proxy: ${corsProxyUrl}`);
+                proxyData = { contents: xmlText };
+                break;
+              }
+            }
+          } catch (err) {
+            lastError = err;
+            console.warn(`CORS proxy error:`, err);
+            continue;
+          }
         }
         
-        const proxyData = await response.json();
-        
-        if (!proxyData.contents) {
-          throw new Error('No RSS content received from proxy');
+        if (!proxyData?.contents) {
+          throw lastError || new Error('All CORS proxy services failed');
         }
         
         // Parse the XML directly
@@ -84,8 +120,12 @@ export const useYouTubeVideos = (type: 'sermon' | 'live') => {
         // Check for XML parsing errors
         const parseError = xmlDoc.querySelector('parsererror');
         if (parseError) {
+          console.error('XML parsing error:', parseError.textContent);
+          console.error('Raw XML content:', proxyData.contents.substring(0, 500));
           throw new Error('Failed to parse YouTube RSS XML');
         }
+        
+        console.log('✅ XML parsed successfully');
 
         // Extract video data from XML
         const entries = Array.from(xmlDoc.querySelectorAll('entry'));
@@ -128,7 +168,7 @@ export const useYouTubeVideos = (type: 'sermon' | 'live') => {
               const liveKeywords = [
                 'live', 'stream', 'streaming', 'broadcast', 'broadcasting',
                 'sunday service', 'worship service', 'church service',
-                'online service', 'virtual service', 'የእሁድ አገልግሎት'
+                'online service', 'virtual service', 'Focus on Jesus','የእሁድ አገልግሎት'
               ];
               
               return liveKeywords.some(keyword => title.includes(keyword));
@@ -144,90 +184,16 @@ export const useYouTubeVideos = (type: 'sermon' | 'live') => {
 
         setVideos(formattedVideos);
       } catch (err) {
-        // Try alternative CORS proxy as fallback
-        try {
-          const fallbackYoutubeRssUrl = type === 'sermon' 
-            ? `https://www.youtube.com/feeds/videos.xml?playlist_id=${PLAYLIST_ID}`
-            : `https://www.youtube.com/feeds/videos.xml?channel_id=${CHANNEL_ID}`;
-          
-          // Try different CORS proxy as fallback
-          const fallbackCorsUrl = `https://corsproxy.io/?${encodeURIComponent(fallbackYoutubeRssUrl)}`;
-          
-          const alternativeResponse = await fetch(fallbackCorsUrl);
-          
-          if (alternativeResponse.ok) {
-            const xmlText = await alternativeResponse.text();
-            
-            // Parse the XML
-            const parser = new DOMParser();
-            const xmlDoc = parser.parseFromString(xmlText, 'text/xml');
-            
-            const parseError = xmlDoc.querySelector('parsererror');
-            if (!parseError) {
-              const fallbackEntries = Array.from(xmlDoc.querySelectorAll('entry'));
-              
-              if (fallbackEntries.length > 0) {
-                const fallbackVideos = fallbackEntries
-                  .map((entry) => {
-                    const videoId = entry.querySelector('videoId')?.textContent || 
-                                   entry.querySelector('id')?.textContent?.split(':').pop() || '';
-                    const title = entry.querySelector('title')?.textContent || '';
-                    const published = entry.querySelector('published')?.textContent || '';
-                    const thumbnail = entry.querySelector('media\\:thumbnail, thumbnail')?.getAttribute('url') || 
-                                     `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`;
-                    
-                    return {
-                      id: videoId,
-                      title: title,
-                      thumbnailUrl: thumbnail,
-                      publishedAt: published,
-                    };
-                  })
-                  .filter((video: any) => {
-                    if (!video.id || !video.title) return false;
-                    
-                    // Apply same filtering logic for live streams in fallback
-                    if (type === 'live') {
-                      // Exclude sermon playlist videos
-                      if (sermonVideoIds.includes(video.id)) {
-                        return false;
-                      }
-                      
-                      // Only include live stream content
-                      const title = video.title.toLowerCase();
-                      const liveKeywords = [
-                        'live', 'stream', 'streaming', 'broadcast', 'broadcasting',
-                        'sunday service', 'worship service', 'church service',
-                        'online service', 'virtual service', 'የእሁድ አገልግሎት'
-                      ];
-                      
-                      return liveKeywords.some(keyword => title.includes(keyword));
-                    }
-                    
-                    return true;
-                  })
-                  .sort((a: any, b: any) => {
-                    return new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime();
-                  });
-                
-                setVideos(fallbackVideos);
-                setError(null); // Clear error since fallback worked
-                return;
-              }
-            }
-          }
-        } catch (fallbackErr) {
-          // Fallback also failed, will use sample data
-        }
+        console.error('Failed to fetch videos with all CORS proxies:', err);
         
         setError(err instanceof Error ? err.message : 'Failed to fetch videos');
         
         // Only use sample data if both primary and fallback fail
         const fallbackVideos = [
           {
-            id: 'dQw4w9WgXcQ',
+            id: 'izfVnlQCi-U',
             title: `Sample ${type === 'sermon' ? 'Sermon & Teaching' : 'Live Stream'} - Please check configuration`,
-            thumbnailUrl: 'https://img.youtube.com/vi/dQw4w9WgXcQ/mqdefault.jpg',
+            thumbnailUrl: 'https://img.youtube.com/vi/izfVnlQCi-U/mqdefault.jpg',
             publishedAt: new Date().toISOString(),
           },
         ];
