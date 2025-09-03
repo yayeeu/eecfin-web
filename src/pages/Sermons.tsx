@@ -4,7 +4,7 @@ import { YouTubeEmbed } from "@/components/YouTubeEmbed";
 import { MessageSquare, Video, ListVideo, Calendar, Info, ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { useYouTubeVideos } from '@/hooks/useYouTubeVideos';
+import { useYouTubeVideosFromCSV } from '@/hooks/useYouTubeVideosFromCSV';
 import { Button } from "@/components/ui/button";
 
 const Sermons = () => {
@@ -14,9 +14,9 @@ const Sermons = () => {
   const VIDEOS_PER_PAGE = 6;
   const PLAYLIST_ID = 'PL827hn5fOPy0ds95bHKNDLcXCWgOO_DuO';
   
-  // Load data for both tabs but optimize UI feedback
-  const { videos: sermons, loading: sermonsLoading, error: sermonsError } = useYouTubeVideos('sermon');
-  const { videos: livestreams, loading: livestreamsLoading, error: livestreamsError } = useYouTubeVideos('live');
+  // Load data from CSV files (pre-fetched by cronjob)
+  const { videos: sermons, loading: sermonsLoading, error: sermonsError } = useYouTubeVideosFromCSV('sermon');
+  const { videos: livestreams, loading: livestreamsLoading, error: livestreamsError } = useYouTubeVideosFromCSV('live');
 
   // Set the most recent sermon as the default video when sermons are loaded
   useEffect(() => {
