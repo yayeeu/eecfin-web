@@ -11,9 +11,20 @@ const Sermons = () => {
   const [selectedVideoId, setSelectedVideoId] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const VIDEOS_PER_PAGE = 6;
-  const PLAYLIST_ID = import.meta.env.VITE_YOUTUBE_PLAYLIST_ID;
+  const PLAYLIST_ID = import.meta.env.VITE_YOUTUBE_PLAYLIST_ID || 'PL827hn5fOPy27cTOXAdkdqO70eoUzKNIQ';
   const { videos: sermons, loading: sermonsLoading } = useYouTubeVideos('sermon');
   const { videos: livestreams, loading: livestreamsLoading } = useYouTubeVideos('live');
+
+  // Debug: Log sermon data when it changes
+  useEffect(() => {
+    if (sermons.length > 0) {
+      console.log(`📺 Sermons page received ${sermons.length} sermons`);
+      console.log('First 3 sermons:', sermons.slice(0, 3).map(s => ({
+        title: s.title.substring(0, 40) + '...',
+        date: new Date(s.publishedAt).toLocaleDateString()
+      })));
+    }
+  }, [sermons]);
 
   // Set the most recent sermon as the default video when sermons are loaded
   useEffect(() => {
@@ -49,6 +60,9 @@ const Sermons = () => {
     const startIndex = (currentPage - 1) * VIDEOS_PER_PAGE;
     const endIndex = startIndex + VIDEOS_PER_PAGE;
     const currentVideos = videos.slice(startIndex, endIndex);
+
+    // Debug pagination
+    console.log(`VideoGrid: total=${videos.length}, page=${currentPage}, showing=${currentVideos.length} (${startIndex}-${endIndex})`);
 
     return (
       <div className="space-y-6">
