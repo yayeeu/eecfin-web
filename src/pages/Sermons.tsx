@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Card } from "@/components/ui/card";
 import { YouTubeEmbed } from "@/components/YouTubeEmbed";
-import { MessageSquare, Video, ListVideo, Calendar, Info, ChevronLeft, ChevronRight } from "lucide-react";
+import { MessageSquare, Video, ListVideo, Calendar, Info, ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useYouTubeVideos } from '@/hooks/useYouTubeVideos';
@@ -10,10 +10,13 @@ import { Button } from "@/components/ui/button";
 const Sermons = () => {
   const [selectedVideoId, setSelectedVideoId] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
+  const [activeTab, setActiveTab] = useState('sermons');
   const VIDEOS_PER_PAGE = 6;
   const PLAYLIST_ID = 'PL827hn5fOPy0ds95bHKNDLcXCWgOO_DuO';
-  const { videos: sermons, loading: sermonsLoading } = useYouTubeVideos('sermon');
-  const { videos: livestreams, loading: livestreamsLoading } = useYouTubeVideos('live');
+  
+  // Load data for both tabs but optimize UI feedback
+  const { videos: sermons, loading: sermonsLoading, error: sermonsError } = useYouTubeVideos('sermon');
+  const { videos: livestreams, loading: livestreamsLoading, error: livestreamsError } = useYouTubeVideos('live');
 
   // Set the most recent sermon as the default video when sermons are loaded
   useEffect(() => {
@@ -22,24 +25,62 @@ const Sermons = () => {
     }
   }, [sermons, selectedVideoId]);
 
-  // Reset to first page when switching tabs
-  const handleTabChange = () => {
+  // Reset to first page when switching tabs and update active tab
+  const handleTabChange = (tabValue: string) => {
     setCurrentPage(1);
+    setActiveTab(tabValue);
   };
 
-  const VideoGrid = ({ videos, loading }: { videos: any[], loading: boolean }) => {
+  const VideoGrid = ({ videos, loading, error, type }: { videos: any[], loading: boolean, error?: string | null, type: 'sermon' | 'live' }) => {
     if (loading) {
       return (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {[...Array(6)].map((_, i) => (
-            <Card key={i} className="animate-pulse">
-              <div className="aspect-video bg-gray-200" />
-              <div className="p-4 space-y-2">
-                <div className="h-4 bg-gray-200 rounded w-3/4" />
-                <div className="h-4 bg-gray-200 rounded w-1/2" />
-              </div>
-            </Card>
-          ))}
+        <div className="space-y-4">
+          {/* Enhanced Loading Indicator */}
+          <div className="flex items-center justify-center gap-3 p-6 bg-gray-50 rounded-lg">
+            <Loader2 className="h-6 w-6 animate-spin text-eecfin-navy" />
+            <div className="text-center">
+              <p className="text-lg font-medium text-eecfin-navy">
+                Loading {type === 'sermon' ? 'Sermons & Teaching' : 'Live Streams'}...
+              </p>
+              <p className="text-sm text-gray-600 mt-1">
+                Fetching latest videos from YouTube
+              </p>
+            </div>
+          </div>
+          
+          {/* Skeleton Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[...Array(6)].map((_, i) => (
+              <Card key={i} className="animate-pulse">
+                <div className="aspect-video bg-gray-200" />
+                <div className="p-4 space-y-2">
+                  <div className="h-4 bg-gray-200 rounded w-3/4" />
+                  <div className="h-4 bg-gray-200 rounded w-1/2" />
+                </div>
+              </Card>
+            ))}
+          </div>
+        </div>
+      );
+    }
+
+    if (error) {
+      return (
+        <div className="text-center p-8">
+          <div className="bg-red-50 border border-red-200 rounded-lg p-6">
+            <div className="flex items-center justify-center gap-2 text-red-600 mb-3">
+              <Info className="h-5 w-5" />
+              <span className="font-medium">Unable to load {type === 'sermon' ? 'sermons' : 'live streams'}</span>
+            </div>
+            <p className="text-red-700 text-sm mb-4">{error}</p>
+            <Button 
+              onClick={() => window.location.reload()} 
+              variant="outline" 
+              className="border-red-200 text-red-600 hover:bg-red-50"
+            >
+              Try Again
+            </Button>
+          </div>
         </div>
       );
     }
@@ -166,23 +207,35 @@ const Sermons = () => {
 
       <div className="w-full">
         <Tabs defaultValue="sermons" onValueChange={handleTabChange}>
-          <TabsList className="mb-4">
+          <TabsList className="grid w-full grid-cols-2 mb-8">
             <TabsTrigger value="sermons" className="gap-2">
               <Video className="h-4 w-4" />
               Sermons & Teaching
+              {sermonsLoading && <Loader2 className="h-3 w-3 animate-spin ml-1" />}
+              {!sermonsLoading && sermons.length > 0 && (
+                <span className="bg-eecfin-navy text-white text-xs px-1.5 py-0.5 rounded-full ml-1">
+                  {sermons.length}
+                </span>
+              )}
             </TabsTrigger>
-            <TabsTrigger value="livestreams" className="gap-2">
+            <TabsTrigger value="live" className="gap-2">
               <ListVideo className="h-4 w-4" />
               Live Streams
+              {livestreamsLoading && <Loader2 className="h-3 w-3 animate-spin ml-1" />}
+              {!livestreamsLoading && livestreams.length > 0 && (
+                <span className="bg-eecfin-navy text-white text-xs px-1.5 py-0.5 rounded-full ml-1">
+                  {livestreams.length}
+                </span>
+              )}
             </TabsTrigger>
           </TabsList>
           
           <TabsContent value="sermons" className="mt-0">
-            <VideoGrid videos={sermons} loading={sermonsLoading} />
+            <VideoGrid videos={sermons} loading={sermonsLoading} error={sermonsError} type="sermon" />
           </TabsContent>
           
-          <TabsContent value="livestreams" className="mt-0">
-            <VideoGrid videos={livestreams} loading={livestreamsLoading} />
+          <TabsContent value="live" className="mt-0">
+            <VideoGrid videos={livestreams} loading={livestreamsLoading} error={livestreamsError} type="live" />
           </TabsContent>
         </Tabs>
       </div>
