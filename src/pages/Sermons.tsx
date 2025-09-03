@@ -11,7 +11,7 @@ const Sermons = () => {
   const [selectedVideoId, setSelectedVideoId] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const VIDEOS_PER_PAGE = 6;
-  const PLAYLIST_ID = import.meta.env.VITE_YOUTUBE_PLAYLIST_ID || 'PL827hn5fOPy27cTOXAdkdqO70eoUzKNIQ';
+  const PLAYLIST_ID = 'PL827hn5fOPy0ds95bHKNDLcXCWgOO_DuO';
   const { videos: sermons, loading: sermonsLoading } = useYouTubeVideos('sermon');
   const { videos: livestreams, loading: livestreamsLoading } = useYouTubeVideos('live');
 
