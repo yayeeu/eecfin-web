@@ -8,6 +8,10 @@ interface YouTubeVideo {
   duration?: string;
 }
 
+// Simple cache to avoid refetching same data
+const videoCache = new Map<string, { videos: YouTubeVideo[], timestamp: number }>();
+const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
+
 export const useYouTubeVideos = (type: 'sermon' | 'live') => {
   const [videos, setVideos] = useState<YouTubeVideo[]>([]);
   const [loading, setLoading] = useState(true);
@@ -19,6 +23,18 @@ export const useYouTubeVideos = (type: 'sermon' | 'live') => {
 
   useEffect(() => {
     const fetchVideos = async () => {
+      // Check cache first
+      const cacheKey = `${type}-${PLAYLIST_ID}-${CHANNEL_ID}`;
+      const cached = videoCache.get(cacheKey);
+      
+      if (cached && Date.now() - cached.timestamp < CACHE_DURATION) {
+        console.log(`📦 Using cached ${type} videos`);
+        setVideos(cached.videos);
+        setLoading(false);
+        setError(null);
+        return;
+      }
+      
       let sermonVideoIds: string[] = [];
       
       try {
@@ -183,6 +199,12 @@ export const useYouTubeVideos = (type: 'sermon' | 'live') => {
           });
 
         setVideos(formattedVideos);
+        
+        // Cache the results
+        videoCache.set(cacheKey, {
+          videos: formattedVideos,
+          timestamp: Date.now()
+        });
       } catch (err) {
         console.error('Failed to fetch videos with all CORS proxies:', err);
         
