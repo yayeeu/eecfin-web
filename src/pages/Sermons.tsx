@@ -11,7 +11,7 @@ const Sermons = () => {
   const [selectedVideoId, setSelectedVideoId] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const VIDEOS_PER_PAGE = 6;
-  const PLAYLIST_ID = import.meta.env.VITE_YOUTUBE_PLAYLIST_ID;
+  const PLAYLIST_ID = import.meta.env.VITE_YOUTUBE_PLAYLIST_ID || 'PL827hn5fOPy27cTOXAdkdqO70eoUzKNIQ';
   const { videos: sermons, loading: sermonsLoading } = useYouTubeVideos('sermon');
   const { videos: livestreams, loading: livestreamsLoading } = useYouTubeVideos('live');
 
@@ -129,13 +129,13 @@ const Sermons = () => {
         <div className="w-full lg:w-[40%] space-y-6">
           <div className="flex items-center gap-3">
             <MessageSquare className="w-8 h-8 text-eecfin-navy" />
-            <h1 className="text-3xl font-bold text-eecfin-navy">EECFIN Media</h1>
+            <h1 className="text-3xl font-bold text-eecfin-navy">EECFIN Sermons & Teaching</h1>
           </div>
           
-          <h2 className="text-2xl font-semibold">Access our complete sermon library</h2>
+          <h2 className="text-2xl font-semibold">Access our complete sermons & teaching library</h2>
           
           <p className="text-lg text-gray-700 leading-relaxed">
-            Stay connected with our church through our broadcasts, sermons, and special 
+            Stay connected with our church through our broadcasts, sermons, teachings, and special 
             events. Watch our services live or catch up on past messages.
           </p>
 
@@ -169,7 +169,7 @@ const Sermons = () => {
           <TabsList className="mb-4">
             <TabsTrigger value="sermons" className="gap-2">
               <Video className="h-4 w-4" />
-              Sermons
+              Sermons & Teaching
             </TabsTrigger>
             <TabsTrigger value="livestreams" className="gap-2">
               <ListVideo className="h-4 w-4" />

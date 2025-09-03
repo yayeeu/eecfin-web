@@ -34,7 +34,7 @@ const MediaSection = () => {
                     ) : (
                       <>
                         <div className="w-4 h-4 bg-eecfin-gold rounded-full"></div>
-                        <span>Latest Service</span>
+                        <span>Recent Live Stream</span>
                       </>
                     )}
                   </CardTitle>
@@ -45,7 +45,7 @@ const MediaSection = () => {
                   )}
                 </div>
                 <CardDescription className="text-white/90 text-base">
-                  {isLive ? "Join our live service now!" : "Watch our most recent service"}
+                  {isLive ? "Join our live service now!" : "Watch our most recent live stream"}
                 </CardDescription>
               </CardHeader>
               <CardContent className="p-0 flex-grow">

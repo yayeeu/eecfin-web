@@ -6,7 +6,7 @@ import { fetchPlaylistItems } from './fetchPlaylistItems.ts';
 
 const GOOGLE_API_KEY = Deno.env.get('GOOGLE_API_KEY');
 const YOUTUBE_CHANNEL_ID = Deno.env.get('YOUTUBE_CHANNEL_ID');
-const SERMONS_PLAYLIST_ID = Deno.env.get('SERMONS_PLAYLIST_ID');
+const SERMONS_PLAYLIST_ID = Deno.env.get('SERMONS_PLAYLIST_ID') || 'PL827hn5fOPy27cTOXAdkdqO70eoUzKNIQ';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',

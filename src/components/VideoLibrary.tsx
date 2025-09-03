@@ -115,7 +115,7 @@ export const VideoLibrary: React.FC<VideoLibraryProps> = ({ type }) => {
           <p className="text-gray-700">
             We're experiencing difficulties connecting to YouTube.
             {type === 'sermon' 
-              ? ' In the meantime, you can visit our YouTube channel directly to watch sermons.' 
+              ? ' In the meantime, you can visit our YouTube channel directly to watch sermons & teachings.' 
               : ' Please check our live streams directly on YouTube.'}
           </p>
           
@@ -147,7 +147,7 @@ export const VideoLibrary: React.FC<VideoLibraryProps> = ({ type }) => {
     return (
       <div className="flex flex-col items-center justify-center py-12">
         <Loader2 className="h-8 w-8 animate-spin mb-4" />
-        <p className="text-gray-500">Loading {type === 'sermon' ? 'sermons' : 'live streams'}...</p>
+        <p className="text-gray-500">Loading {type === 'sermon' ? 'sermons & teachings' : 'live streams'}...</p>
       </div>
     );
   }
@@ -155,7 +155,7 @@ export const VideoLibrary: React.FC<VideoLibraryProps> = ({ type }) => {
   if (videos.length === 0) {
     return (
       <div className="text-center py-12">
-        <p className="text-gray-500">No {type === 'sermon' ? 'sermons' : 'live streams'} found from the last 3 months.</p>
+        <p className="text-gray-500">No {type === 'sermon' ? 'sermons & teachings' : 'live streams'} found from the last 3 months.</p>
         <Button 
           variant="link" 
           onClick={() => window.open('https://www.youtube.com/@eecfin', '_blank')}
