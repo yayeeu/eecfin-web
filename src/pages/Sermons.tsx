@@ -183,7 +183,7 @@ const Sermons = () => {
           <Alert className="bg-blue-50 border-blue-100">
             <Info className="h-4 w-4 text-blue-500" />
             <AlertDescription className="text-blue-700">
-              Our service times: <strong>Sunday 16:00</strong> • Live streaming available
+              Our service times: <strong>Sunday 17:00</strong> • Live streaming available
             </AlertDescription>
           </Alert>
 

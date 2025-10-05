@@ -48,7 +48,7 @@ const ContactInfo = () => {
           <div>
             <h3 className="text-lg font-semibold mb-1">Service Times</h3>
             <p className="text-gray-600">
-              Weekly Sunday: 16:00 <br />
+              Weekly Sunday: 17:00 <br />
             </p>
           </div>
         </div>

@@ -28,3 +28,4 @@ echo "📝 Logs: $LOG_PATH"
 echo ""
 echo "To verify the cronjob was added, run: crontab -l"
 echo "To remove the cronjob, run: crontab -l | grep -v 'fetch-youtube-videos.js' | crontab -"
+
