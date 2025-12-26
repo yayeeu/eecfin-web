@@ -6,28 +6,12 @@ on:
       - main
 
 jobs:
-  deploy-production:
+  deploy-staging:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Set up SSH key and connect
-        run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.STG_SSH_KEY }}" > ~/.ssh/id_ed25519
-          chmod 600 ~/.ssh/id_ed25519
-          ssh-keyscan ${{ secrets.STG_IP }} >> ~/.ssh/known_hosts
-          ssh -i ~/.ssh/id_ed25519 ${{ secrets.STG_USER }}@${{ secrets.STG_IP }} "echo ✅ Connected to server"
-
-      - name: Add server to known_hosts
-        run: |
-          mkdir -p ~/.ssh
-          ssh-keyscan ${{secrets.STG_IP}} >> ~/.ssh/known_hosts
-
-      #- name: Test SSH connection
-      #  run: ssh -vvv ${{secrets.STG_USER}}@${{secrets.STG_IP}}
-
-      # Connect to server and run deployment commands
-      - name: Deploy to Staging via SSH
+      # Connect to SSH server and run deployment commands
+      - name: Deploy to production via SSH
         uses: appleboy/ssh-action@v1.0.0
         with:
           host: ${{ secrets.STG_IP }}
@@ -35,12 +19,12 @@ jobs:
           key: ${{ secrets.STG_SSH_KEY }}
           port: 22
           script: |
-            cd ~/prd/eecfin-web
-           
+            cd ~/eecfin.org
+            
             # OPTION A: Clean directory
             #rm -rf *
             #git clone -b staging git@github.com:yayeeu/eecfin-web.git .
-            #git clone -b main git@github.com:yayeeu/eecfin-web.git .
+            #git clone -b staging git@github.com:yayeeu/eecfin-web.git
             #cd eecfin-web
 
             # OPTION B (if you want to keep repo initialized):
@@ -64,5 +48,6 @@ jobs:
             echo "VITE_CALENDAR_ID=${{secrets.STG_CALENDAR_ID }}" >> .env
 
             # Build and deploy with docker compose
+            #docker compose -f docker-compose.yml -f docker-compose.prd.yml up -d --build
             docker compose -p web-prd down
             docker compose -p web-prd -f docker-compose.yml -f docker-compose.prd.yml up -d --build
