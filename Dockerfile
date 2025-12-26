@@ -13,7 +13,7 @@ RUN npm install --legacy-peer-deps
 COPY . .
 
 # Expose the correct port
-EXPOSE 8080
+EXPOSE 8081
 
 # Start the app in development mode with hot reloading
 #CMD ["npm", "run", "dev", "--", "--host"]
