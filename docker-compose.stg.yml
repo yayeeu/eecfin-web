@@ -8,18 +8,18 @@ services:
       - "8081:8081"
     environment:
       - HOST=0.0.0.0
-      - VIRTUAL_HOST=stg.eecfin.org
-      - VIRTUAL_PORT=8081
-      - LETSENCRYPT_HOST=stg.eecfin.org 
-      - LETSENCRYPT_EMAIL=eecfin.admin@eecfin.org 
+      #- VIRTUAL_HOST=stg.eecfin.org
+      #- VIRTUAL_PORT=8081
+      #- LETSENCRYPT_HOST=stg.eecfin.org 
+      #- LETSENCRYPT_EMAIL=eecfin.admin@eecfin.org 
      # - CHOKIDAR_USEPOLLING=true
- #   networks:
-  #    - nginx_proxy
+    networks:
+      - supabase_default
     volumes:
       - ./:/app       # Mount your code from host
       - /app/node_modules   # Prevent overwriting container's node_modules
    
 #networks:
- # nginx_proxy:
-  #  external: true 
+  supabase_default:
+    external: true 
  
