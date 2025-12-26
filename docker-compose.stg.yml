@@ -19,7 +19,7 @@ services:
       - ./:/app       # Mount your code from host
       - /app/node_modules   # Prevent overwriting container's node_modules
    
-#networks:
+networks:
   supabase_default:
     external: true 
  
