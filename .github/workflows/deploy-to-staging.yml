@@ -46,6 +46,7 @@ jobs:
             echo "VITE_YOUTUBE_LIVE_PLAYLIST_ID=${{secrets.STG_YOUTUBE_LIVE_PLAYLIST_ID }}" >> .env
             echo "VITE_YOUTUBE_FALLBACK_VIDEO_ID=${{secrets.STG_YOUTUBE_FALLBACK_VIDEO_ID }}" >> .env
             echo "VITE_CALENDAR_ID=${{secrets.STG_CALENDAR_ID }}" >> .env
+            echo "PORT=8081" >> .env
 
             # Build and deploy with docker compose
             #docker compose -f docker-compose.yml -f docker-compose.stg.yml up -d --build
