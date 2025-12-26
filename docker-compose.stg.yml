@@ -3,11 +3,14 @@ services:
     container_name: eecfin-web-stg
     build:
       context: .
+      args:
+        - PORT=${PORT:-8081}
     restart: unless-stopped
     ports:
-      - "8081:8081"
+      - "${PORT:-8081}:${PORT:-8081}"
     environment:
       - HOST=0.0.0.0
+      - PORT=${PORT:-8081}
       #- VIRTUAL_HOST=stg.eecfin.org
       #- VIRTUAL_PORT=8081
       #- LETSENCRYPT_HOST=stg.eecfin.org 
