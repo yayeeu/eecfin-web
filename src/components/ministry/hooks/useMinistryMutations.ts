@@ -1,14 +1,17 @@
 
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { createMinistry, updateMinistry, deleteMinistry } from '@/lib/ministryService';
-import { Ministry } from '@/types/database.types';
+import { apiService, Ministry } from '@/lib/api';
 import { toast } from 'sonner';
 
 export const useMinistryMutations = () => {
   const queryClient = useQueryClient();
 
   const createMutation = useMutation({
-    mutationFn: createMinistry,
+    mutationFn: async (ministry: Omit<Ministry, 'id' | 'created_at' | 'updated_at'>) => {
+      const response = await apiService.createMinistry(ministry);
+      if (response.error) throw new Error(response.error);
+      return response.data!.ministry;
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['ministries'] });
       toast.success('Ministry added successfully');
@@ -20,8 +23,11 @@ export const useMinistryMutations = () => {
   });
 
   const updateMutation = useMutation({
-    mutationFn: ({ id, ministry }: { id: string; ministry: Partial<Omit<Ministry, 'id' | 'created_at'>> }) => 
-      updateMinistry(id, ministry),
+    mutationFn: async ({ id, ministry }: { id: string; ministry: Partial<Omit<Ministry, 'id' | 'created_at'>> }) => {
+      const response = await apiService.updateMinistry(id, ministry);
+      if (response.error) throw new Error(response.error);
+      return response.data!.ministry;
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['ministries'] });
       toast.success('Ministry updated successfully');
@@ -33,7 +39,11 @@ export const useMinistryMutations = () => {
   });
 
   const deleteMutation = useMutation({
-    mutationFn: deleteMinistry,
+    mutationFn: async (id: string) => {
+      const response = await apiService.deleteMinistry(id);
+      if (response.error) throw new Error(response.error);
+      return true;
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['ministries'] });
       toast.success('Ministry deleted successfully');

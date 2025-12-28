@@ -2,15 +2,40 @@
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Member } from '@/types/database.types';
-import { getElderMembers } from '@/lib/services/elderService';
+import { apiService, Elder } from '@/lib/api';
+import { Member } from '@/types/database.types';
 import { Loader2, UserCircle2 } from 'lucide-react';
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 
 const EldersList = () => {
-  const { data: elders, isLoading, isError } = useQuery({
+  const { data: eldersResponse, isLoading, isError } = useQuery({
     queryKey: ['elders'],
-    queryFn: getElderMembers
+    queryFn: async () => {
+      const response = await apiService.getElders();
+      if (response.error) throw new Error(response.error);
+      
+      // Map API response to Member[] format
+      const elders = (response.data?.elders || [])
+        .filter(elder => elder.eldership_status === 'active')
+        .map(elder => ({
+          id: elder.member_id,
+          name: elder.member_name || 'Unknown',
+          email: elder.member_email || '',
+          phone: elder.member_phone || '',
+          role: 'elder' as const,
+          status: 'active' as const,
+          created_at: elder.created_at,
+          updated_at: elder.updated_at,
+          address: '',
+          image: elder.member_image || '',
+        } as Member))
+        .sort((a, b) => a.name.localeCompare(b.name));
+      
+      return elders;
+    }
   });
+  
+  const elders = eldersResponse || [];
 
   if (isLoading) {
     return (

@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Member, Ministry } from '@/types/database.types';
 import { getMemberMinistries, assignMinistryToMember, removeMinistryFromMember } from '@/lib/memberService';
-import { getMinistries } from '@/lib/ministryService';
+import { apiService } from '@/lib/api';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Plus, X, Loader2 } from 'lucide-react';
@@ -40,7 +40,14 @@ const MemberMinistryAssignments: React.FC<MemberMinistryAssignmentsProps> = ({
     isLoading: allMinistriesLoading
   } = useQuery({
     queryKey: ['ministries'],
-    queryFn: () => getMinistries(true), // Only active ministries
+    queryFn: async () => {
+      const response = await apiService.getMinistries();
+      if (response.error) throw new Error(response.error);
+      const ministries = (response.data?.ministries || [])
+        .filter(m => m.status === 'active' && m.is_active !== false)
+        .sort((a, b) => a.name.localeCompare(b.name));
+      return ministries;
+    },
     enabled: !readOnly // Only load if not in read-only mode
   });
   

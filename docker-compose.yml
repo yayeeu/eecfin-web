@@ -3,11 +3,14 @@ services:
     container_name: eecfin-web
     build:
       context: .
+      args:
+        - PORT=${PORT:-8082}
     restart: no #unless-stopped
-    #ports:
-    #  - "8080:8080sss"
+    ports:
+      - "${PORT:-8082}:${PORT:-8082}"
     environment:
       - HOST=0.0.0.0
+      - PORT=${PORT:-8082}
     #networks:
     #  - nginx_proxy
     volumes:

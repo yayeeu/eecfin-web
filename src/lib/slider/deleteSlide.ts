@@ -1,8 +1,10 @@
 
+// TODO: Migrate to API endpoint instead of direct Supabase calls
 import { supabase, isSupabaseConfigured } from '@/lib/supabaseClient';
 
 /**
  * Delete a slide from Supabase
+ * NOTE: This should be migrated to use the API instead
  */
 export const deleteSlide = async (id: string): Promise<void> => {
   if (!isSupabaseConfigured()) {

@@ -8,10 +8,8 @@ export {
   deleteMember
 } from '@/lib/services/memberBasicService';
 
-export {
-  getElderMembers,
-  getEldersForDropdown
-} from '@/lib/services/elderService';
+// Elder functions removed - use apiService.getElders() directly from '@/lib/api'
+// These were helper functions that have been removed to match abalatv2 architecture
 
 export {
   assignElderToMember,

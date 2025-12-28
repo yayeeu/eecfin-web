@@ -1,10 +1,11 @@
-
+// TODO: Migrate to API endpoint instead of direct Supabase calls
 import { supabase, isSupabaseConfigured } from '@/lib/supabaseClient';
 import { Member } from '@/types/database.types';
 import { v4 as uuidv4 } from 'uuid';
 import { mockMembers } from '@/lib/mockData/membersMockData';
 
 // Basic CRUD operations for members
+// NOTE: These should be migrated to use the API instead of direct Supabase calls
 
 export const getAllMembers = async () => {
   // If Supabase is not configured, return mock data

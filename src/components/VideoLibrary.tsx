@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { Card } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2, RefreshCw, AlertCircle, ExternalLink } from "lucide-react";
+// TODO: Migrate to API endpoint instead of Supabase Edge Functions
 import { supabase } from "@/lib/supabaseClient";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";

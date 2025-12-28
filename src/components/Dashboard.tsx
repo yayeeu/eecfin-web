@@ -1,8 +1,9 @@
 
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { getAllMembers, getElderMembers } from '@/lib/memberService';
-import { getMinistries } from '@/lib/ministryService';
+import { getAllMembers } from '@/lib/memberService';
+import { apiService } from '@/lib/api';
+import { Member } from '@/types/database.types';
 import MembersMap from './dashboard/MembersMap';
 import MemberMetrics from './dashboard/MemberMetrics';
 import MinistryStats from './dashboard/MinistryStats';
@@ -15,15 +16,45 @@ const Dashboard: React.FC = () => {
     queryFn: getAllMembers
   });
 
-  const { data: elders, isLoading: eldersLoading } = useQuery({
+  const { data: eldersResponse, isLoading: eldersLoading } = useQuery({
     queryKey: ['elders'],
-    queryFn: getElderMembers
+    queryFn: async () => {
+      const response = await apiService.getElders();
+      if (response.error) throw new Error(response.error);
+      const elders = (response.data?.elders || [])
+        .filter(elder => elder.eldership_status === 'active')
+        .map(elder => ({
+          id: elder.member_id,
+          name: elder.member_name || 'Unknown',
+          email: elder.member_email || '',
+          phone: elder.member_phone || '',
+          role: 'elder' as const,
+          status: 'active' as const,
+          created_at: elder.created_at,
+          updated_at: elder.updated_at,
+          address: '',
+          image: elder.member_image || '',
+        } as Member))
+        .sort((a, b) => a.name.localeCompare(b.name));
+      return elders;
+    }
   });
+  
+  const elders = eldersResponse || [];
 
-  const { data: ministries, isLoading: ministriesLoading } = useQuery({
+  const { data: ministriesResponse, isLoading: ministriesLoading } = useQuery({
     queryKey: ['ministries'],
-    queryFn: () => getMinistries(true)
+    queryFn: async () => {
+      const response = await apiService.getMinistries();
+      if (response.error) throw new Error(response.error);
+      const ministries = (response.data?.ministries || [])
+        .filter(m => m.status === 'active' && m.is_active !== false)
+        .sort((a, b) => a.name.localeCompare(b.name));
+      return ministries;
+    }
   });
+  
+  const ministries = ministriesResponse || [];
 
   const isLoading = membersLoading || eldersLoading || ministriesLoading;
 

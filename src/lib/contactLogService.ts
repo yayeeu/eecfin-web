@@ -1,4 +1,4 @@
-
+// TODO: Migrate to API endpoint instead of direct Supabase calls
 import { supabase, isSupabaseConfigured } from '@/lib/supabaseClient';
 import { ContactLog } from '@/types/database.types';
 import { v4 as uuidv4 } from 'uuid';

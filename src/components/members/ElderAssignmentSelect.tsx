@@ -1,7 +1,8 @@
 
 import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { assignElderToMember, removeElderAssignment, getEldersForDropdown } from '@/lib/memberService';
+import { assignElderToMember, removeElderAssignment } from '@/lib/memberService';
+import { apiService } from '@/lib/api';
 import { Member } from '@/types/database.types';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
@@ -21,10 +22,26 @@ const ElderAssignmentSelect: React.FC<ElderAssignmentSelectProps> = ({ member, o
   );
 
   // Query for getting all elders for dropdown
-  const { data: elders, isLoading: isLoadingElders } = useQuery({
+  const { data: eldersResponse, isLoading: isLoadingElders } = useQuery({
     queryKey: ['elders-dropdown'],
-    queryFn: getEldersForDropdown
+    queryFn: async () => {
+      const response = await apiService.getElders();
+      if (response.error) throw new Error(response.error);
+      const elders = (response.data?.elders || [])
+        .filter(elder => elder.eldership_status === 'active')
+        .map(elder => ({
+          id: elder.member_id,
+          name: elder.member_name || 'Unknown',
+          email: elder.member_email || '',
+          phone: elder.member_phone || '',
+          status: elder.eldership_status === 'active' ? 'active' : 'inactive'
+        }))
+        .sort((a, b) => a.name.localeCompare(b.name));
+      return elders;
+    }
   });
+  
+  const elders = eldersResponse || [];
 
   // Mutation for assigning an elder to a member
   const assignElderMutation = useMutation({

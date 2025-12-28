@@ -13,11 +13,13 @@ export default defineConfig(({ mode }) => {
       host: "0.0.0.0",
       port: port,
       allowedHosts: [
+        'localhost',
+        '127.0.0.1',
         'stg.eecfin.org',
         'web-stg.eecfin.org',
         'eecfin.org',
         'eecfinweb.localhost',
-        '.eecfin.org', // allows all subdomains of aku.education
+        '.eecfin.org', // allows all subdomains of eecfin.org
       ],
       hmr: {
         overlay: false,

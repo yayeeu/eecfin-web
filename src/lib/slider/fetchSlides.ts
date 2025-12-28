@@ -1,9 +1,11 @@
 
 import { SlideImage } from './types';
+// TODO: Migrate to API endpoint instead of direct Supabase calls
 import { supabase, isSupabaseConfigured } from '@/lib/supabaseClient';
 
 /**
  * Fetch all slides from Supabase
+ * NOTE: This should be migrated to use the API instead
  */
 export const fetchSlides = async (): Promise<SlideImage[]> => {
   try {
