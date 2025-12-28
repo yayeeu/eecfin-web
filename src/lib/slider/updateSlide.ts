@@ -1,10 +1,12 @@
 
+// TODO: Migrate to API endpoint instead of direct Supabase calls
 import { SlideImage } from './types';
 import { supabase, isSupabaseConfigured, ensureStorageBucket } from '@/lib/supabaseClient';
 import { v4 as uuidv4 } from 'uuid';
 
 /**
  * Update an existing slide in Supabase
+ * NOTE: This should be migrated to use the API instead
  */
 export const updateSlide = async (id: string, slide: SlideImage, imageFile: File | null): Promise<SlideImage> => {
   if (!isSupabaseConfigured()) {

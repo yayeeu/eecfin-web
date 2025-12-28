@@ -1,7 +1,7 @@
 
 import React, { useMemo, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { getMinistries } from '@/lib/ministryService';
+import { apiService } from '@/lib/api';
 import { Handshake } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
@@ -20,12 +20,22 @@ const MinistrySection: React.FC = () => {
   const ministriesPerPage = 6; // Display 6 ministries per page
   
   // Optimize data fetching
-  const { data: ministries, isLoading, error } = useQuery({
+  const { data: ministriesResponse, isLoading, error } = useQuery({
     queryKey: ['ministries', true],
-    queryFn: () => getMinistries(true), // Only fetch active ministries
+    queryFn: async () => {
+      const response = await apiService.getMinistries();
+      if (response.error) throw new Error(response.error);
+      // Filter active ministries and sort
+      const ministries = (response.data?.ministries || [])
+        .filter(m => m.status === 'active' && m.is_active !== false)
+        .sort((a, b) => a.name.localeCompare(b.name));
+      return ministries;
+    },
     staleTime: 5 * 60 * 1000, // 5 minutes
     refetchOnWindowFocus: false,
   });
+  
+  const ministries = ministriesResponse || [];
   
   // Calculate total pages
   const totalPages = useMemo(() => {

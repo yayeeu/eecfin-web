@@ -1,3 +1,12 @@
+// NOTE: This file is kept for backward compatibility with features that haven't been migrated to API yet:
+// - Slider functions (addSlide, updateSlide, deleteSlide, fetchSlides)
+// - VideoLibrary (Supabase Edge Functions)
+// - Member services (memberBasicService, memberDropdownService, etc.)
+// - Contact log service
+// - Member ministry service
+//
+// TODO: Migrate these features to use the API instead of direct Supabase calls
+// Once migrated, this file can be removed.
 
 import { createClient } from '@supabase/supabase-js';
 import { Database } from '@/types/database.types';

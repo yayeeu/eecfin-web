@@ -1,7 +1,8 @@
 
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { getElderMembers } from '@/lib/memberService';
+import { apiService } from '@/lib/api';
+import { Member } from '@/types/database.types';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from "@/components/ui/badge";
@@ -14,10 +15,31 @@ const ElderManager = () => {
   const { toast } = useToast();
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   
-  const { data: elders, isLoading, error, refetch } = useQuery({
+  const { data: eldersResponse, isLoading, error, refetch } = useQuery({
     queryKey: ['elders'],
-    queryFn: getElderMembers,
+    queryFn: async () => {
+      const response = await apiService.getElders();
+      if (response.error) throw new Error(response.error);
+      const elders = (response.data?.elders || [])
+        .filter(elder => elder.eldership_status === 'active')
+        .map(elder => ({
+          id: elder.member_id,
+          name: elder.member_name || 'Unknown',
+          email: elder.member_email || '',
+          phone: elder.member_phone || '',
+          role: 'elder' as const,
+          status: 'active' as const,
+          created_at: elder.created_at,
+          updated_at: elder.updated_at,
+          address: '',
+          image: elder.member_image || '',
+        } as Member))
+        .sort((a, b) => a.name.localeCompare(b.name));
+      return elders;
+    }
   });
+  
+  const elders = eldersResponse || [];
 
   const handleRefresh = () => {
     refetch();

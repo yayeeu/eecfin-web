@@ -1,4 +1,4 @@
-
+// TODO: Migrate to API endpoint instead of direct Supabase calls
 import { supabase, isSupabaseConfigured } from '@/lib/supabaseClient';
 import { mockMembers } from '@/lib/mockData/membersMockData';
 
