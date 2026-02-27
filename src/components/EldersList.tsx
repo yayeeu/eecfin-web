@@ -8,19 +8,8 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 
 interface ElderWithRole extends Member {
   elders_role?: string;
+  list_order?: number;
 }
-
-// Helper function to get role priority for sorting
-const getRolePriority = (role?: string): number => {
-  if (!role) return 999; // No role goes to the end
-  const normalizedRole = role.toLowerCase().trim();
-  
-  if (normalizedRole === 'chair') return 1;
-  if (normalizedRole === 'vice chair' || normalizedRole === 'vicechair') return 2;
-  if (normalizedRole === 'secretary') return 3;
-  if (normalizedRole === 'treasurer') return 4;
-  return 999; // Other roles go to the end
-};
 
 const EldersList = () => {
   const { data: eldersResponse, isLoading, isError } = useQuery({
@@ -29,7 +18,7 @@ const EldersList = () => {
       const response = await apiService.getElders();
       if (response.error) throw new Error(response.error);
       
-      // Map API response to Member[] format with elders_role
+      // Map API response to Member[] format with elders_role and list_order
       const elders = (response.data?.elders || [])
         .filter(elder => elder.eldership_status === 'active')
         .map(elder => ({
@@ -44,17 +33,19 @@ const EldersList = () => {
           address: '',
           image: elder.member_image || '',
           elders_role: elder.elders_role,
+          list_order: elder.list_order,
         } as ElderWithRole))
         .sort((a, b) => {
-          // First sort by role priority
-          const priorityA = getRolePriority(a.elders_role);
-          const priorityB = getRolePriority(b.elders_role);
+          // Sort by list_order in ascending order (starting from 1)
+          // If list_order is not set, put those at the end
+          const orderA = a.list_order ?? 9999;
+          const orderB = b.list_order ?? 9999;
           
-          if (priorityA !== priorityB) {
-            return priorityA - priorityB;
+          if (orderA !== orderB) {
+            return orderA - orderB;
           }
           
-          // If same priority, sort alphabetically by name
+          // If same list_order, sort alphabetically by name
           return a.name.localeCompare(b.name);
         });
       
