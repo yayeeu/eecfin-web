@@ -3,9 +3,24 @@ import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Member } from '@/types/database.types';
 import { apiService, Elder } from '@/lib/api';
-import { Member } from '@/types/database.types';
 import { Loader2, UserCircle2 } from 'lucide-react';
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+
+interface ElderWithRole extends Member {
+  elders_role?: string;
+}
+
+// Helper function to get role priority for sorting
+const getRolePriority = (role?: string): number => {
+  if (!role) return 999; // No role goes to the end
+  const normalizedRole = role.toLowerCase().trim();
+  
+  if (normalizedRole === 'chair') return 1;
+  if (normalizedRole === 'vice chair' || normalizedRole === 'vicechair') return 2;
+  if (normalizedRole === 'secretary') return 3;
+  if (normalizedRole === 'treasurer') return 4;
+  return 999; // Other roles go to the end
+};
 
 const EldersList = () => {
   const { data: eldersResponse, isLoading, isError } = useQuery({
@@ -14,7 +29,7 @@ const EldersList = () => {
       const response = await apiService.getElders();
       if (response.error) throw new Error(response.error);
       
-      // Map API response to Member[] format
+      // Map API response to Member[] format with elders_role
       const elders = (response.data?.elders || [])
         .filter(elder => elder.eldership_status === 'active')
         .map(elder => ({
@@ -28,8 +43,20 @@ const EldersList = () => {
           updated_at: elder.updated_at,
           address: '',
           image: elder.member_image || '',
-        } as Member))
-        .sort((a, b) => a.name.localeCompare(b.name));
+          elders_role: elder.elders_role,
+        } as ElderWithRole))
+        .sort((a, b) => {
+          // First sort by role priority
+          const priorityA = getRolePriority(a.elders_role);
+          const priorityB = getRolePriority(b.elders_role);
+          
+          if (priorityA !== priorityB) {
+            return priorityA - priorityB;
+          }
+          
+          // If same priority, sort alphabetically by name
+          return a.name.localeCompare(b.name);
+        });
       
       return elders;
     }
@@ -85,7 +112,12 @@ const EldersList = () => {
               </AvatarFallback>
             )}
           </Avatar>
-          <h3 className="text-base font-semibold">{elder.name}</h3>
+          <h3 className="text-base font-semibold">
+            {elder.name}
+            {elder.elders_role && (
+              <span className="text-sm text-gray-600 font-normal">, {elder.elders_role}</span>
+            )}
+          </h3>
           <p className="text-sm text-eecfin-navy font-medium">Elder</p>
           
           {elder.phone && (

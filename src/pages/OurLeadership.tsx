@@ -65,21 +65,11 @@ const OurLeadership = () => {
           </div>
         </div>
 
-        {/* Main Content Section with Large Left Image */}
+        {/* Main Content Section */}
         <section className="bg-white">
-          <div className="flex min-h-screen">
-            {/* Large Left Side Image */}
-            <div className="w-2/5 relative overflow-hidden">
-              <img 
-                src="/images/our-leadership-hero.jpg?w=1200&h=800&fit=crop" 
-                alt="Leadership and guidance"
-                className="w-full h-full object-cover"
-              />
-              <div className="absolute inset-0 bg-gradient-to-r from-transparent to-white/20"></div>
-            </div>
-            
-            {/* Right Content Area */}
-            <div className="w-3/5 py-16">
+          <div className="min-h-screen">
+            {/* Content Area */}
+            <div className="w-full py-16">
               <div className="container-custom max-w-4xl">
                 <div className="text-center mb-12">
                   <div className="inline-block p-2 bg-purple-100 text-purple-700 rounded-full mb-4">

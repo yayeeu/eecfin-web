@@ -25,6 +25,7 @@ export interface Elder {
   id: string;
   member_id: string;
   eldership_status: 'active' | 'inactive';
+  elders_role?: string;
   member_name?: string;
   member_email?: string;
   member_phone?: string;
