@@ -17,6 +17,8 @@ const Events = lazy(() => import("./pages/Events"));
 const Contact = lazy(() => import("./pages/Contact"));
 const GetInvolved = lazy(() => import("./pages/GetInvolved"));
 const Give = lazy(() => import("./pages/Give"));
+const GiveNow = lazy(() => import("./pages/GiveNow"));
+const Qr = lazy(() => import("./pages/Qr"));
 const Constitution = lazy(() => import("./pages/Constitution"));
 const Sermons = lazy(() => import("./pages/Sermons"));
 
@@ -48,6 +50,8 @@ const publicRoutes = [
   { path: "/contact", element: <Contact /> },
   { path: "/get-involved", element: <GetInvolved /> },
   { path: "/give", element: <Give /> },
+  { path: "/givenow", element: <GiveNow /> },
+  { path: "/qr", element: <Qr /> },
   { path: "/constitution", element: <Constitution /> },
   { path: "/sermons", element: <Sermons /> }
 ];
@@ -60,23 +64,35 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           {/* Public Routes */}
-          {publicRoutes.map(route => (
-            <Route 
-              key={route.path} 
-              path={route.path} 
-              element={
-                route.path === "/" ? (
-                  route.element
-                ) : (
-                  <Layout>
-                    <Suspense fallback={<PageLoader />}>
-                      {route.element}
-                    </Suspense>
-                  </Layout>
-                )
-              } 
-            />
-          ))}
+          {publicRoutes.map(route => {
+            const noLayout =
+              route.path === "/" ||
+              route.path === "/givenow" ||
+              route.path === "/qr";
+            return (
+              <Route
+                key={route.path}
+                path={route.path}
+                element={
+                  noLayout ? (
+                    route.path === "/" ? (
+                      route.element
+                    ) : (
+                      <Suspense fallback={<PageLoader />}>
+                        {route.element}
+                      </Suspense>
+                    )
+                  ) : (
+                    <Layout>
+                      <Suspense fallback={<PageLoader />}>
+                        {route.element}
+                      </Suspense>
+                    </Layout>
+                  )
+                }
+              />
+            );
+          })}
 
           {/* 404 Route */}
           <Route path="*" element={<NotFound />} />

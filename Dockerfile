@@ -19,8 +19,7 @@ COPY . .
 # Expose the port from environment variable
 EXPOSE ${PORT}
 
-# Start the app in development mode with hot reloading
-#CMD ["npm", "run", "dev", "--", "--host"]
-#CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0", "--port", "8080"]
+# Sync node_modules on each start (bind mount keeps a stale anonymous volume otherwise)
+ENTRYPOINT ["/bin/sh", "/app/docker-entrypoint.sh"]
 CMD ["npm", "run", "dev"]
 

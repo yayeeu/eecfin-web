@@ -3,13 +3,9 @@ import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Member } from '@/types/database.types';
 import { apiService, Elder } from '@/lib/api';
+import { Member } from '@/types/database.types';
 import { Loader2, UserCircle2 } from 'lucide-react';
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-
-interface ElderWithRole extends Member {
-  elders_role?: string;
-  list_order?: number;
-}
 
 const EldersList = () => {
   const { data: eldersResponse, isLoading, isError } = useQuery({
@@ -18,7 +14,7 @@ const EldersList = () => {
       const response = await apiService.getElders();
       if (response.error) throw new Error(response.error);
       
-      // Map API response to Member[] format with elders_role and list_order
+      // Map API response to Member[] format
       const elders = (response.data?.elders || [])
         .filter(elder => elder.eldership_status === 'active')
         .map(elder => ({
@@ -32,22 +28,8 @@ const EldersList = () => {
           updated_at: elder.updated_at,
           address: '',
           image: elder.member_image || '',
-          elders_role: elder.elders_role,
-          list_order: elder.list_order,
-        } as ElderWithRole))
-        .sort((a, b) => {
-          // Sort by list_order in ascending order (starting from 1)
-          // If list_order is not set, put those at the end
-          const orderA = a.list_order ?? 9999;
-          const orderB = b.list_order ?? 9999;
-          
-          if (orderA !== orderB) {
-            return orderA - orderB;
-          }
-          
-          // If same list_order, sort alphabetically by name
-          return a.name.localeCompare(b.name);
-        });
+        } as Member))
+        .sort((a, b) => a.name.localeCompare(b.name));
       
       return elders;
     }
@@ -103,12 +85,7 @@ const EldersList = () => {
               </AvatarFallback>
             )}
           </Avatar>
-          <h3 className="text-base font-semibold">
-            {elder.name}
-            {elder.elders_role && (
-              <span className="text-sm text-gray-600 font-normal">, {elder.elders_role}</span>
-            )}
-          </h3>
+          <h3 className="text-base font-semibold">{elder.name}</h3>
           <p className="text-sm text-eecfin-navy font-medium">Elder</p>
           
           {elder.phone && (
