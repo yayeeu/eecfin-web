@@ -99,8 +99,8 @@ const FeaturesSection = () => {
                         </div>
                         <div className="flex items-center gap-2">
                           <MapPin className="h-3 w-3" />
-                          <span>Keinulaudankuja 4 B</span>
-                          <span>00790 Helsinki, Finland</span>
+                          <span>Sinikalliontie 10</span>
+                          <span>02630 Espoo, Finland</span>
                         </div>
                       </div>
                     </div>
