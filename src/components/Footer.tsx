@@ -14,7 +14,7 @@ const Footer = () => {
       <footer className="bg-eecfin-navy text-white py-4">
         <div className="container-custom">
           <div className="text-center text-sm">
-            <p>&copy; {currentYear} Ethiopian Evangelical Church in Finland. All rights reserved.</p>
+            <p>© {currentYear} Ethiopian Evangelical Church in Finland. All rights reserved.</p>
           </div>
         </div>
       </footer>
@@ -30,7 +30,7 @@ const Footer = () => {
             <h3 className="text-eecfin-gold text-xl font-semibold mb-4">Ethiopian Evangelical Church in Finland</h3>
             <p className="mb-2 flex items-center">
               <MapPin size={18} className="mr-2 text-eecfin-gold" />
-              <span>Keinulaudankuja 4 B, 00940 Helsinki, Finland</span>
+              <span>Sinikalliontie 10, 02630 Espoo, Finland</span>
             </p>
            
             <p className="flex items-center">
@@ -66,13 +66,13 @@ const Footer = () => {
               </a>
             </div>
             <p className="text-sm">
-              Join us for worship every Sunday at 17:00 !
+              Join us for worship every Sunday at 10:00 AM
             </p>
           </div>
         </div>
 
         <div className="mt-8 pt-8 border-t border-gray-700 text-center text-sm">
-          <p>&copy; {currentYear} Ethiopian Evangelical Church in Finland. All rights reserved.</p>
+          <p>© {currentYear} Ethiopian Evangelical Church in Finland. All rights reserved.</p>
           <p>Fundraising permission: RA/2025/336 </p>
         </div>
       </div>

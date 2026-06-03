@@ -14,8 +14,8 @@ const ContactInfo = () => {
           <div>
             <h3 className="text-lg font-semibold mb-1">Church Location</h3>
             <p className="text-gray-600">
-              Keinulaudankuja 4 B<br />
-              00940 Helsinki, Finland
+              Sinikalliontie 10<br />
+              02630 Espoo, Finland
             </p>
           </div>
         </div>
@@ -48,7 +48,7 @@ const ContactInfo = () => {
           <div>
             <h3 className="text-lg font-semibold mb-1">Service Times</h3>
             <p className="text-gray-600">
-              Weekly Sunday: 17:00 <br />
+              Weekly Sunday: 10:00 AM<br />
             </p>
           </div>
         </div>
