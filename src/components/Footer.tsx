@@ -66,7 +66,7 @@ const Footer = () => {
               </a>
             </div>
             <p className="text-sm">
-              Join us for worship every Sunday at 17:00 !
+              Join us for worship every Sunday at 10:00 AM
             </p>
           </div>
         </div>

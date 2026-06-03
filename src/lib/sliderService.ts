@@ -41,8 +41,8 @@ export const fetchSlides = async (): Promise<SlideImage[]> => {
       {
         fileName: 'YouthCover.jpg',
         overlay: {
-          title: "በጸሎት ጽኑ",
-          subtitle: " - ሮሜ 12:12"
+          title: "በጸሎት ጽኑበመንፈስ የምትቃጠሉ ሁኑ::",
+          subtitle: " - ሮሜ 12:11"
         }
       },
       {
